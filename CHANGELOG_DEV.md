@@ -2,3 +2,4 @@
 [2024-01-01T11:19:26] fix bug where cached response was returning stale date
 [2024-01-01T18:10:42] fix memory leak caused by uncleaned event listeners
 [2024-01-01T19:16:56] implement error boundary fallback for broken child components
+[2024-01-01T20:05:06] fix failing assertion in user profile integration test

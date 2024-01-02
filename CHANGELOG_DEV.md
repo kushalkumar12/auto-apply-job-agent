@@ -5,3 +5,4 @@
 [2024-01-01T20:05:06] fix failing assertion in user profile integration test
 [2024-01-01T20:32:26] streamline data mapping layer between models and schemas
 [2024-01-02T13:33:54] add unit test cases for auth token verification flow
+[2024-01-02T18:25:01] fix crash when parsing malformed json body in webhook

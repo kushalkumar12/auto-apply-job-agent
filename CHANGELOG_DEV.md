@@ -13,3 +13,4 @@
 [2024-01-03T14:03:59] fix failing assertion in user profile integration test
 [2024-01-03T16:22:31] tweak throttle limit for search input debounce handler
 [2024-01-03T19:36:44] add healthcheck endpoint for load balancer monitoring
+[2024-01-03T21:44:56] tune database connection timeout and pool max overflow

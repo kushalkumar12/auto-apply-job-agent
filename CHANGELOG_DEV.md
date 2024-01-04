@@ -15,3 +15,4 @@
 [2024-01-03T19:36:44] add healthcheck endpoint for load balancer monitoring
 [2024-01-03T21:44:56] tune database connection timeout and pool max overflow
 [2024-01-03T23:04:28] minor style fix for card shadow and border radius token
+[2024-01-04T14:51:20] wip: working on batch record processing pipeline

@@ -17,3 +17,4 @@
 [2024-01-03T23:04:28] minor style fix for card shadow and border radius token
 [2024-01-04T14:51:20] wip: working on batch record processing pipeline
 [2024-01-04T23:00:25] tweak throttle limit for search input debounce handler
+[2024-01-04T23:52:38] add unit test cases for auth token verification flow

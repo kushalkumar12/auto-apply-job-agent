@@ -19,3 +19,4 @@
 [2024-01-04T23:00:25] tweak throttle limit for search input debounce handler
 [2024-01-04T23:52:38] add unit test cases for auth token verification flow
 [2024-01-05T11:10:34] cleanup unused imports and format backend service files
+[2024-01-05T11:15:50] optimize query execution time by adding compound index

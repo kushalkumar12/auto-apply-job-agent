@@ -24,3 +24,4 @@
 [2024-01-05T23:20:21] fix issue with session expiration handling on reconnect
 [2024-01-06T12:01:07] handle edge case when payload data is empty or missing
 [2024-01-06T13:54:46] minor style fix for card shadow and border radius token
+[2024-01-06T14:53:35] fix off-by-one error in date range calculations

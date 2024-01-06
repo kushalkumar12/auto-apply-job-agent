@@ -23,3 +23,4 @@
 [2024-01-05T21:22:23] configure cors origins for local dev port forwarding
 [2024-01-05T23:20:21] fix issue with session expiration handling on reconnect
 [2024-01-06T12:01:07] handle edge case when payload data is empty or missing
+[2024-01-06T13:54:46] minor style fix for card shadow and border radius token

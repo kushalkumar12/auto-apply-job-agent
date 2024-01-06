@@ -27,3 +27,4 @@
 [2024-01-06T14:53:35] fix off-by-one error in date range calculations
 [2024-01-06T14:55:11] streamline data mapping layer between models and schemas
 [2024-01-06T16:01:49] initial setup for core router modules and baseline configs
+[2024-01-06T16:45:50] fix memory leak caused by uncleaned event listeners

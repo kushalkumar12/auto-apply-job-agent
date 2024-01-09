@@ -39,3 +39,4 @@
 [2024-01-09T18:26:05] fix flexbox wrapping issue on tablet screen sizes
 [2024-01-09T18:57:03] initial setup for core router modules and baseline configs
 [2024-01-09T20:21:39] tweak default page size and pagination limits in config
+[2024-01-09T21:35:40] tune database connection timeout and pool max overflow

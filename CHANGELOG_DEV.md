@@ -37,3 +37,4 @@
 [2024-01-09T16:29:20] add missing null checks before accessing object properties
 [2024-01-09T18:01:03] fix crash when parsing malformed json body in webhook
 [2024-01-09T18:26:05] fix flexbox wrapping issue on tablet screen sizes
+[2024-01-09T18:57:03] initial setup for core router modules and baseline configs

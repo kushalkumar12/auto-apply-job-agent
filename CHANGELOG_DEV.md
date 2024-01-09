@@ -32,3 +32,4 @@
 [2024-01-06T22:50:47] refactor database connection pool retry handling
 [2024-01-06T23:50:27] update readme documentation for local enviroment setup
 [2024-01-09T09:38:30] tweak throttle limit for search input debounce handler
+[2024-01-09T10:21:31] add regression test for concurrent job updates

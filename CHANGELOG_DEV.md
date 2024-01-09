@@ -40,3 +40,4 @@
 [2024-01-09T18:57:03] initial setup for core router modules and baseline configs
 [2024-01-09T20:21:39] tweak default page size and pagination limits in config
 [2024-01-09T21:35:40] tune database connection timeout and pool max overflow
+[2024-01-09T21:54:12] add regression test for concurrent job updates

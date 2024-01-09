@@ -34,3 +34,4 @@
 [2024-01-09T09:38:30] tweak throttle limit for search input debounce handler
 [2024-01-09T10:21:31] add regression test for concurrent job updates
 [2024-01-09T11:01:44] add keyboard shortcut support for modal dismiss
+[2024-01-09T16:29:20] add missing null checks before accessing object properties

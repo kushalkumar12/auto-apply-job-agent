@@ -33,3 +33,4 @@
 [2024-01-06T23:50:27] update readme documentation for local enviroment setup
 [2024-01-09T09:38:30] tweak throttle limit for search input debounce handler
 [2024-01-09T10:21:31] add regression test for concurrent job updates
+[2024-01-09T11:01:44] add keyboard shortcut support for modal dismiss

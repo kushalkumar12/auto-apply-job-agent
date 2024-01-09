@@ -31,3 +31,4 @@
 [2024-01-06T21:43:32] wip: working on batch record processing pipeline
 [2024-01-06T22:50:47] refactor database connection pool retry handling
 [2024-01-06T23:50:27] update readme documentation for local enviroment setup
+[2024-01-09T09:38:30] tweak throttle limit for search input debounce handler

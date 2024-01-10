@@ -51,3 +51,4 @@
 [2024-01-10T15:32:09] add healthcheck endpoint for load balancer monitoring
 [2024-01-10T15:52:56] cleanup console logs left over from local debugging
 [2024-01-10T17:51:25] update readme documentation for local enviroment setup
+[2024-01-10T18:39:10] refactor logging middleware to mask sensitive headers

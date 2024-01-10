@@ -43,3 +43,4 @@
 [2024-01-09T21:54:12] add regression test for concurrent job updates
 [2024-01-10T09:26:10] fix bug where cached response was returning stale date
 [2024-01-10T09:30:10] cleanup console logs left over from local debugging
+[2024-01-10T12:25:30] fix off-by-one error in date range calculations

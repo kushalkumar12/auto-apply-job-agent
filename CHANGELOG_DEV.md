@@ -47,3 +47,4 @@
 [2024-01-10T12:27:18] fix off-by-one error in date range calculations
 [2024-01-10T12:56:15] fix issue where modal state was not reseting on close
 [2024-01-10T13:20:05] final touches on feature branch before code review
+[2024-01-10T13:57:23] tune database connection timeout and pool max overflow

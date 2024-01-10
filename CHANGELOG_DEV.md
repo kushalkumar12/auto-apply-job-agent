@@ -45,3 +45,4 @@
 [2024-01-10T09:30:10] cleanup console logs left over from local debugging
 [2024-01-10T12:25:30] fix off-by-one error in date range calculations
 [2024-01-10T12:27:18] fix off-by-one error in date range calculations
+[2024-01-10T12:56:15] fix issue where modal state was not reseting on close

@@ -54,3 +54,4 @@
 [2024-01-10T18:39:10] refactor logging middleware to mask sensitive headers
 [2024-01-10T18:48:55] update typography scale for nested list elements
 [2024-01-10T21:53:02] bump package dependencies and resolve vulnerability warning
+[2024-01-10T22:31:25] fix memory leak caused by uncleaned event listeners

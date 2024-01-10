@@ -41,3 +41,4 @@
 [2024-01-09T20:21:39] tweak default page size and pagination limits in config
 [2024-01-09T21:35:40] tune database connection timeout and pool max overflow
 [2024-01-09T21:54:12] add regression test for concurrent job updates
+[2024-01-10T09:26:10] fix bug where cached response was returning stale date

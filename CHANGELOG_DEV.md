@@ -58,3 +58,4 @@
 [2024-01-10T22:44:56] optimize query execution time by adding compound index
 [2024-01-11T17:21:04] minor style fix for card shadow and border radius token
 [2024-01-11T20:58:10] add validation schema checks for incoming request payloads
+[2024-01-11T22:42:23] setup pre-commit hook scripts for automated linting

@@ -71,3 +71,4 @@
 [2024-01-14T16:56:07] quick commit before lunch, still need to finish error checks
 [2024-01-14T18:39:15] update dockerfile base image and multistage build layers
 [2024-01-14T20:50:26] fix flexbox wrapping issue on tablet screen sizes
+[2024-01-14T21:15:15] improve error messages returned during failed validation

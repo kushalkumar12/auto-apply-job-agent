@@ -68,3 +68,4 @@
 [2024-01-14T14:41:14] cleanup unused imports and format backend service files
 [2024-01-14T15:27:23] implement optimistic ui update for item toggle action
 [2024-01-14T16:23:56] add regression test for concurrent job updates
+[2024-01-14T16:56:07] quick commit before lunch, still need to finish error checks

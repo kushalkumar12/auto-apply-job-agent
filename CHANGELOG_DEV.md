@@ -62,3 +62,4 @@
 [2024-01-12T09:00:28] reorg utility methods into dedicated shared modules
 [2024-01-12T20:15:03] add validation schema checks for incoming request payloads
 [2024-01-12T20:19:21] update api endpoints docstrings and request response examples
+[2024-01-14T10:18:29] tune database connection timeout and pool max overflow

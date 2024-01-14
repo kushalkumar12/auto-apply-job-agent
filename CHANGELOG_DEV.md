@@ -69,3 +69,4 @@
 [2024-01-14T15:27:23] implement optimistic ui update for item toggle action
 [2024-01-14T16:23:56] add regression test for concurrent job updates
 [2024-01-14T16:56:07] quick commit before lunch, still need to finish error checks
+[2024-01-14T18:39:15] update dockerfile base image and multistage build layers

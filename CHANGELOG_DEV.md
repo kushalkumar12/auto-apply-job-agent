@@ -77,3 +77,4 @@
 [2024-01-15T13:58:39] bump package dependencies and resolve vulnerability warning
 [2024-01-15T14:12:52] update api endpoints docstrings and request response examples
 [2024-01-15T16:19:48] improve error messages returned during failed validation
+[2024-01-15T17:41:59] resolve race condition in websocket reconnection listener

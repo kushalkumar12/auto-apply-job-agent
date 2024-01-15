@@ -73,3 +73,4 @@
 [2024-01-14T20:50:26] fix flexbox wrapping issue on tablet screen sizes
 [2024-01-14T21:15:15] improve error messages returned during failed validation
 [2024-01-14T23:23:35] tweak default page size and pagination limits in config
+[2024-01-15T10:32:09] refactor logging middleware to mask sensitive headers

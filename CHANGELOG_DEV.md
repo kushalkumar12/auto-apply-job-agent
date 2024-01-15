@@ -78,3 +78,4 @@
 [2024-01-15T14:12:52] update api endpoints docstrings and request response examples
 [2024-01-15T16:19:48] improve error messages returned during failed validation
 [2024-01-15T17:41:59] resolve race condition in websocket reconnection listener
+[2024-01-15T19:26:58] resolve race condition in websocket reconnection listener

@@ -85,3 +85,4 @@
 [2024-01-16T10:23:04] add healthcheck endpoint for load balancer monitoring
 [2024-01-16T10:33:16] improve error messages returned during failed validation
 [2024-01-16T11:08:10] setup pre-commit hook scripts for automated linting
+[2024-01-16T11:30:47] correct spelling of parameter in api client method

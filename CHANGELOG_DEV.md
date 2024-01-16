@@ -83,3 +83,4 @@
 [2024-01-15T23:40:47] fix issue with session expiration handling on reconnect
 [2024-01-16T10:19:23] reorg utility methods into dedicated shared modules
 [2024-01-16T10:23:04] add healthcheck endpoint for load balancer monitoring
+[2024-01-16T10:33:16] improve error messages returned during failed validation

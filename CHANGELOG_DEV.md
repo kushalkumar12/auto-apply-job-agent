@@ -109,3 +109,4 @@
 [2024-01-16T22:06:18] cache frequent lookup tables in local memory store
 [2024-01-16T22:20:42] minor style fix for card shadow and border radius token
 [2024-01-16T22:32:15] implement error boundary fallback for broken child components
+[2024-01-16T23:09:30] add keyboard shortcut support for modal dismiss

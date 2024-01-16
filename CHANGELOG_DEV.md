@@ -86,3 +86,4 @@
 [2024-01-16T10:33:16] improve error messages returned during failed validation
 [2024-01-16T11:08:10] setup pre-commit hook scripts for automated linting
 [2024-01-16T11:30:47] correct spelling of parameter in api client method
+[2024-01-16T12:14:52] fix failing assertion in user profile integration test

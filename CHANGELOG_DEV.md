@@ -95,3 +95,4 @@
 [2024-01-16T14:51:09] fix issue where modal state was not reseting on close
 [2024-01-16T15:09:52] fix crash when parsing malformed json body in webhook
 [2024-01-16T15:41:26] fix flexbox wrapping issue on tablet screen sizes
+[2024-01-16T15:43:43] quick commit before lunch, still need to finish error checks

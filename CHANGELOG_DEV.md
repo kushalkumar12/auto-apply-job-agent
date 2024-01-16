@@ -99,3 +99,4 @@
 [2024-01-16T15:59:46] add unit test cases for auth token verification flow
 [2024-01-16T16:11:29] fix flexbox wrapping issue on tablet screen sizes
 [2024-01-16T16:12:09] implement error boundary fallback for broken child components
+[2024-01-16T17:42:41] fix crash when parsing malformed json body in webhook

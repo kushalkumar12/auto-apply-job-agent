@@ -90,3 +90,4 @@
 [2024-01-16T12:45:15] cleanup unused imports and format backend service files
 [2024-01-16T12:52:26] cleanup unused imports and format backend service files
 [2024-01-16T13:50:34] add gitignore entries for build cache and temp outputs
+[2024-01-16T14:22:58] wip: working on batch record processing pipeline

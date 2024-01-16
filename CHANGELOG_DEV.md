@@ -81,3 +81,4 @@
 [2024-01-15T19:26:58] resolve race condition in websocket reconnection listener
 [2024-01-15T21:37:20] adjust button padding and fix responsive alignment on mobile
 [2024-01-15T23:40:47] fix issue with session expiration handling on reconnect
+[2024-01-16T10:19:23] reorg utility methods into dedicated shared modules

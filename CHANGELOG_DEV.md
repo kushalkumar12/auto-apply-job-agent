@@ -96,3 +96,4 @@
 [2024-01-16T15:09:52] fix crash when parsing malformed json body in webhook
 [2024-01-16T15:41:26] fix flexbox wrapping issue on tablet screen sizes
 [2024-01-16T15:43:43] quick commit before lunch, still need to finish error checks
+[2024-01-16T15:59:46] add unit test cases for auth token verification flow

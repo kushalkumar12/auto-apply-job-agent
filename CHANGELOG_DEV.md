@@ -100,3 +100,4 @@
 [2024-01-16T16:11:29] fix flexbox wrapping issue on tablet screen sizes
 [2024-01-16T16:12:09] implement error boundary fallback for broken child components
 [2024-01-16T17:42:41] fix crash when parsing malformed json body in webhook
+[2024-01-16T18:22:57] bump package dependencies and resolve vulnerability warning

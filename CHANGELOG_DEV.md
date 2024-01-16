@@ -110,3 +110,4 @@
 [2024-01-16T22:20:42] minor style fix for card shadow and border radius token
 [2024-01-16T22:32:15] implement error boundary fallback for broken child components
 [2024-01-16T23:09:30] add keyboard shortcut support for modal dismiss
+[2024-01-16T23:41:25] fix failing assertion in user profile integration test

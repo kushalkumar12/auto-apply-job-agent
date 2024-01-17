@@ -112,3 +112,4 @@
 [2024-01-16T23:09:30] add keyboard shortcut support for modal dismiss
 [2024-01-16T23:41:25] fix failing assertion in user profile integration test
 [2024-01-17T11:07:59] prevent content shift when loading skeleton placeholders
+[2024-01-17T12:06:26] adjust button padding and fix responsive alignment on mobile

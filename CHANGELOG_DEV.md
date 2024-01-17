@@ -117,3 +117,4 @@
 [2024-01-17T14:39:26] add unit test cases for auth token verification flow
 [2024-01-17T14:42:24] adjust button padding and fix responsive alignment on mobile
 [2024-01-17T17:45:35] improve error messages returned during failed validation
+[2024-01-17T19:19:38] fix flexbox wrapping issue on tablet screen sizes

@@ -122,3 +122,4 @@
 [2024-01-17T19:44:25] cleanup console logs left over from local debugging
 [2024-01-17T20:07:28] update readme documentation for local enviroment setup
 [2024-01-17T20:15:39] add validation schema checks for incoming request payloads
+[2024-01-17T20:55:01] implement optimistic ui update for item toggle action

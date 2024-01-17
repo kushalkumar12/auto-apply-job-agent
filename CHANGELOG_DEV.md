@@ -121,3 +121,4 @@
 [2024-01-17T19:27:57] reorg utility methods into dedicated shared modules
 [2024-01-17T19:44:25] cleanup console logs left over from local debugging
 [2024-01-17T20:07:28] update readme documentation for local enviroment setup
+[2024-01-17T20:15:39] add validation schema checks for incoming request payloads

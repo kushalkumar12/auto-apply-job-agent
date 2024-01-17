@@ -123,3 +123,4 @@
 [2024-01-17T20:07:28] update readme documentation for local enviroment setup
 [2024-01-17T20:15:39] add validation schema checks for incoming request payloads
 [2024-01-17T20:55:01] implement optimistic ui update for item toggle action
+[2024-01-17T23:50:56] correct spelling of parameter in api client method

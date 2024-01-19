@@ -136,3 +136,4 @@
 [2024-01-19T22:25:05] add gitignore entries for build cache and temp outputs
 [2024-01-19T22:52:59] fix crash when parsing malformed json body in webhook
 [2024-01-19T23:09:03] update readme documentation for local enviroment setup
+[2024-01-19T23:20:23] setup pre-commit hook scripts for automated linting

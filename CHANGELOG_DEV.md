@@ -127,3 +127,4 @@
 [2024-01-19T09:15:50] optimize query execution time by adding compound index
 [2024-01-19T10:15:06] wip: working on batch record processing pipeline
 [2024-01-19T10:37:24] quick commit before lunch, still need to finish error checks
+[2024-01-19T10:46:35] tune database connection timeout and pool max overflow

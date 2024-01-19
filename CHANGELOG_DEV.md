@@ -134,3 +134,4 @@
 [2024-01-19T20:13:04] fix typo in helper function params and update type hints
 [2024-01-19T21:13:28] prevent content shift when loading skeleton placeholders
 [2024-01-19T22:25:05] add gitignore entries for build cache and temp outputs
+[2024-01-19T22:52:59] fix crash when parsing malformed json body in webhook

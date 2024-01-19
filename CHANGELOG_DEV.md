@@ -125,3 +125,4 @@
 [2024-01-17T20:55:01] implement optimistic ui update for item toggle action
 [2024-01-17T23:50:56] correct spelling of parameter in api client method
 [2024-01-19T09:15:50] optimize query execution time by adding compound index
+[2024-01-19T10:15:06] wip: working on batch record processing pipeline

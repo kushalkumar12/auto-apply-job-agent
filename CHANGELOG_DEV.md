@@ -137,3 +137,4 @@
 [2024-01-19T22:52:59] fix crash when parsing malformed json body in webhook
 [2024-01-19T23:09:03] update readme documentation for local enviroment setup
 [2024-01-19T23:20:23] setup pre-commit hook scripts for automated linting
+[2024-01-19T23:57:38] reorg utility methods into dedicated shared modules

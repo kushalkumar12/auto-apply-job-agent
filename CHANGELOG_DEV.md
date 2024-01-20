@@ -138,3 +138,4 @@
 [2024-01-19T23:09:03] update readme documentation for local enviroment setup
 [2024-01-19T23:20:23] setup pre-commit hook scripts for automated linting
 [2024-01-19T23:57:38] reorg utility methods into dedicated shared modules
+[2024-01-20T09:28:55] fix off-by-one error in date range calculations

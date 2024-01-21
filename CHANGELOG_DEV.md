@@ -148,3 +148,4 @@
 [2024-01-20T18:07:09] final touches on feature branch before code review
 [2024-01-21T15:06:22] update test coverage for user registration edge cases
 [2024-01-21T20:10:09] quick commit before lunch, still need to finish error checks
+[2024-01-21T21:49:12] tweak throttle limit for search input debounce handler

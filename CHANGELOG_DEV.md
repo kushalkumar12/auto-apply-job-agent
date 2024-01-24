@@ -155,3 +155,4 @@
 [2024-01-24T11:56:55] fix memory leak caused by uncleaned event listeners
 [2024-01-24T12:44:12] optimize query execution time by adding compound index
 [2024-01-24T14:41:19] minor style fix for card shadow and border radius token
+[2024-01-24T14:44:45] refactor logging middleware to mask sensitive headers

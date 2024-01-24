@@ -166,3 +166,4 @@
 [2024-01-24T19:01:32] tweak active tab indicator transition speed and easing
 [2024-01-24T19:47:17] cache frequent lookup tables in local memory store
 [2024-01-24T20:12:00] revert temporary test flags before merge
+[2024-01-24T21:22:44] fix issue where modal state was not reseting on close

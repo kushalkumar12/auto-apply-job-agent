@@ -152,3 +152,4 @@
 [2024-01-21T22:39:48] update readme documentation for local enviroment setup
 [2024-01-24T09:24:18] update api endpoints docstrings and request response examples
 [2024-01-24T09:28:28] update api endpoints docstrings and request response examples
+[2024-01-24T11:56:55] fix memory leak caused by uncleaned event listeners

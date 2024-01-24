@@ -168,3 +168,4 @@
 [2024-01-24T20:12:00] revert temporary test flags before merge
 [2024-01-24T21:22:44] fix issue where modal state was not reseting on close
 [2024-01-24T22:40:26] refactor logging middleware to mask sensitive headers
+[2024-01-24T22:46:52] fix memory leak caused by uncleaned event listeners

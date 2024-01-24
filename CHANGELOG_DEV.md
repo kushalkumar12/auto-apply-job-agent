@@ -161,3 +161,4 @@
 [2024-01-24T17:04:49] cleanup console logs left over from local debugging
 [2024-01-24T18:36:33] add validation schema checks for incoming request payloads
 [2024-01-24T18:46:07] tweak throttle limit for search input debounce handler
+[2024-01-24T18:59:29] fix broken link in navigation menu footer and header

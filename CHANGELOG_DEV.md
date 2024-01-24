@@ -151,3 +151,4 @@
 [2024-01-21T21:49:12] tweak throttle limit for search input debounce handler
 [2024-01-21T22:39:48] update readme documentation for local enviroment setup
 [2024-01-24T09:24:18] update api endpoints docstrings and request response examples
+[2024-01-24T09:28:28] update api endpoints docstrings and request response examples

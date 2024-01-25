@@ -178,3 +178,4 @@
 [2024-01-25T14:49:12] update readme documentation for local enviroment setup
 [2024-01-25T16:12:59] improve error messages returned during failed validation
 [2024-01-25T16:52:22] fix typo in helper function params and update type hints
+[2024-01-25T18:17:03] add unit test cases for auth token verification flow

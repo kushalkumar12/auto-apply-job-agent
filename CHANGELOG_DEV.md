@@ -181,3 +181,4 @@
 [2024-01-25T18:17:03] add unit test cases for auth token verification flow
 [2024-01-25T19:01:01] add gitignore entries for build cache and temp outputs
 [2024-01-25T22:01:18] tweak default page size and pagination limits in config
+[2024-01-25T23:49:03] add validation schema checks for incoming request payloads

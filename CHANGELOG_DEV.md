@@ -172,3 +172,4 @@
 [2024-01-24T23:52:09] configure cors origins for local dev port forwarding
 [2024-01-25T09:51:25] speed up test runner execution by running in-memory db
 [2024-01-25T10:25:14] fix issue where modal state was not reseting on close
+[2024-01-25T11:08:47] update test coverage for user registration edge cases

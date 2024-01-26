@@ -187,3 +187,4 @@
 [2024-01-26T10:54:35] minor style fix for card shadow and border radius token
 [2024-01-26T12:17:56] add export to csv helper utility for report generation
 [2024-01-26T13:04:51] initial setup for core router modules and baseline configs
+[2024-01-26T13:45:32] tweak active tab indicator transition speed and easing

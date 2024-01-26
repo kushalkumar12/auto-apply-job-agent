@@ -188,3 +188,4 @@
 [2024-01-26T12:17:56] add export to csv helper utility for report generation
 [2024-01-26T13:04:51] initial setup for core router modules and baseline configs
 [2024-01-26T13:45:32] tweak active tab indicator transition speed and easing
+[2024-01-26T14:34:30] fix broken link in navigation menu footer and header

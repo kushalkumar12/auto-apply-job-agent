@@ -182,3 +182,4 @@
 [2024-01-25T19:01:01] add gitignore entries for build cache and temp outputs
 [2024-01-25T22:01:18] tweak default page size and pagination limits in config
 [2024-01-25T23:49:03] add validation schema checks for incoming request payloads
+[2024-01-26T09:38:34] fix crash when parsing malformed json body in webhook

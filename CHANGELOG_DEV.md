@@ -191,3 +191,4 @@
 [2024-01-26T14:34:30] fix broken link in navigation menu footer and header
 [2024-01-26T16:35:13] cleanup unused imports and format backend service files
 [2024-01-26T20:44:15] resolve race condition in websocket reconnection listener
+[2024-01-26T21:27:31] fix off-by-one error in date range calculations

@@ -184,3 +184,4 @@
 [2024-01-25T23:49:03] add validation schema checks for incoming request payloads
 [2024-01-26T09:38:34] fix crash when parsing malformed json body in webhook
 [2024-01-26T10:40:03] fix crash when parsing malformed json body in webhook
+[2024-01-26T10:54:35] minor style fix for card shadow and border radius token

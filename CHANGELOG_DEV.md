@@ -190,3 +190,4 @@
 [2024-01-26T13:45:32] tweak active tab indicator transition speed and easing
 [2024-01-26T14:34:30] fix broken link in navigation menu footer and header
 [2024-01-26T16:35:13] cleanup unused imports and format backend service files
+[2024-01-26T20:44:15] resolve race condition in websocket reconnection listener

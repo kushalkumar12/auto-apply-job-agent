@@ -196,3 +196,4 @@
 [2024-01-26T23:15:33] cleanup console logs left over from local debugging
 [2024-01-27T13:33:00] update dockerfile base image and multistage build layers
 [2024-01-27T15:04:37] fix broken link in navigation menu footer and header
+[2024-01-27T15:33:02] streamline data mapping layer between models and schemas

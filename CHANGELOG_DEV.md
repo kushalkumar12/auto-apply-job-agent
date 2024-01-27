@@ -198,3 +198,4 @@
 [2024-01-27T15:04:37] fix broken link in navigation menu footer and header
 [2024-01-27T15:33:02] streamline data mapping layer between models and schemas
 [2024-01-27T20:10:37] add keyboard shortcut support for modal dismiss
+[2024-01-27T20:47:02] add healthcheck endpoint for load balancer monitoring

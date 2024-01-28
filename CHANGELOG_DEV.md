@@ -201,3 +201,4 @@
 [2024-01-27T20:47:02] add healthcheck endpoint for load balancer monitoring
 [2024-01-28T10:35:09] resolve race condition in websocket reconnection listener
 [2024-01-28T13:57:28] speed up test runner execution by running in-memory db
+[2024-01-28T19:27:39] fix failing assertion in user profile integration test

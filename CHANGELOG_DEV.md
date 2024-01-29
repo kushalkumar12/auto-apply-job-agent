@@ -205,3 +205,4 @@
 [2024-01-29T09:06:11] refactor database connection pool retry handling
 [2024-01-29T14:43:31] fix crash when parsing malformed json body in webhook
 [2024-01-29T14:45:49] update typography scale for nested list elements
+[2024-01-29T16:58:09] adjust color contrast on badge tags for better accesibility

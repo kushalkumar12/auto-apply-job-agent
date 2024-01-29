@@ -203,3 +203,4 @@
 [2024-01-28T13:57:28] speed up test runner execution by running in-memory db
 [2024-01-28T19:27:39] fix failing assertion in user profile integration test
 [2024-01-29T09:06:11] refactor database connection pool retry handling
+[2024-01-29T14:43:31] fix crash when parsing malformed json body in webhook

@@ -213,3 +213,4 @@
 [2024-01-30T23:24:04] add regression test for concurrent job updates
 [2024-01-31T09:04:35] cleanup console logs left over from local debugging
 [2024-01-31T09:52:55] speed up test runner execution by running in-memory db
+[2024-01-31T10:28:08] wip: working on batch record processing pipeline

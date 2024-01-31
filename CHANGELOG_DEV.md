@@ -220,3 +220,4 @@
 [2024-01-31T20:24:39] quick commit before lunch, still need to finish error checks
 [2024-01-31T20:34:53] fix typo in helper function params and update type hints
 [2024-01-31T22:13:15] add export to csv helper utility for report generation
+[2024-01-31T22:37:31] add export to csv helper utility for report generation

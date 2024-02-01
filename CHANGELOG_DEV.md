@@ -224,3 +224,4 @@
 [2024-01-31T23:00:12] fix issue where modal state was not reseting on close
 [2024-02-01T09:58:06] fix failing assertion in user profile integration test
 [2024-02-01T12:13:51] configure cors origins for local dev port forwarding
+[2024-02-01T14:25:06] setup pre-commit hook scripts for automated linting

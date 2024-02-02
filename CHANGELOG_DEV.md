@@ -235,3 +235,4 @@
 [2024-02-02T16:55:29] add missing null checks before accessing object properties
 [2024-02-02T16:58:18] refactor logging middleware to mask sensitive headers
 [2024-02-02T18:16:50] add export to csv helper utility for report generation
+[2024-02-02T19:49:30] prevent content shift when loading skeleton placeholders

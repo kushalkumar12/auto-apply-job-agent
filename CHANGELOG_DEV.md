@@ -248,3 +248,4 @@
 [2024-02-03T12:58:21] improve error messages returned during failed validation
 [2024-02-03T14:45:13] add gitignore entries for build cache and temp outputs
 [2024-02-03T15:04:44] revert temporary test flags before merge
+[2024-02-03T15:30:11] optimize query execution time by adding compound index

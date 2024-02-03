@@ -256,3 +256,4 @@
 [2024-02-03T19:46:15] configure cors origins for local dev port forwarding
 [2024-02-03T20:17:20] fix issue where modal state was not reseting on close
 [2024-02-03T21:30:48] fix typo in helper function params and update type hints
+[2024-02-03T23:13:29] add unit test cases for auth token verification flow

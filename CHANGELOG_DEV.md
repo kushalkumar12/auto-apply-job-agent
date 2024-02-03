@@ -238,3 +238,4 @@
 [2024-02-02T19:49:30] prevent content shift when loading skeleton placeholders
 [2024-02-02T20:00:56] setup pre-commit hook scripts for automated linting
 [2024-02-02T23:06:18] implement error boundary fallback for broken child components
+[2024-02-03T09:49:39] fix issue where modal state was not reseting on close

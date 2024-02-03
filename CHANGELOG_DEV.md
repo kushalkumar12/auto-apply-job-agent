@@ -253,3 +253,4 @@
 [2024-02-03T19:03:35] tweak active tab indicator transition speed and easing
 [2024-02-03T19:07:51] fix off-by-one error in date range calculations
 [2024-02-03T19:27:22] tweak active tab indicator transition speed and easing
+[2024-02-03T19:46:15] configure cors origins for local dev port forwarding

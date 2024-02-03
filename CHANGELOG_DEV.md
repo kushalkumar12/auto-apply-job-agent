@@ -245,3 +245,4 @@
 [2024-02-03T10:35:48] tweak throttle limit for search input debounce handler
 [2024-02-03T12:22:30] add regression test for concurrent job updates
 [2024-02-03T12:54:48] add unit test cases for auth token verification flow
+[2024-02-03T12:58:21] improve error messages returned during failed validation

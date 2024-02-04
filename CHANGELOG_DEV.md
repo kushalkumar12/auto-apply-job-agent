@@ -268,3 +268,4 @@
 [2024-02-04T15:26:22] update readme documentation for local enviroment setup
 [2024-02-04T16:04:34] fix off-by-one error in date range calculations
 [2024-02-04T16:23:15] adjust color contrast on badge tags for better accesibility
+[2024-02-04T16:58:43] update readme documentation for local enviroment setup

@@ -271,3 +271,4 @@
 [2024-02-04T16:58:43] update readme documentation for local enviroment setup
 [2024-02-04T17:53:27] add healthcheck endpoint for load balancer monitoring
 [2024-02-04T18:43:49] fix failing assertion in user profile integration test
+[2024-02-04T19:25:58] fix typo in helper function params and update type hints

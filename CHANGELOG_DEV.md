@@ -262,3 +262,4 @@
 [2024-02-04T10:21:31] streamline data mapping layer between models and schemas
 [2024-02-04T10:55:51] fix typo in helper function params and update type hints
 [2024-02-04T10:59:18] add missing null checks before accessing object properties
+[2024-02-04T12:41:55] wip: working on batch record processing pipeline

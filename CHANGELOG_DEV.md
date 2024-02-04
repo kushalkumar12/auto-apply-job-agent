@@ -273,3 +273,4 @@
 [2024-02-04T18:43:49] fix failing assertion in user profile integration test
 [2024-02-04T19:25:58] fix typo in helper function params and update type hints
 [2024-02-04T19:28:15] implement optimistic ui update for item toggle action
+[2024-02-04T19:33:54] optimize query execution time by adding compound index

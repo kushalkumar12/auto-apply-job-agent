@@ -275,3 +275,4 @@
 [2024-02-04T19:28:15] implement optimistic ui update for item toggle action
 [2024-02-04T19:33:54] optimize query execution time by adding compound index
 [2024-02-04T19:52:43] wip: working on batch record processing pipeline
+[2024-02-04T21:29:24] update dockerfile base image and multistage build layers

@@ -265,3 +265,4 @@
 [2024-02-04T12:41:55] wip: working on batch record processing pipeline
 [2024-02-04T13:59:45] improve error messages returned during failed validation
 [2024-02-04T14:25:31] optimize query execution time by adding compound index
+[2024-02-04T15:26:22] update readme documentation for local enviroment setup

@@ -260,3 +260,4 @@
 [2024-02-04T09:09:43] add mock test fixtures for external api responses
 [2024-02-04T09:29:19] add validation schema checks for incoming request payloads
 [2024-02-04T10:21:31] streamline data mapping layer between models and schemas
+[2024-02-04T10:55:51] fix typo in helper function params and update type hints

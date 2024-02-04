@@ -277,3 +277,4 @@
 [2024-02-04T19:52:43] wip: working on batch record processing pipeline
 [2024-02-04T21:29:24] update dockerfile base image and multistage build layers
 [2024-02-04T21:47:10] refactor database connection pool retry handling
+[2024-02-04T22:46:53] speed up test runner execution by running in-memory db

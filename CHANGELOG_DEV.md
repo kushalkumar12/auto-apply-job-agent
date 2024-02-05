@@ -281,3 +281,4 @@
 [2024-02-04T23:29:42] add missing null checks before accessing object properties
 [2024-02-05T12:39:03] refactor database connection pool retry handling
 [2024-02-05T13:25:09] improve error messages returned during failed validation
+[2024-02-05T21:20:35] add regression test for concurrent job updates

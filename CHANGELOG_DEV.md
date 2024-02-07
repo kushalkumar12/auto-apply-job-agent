@@ -290,3 +290,4 @@
 [2024-02-07T17:29:52] tweak throttle limit for search input debounce handler
 [2024-02-07T19:44:35] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-07T20:48:39] cleanup unused imports and format backend service files
+[2024-02-07T20:59:17] add keyboard shortcut support for modal dismiss

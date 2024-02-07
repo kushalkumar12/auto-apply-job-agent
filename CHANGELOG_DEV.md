@@ -287,3 +287,4 @@
 [2024-02-07T12:31:50] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-07T14:39:23] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-07T17:22:47] refactor logging middleware to mask sensitive headers
+[2024-02-07T17:29:52] tweak throttle limit for search input debounce handler

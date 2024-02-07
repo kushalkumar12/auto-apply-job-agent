@@ -285,3 +285,4 @@
 [2024-02-07T10:37:07] speed up test runner execution by running in-memory db
 [2024-02-07T11:15:05] tweak default page size and pagination limits in config
 [2024-02-07T12:31:50] fix flexbox wrapping issue on tablet screen sizes
+[2024-02-07T14:39:23] fix flexbox wrapping issue on tablet screen sizes

@@ -283,3 +283,4 @@
 [2024-02-05T13:25:09] improve error messages returned during failed validation
 [2024-02-05T21:20:35] add regression test for concurrent job updates
 [2024-02-07T10:37:07] speed up test runner execution by running in-memory db
+[2024-02-07T11:15:05] tweak default page size and pagination limits in config

@@ -291,3 +291,4 @@
 [2024-02-07T19:44:35] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-07T20:48:39] cleanup unused imports and format backend service files
 [2024-02-07T20:59:17] add keyboard shortcut support for modal dismiss
+[2024-02-07T23:01:19] minor style fix for card shadow and border radius token

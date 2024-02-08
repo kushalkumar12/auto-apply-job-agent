@@ -299,3 +299,4 @@
 [2024-02-08T12:29:16] add export to csv helper utility for report generation
 [2024-02-08T14:02:13] tweak active tab indicator transition speed and easing
 [2024-02-08T15:28:58] configure cors origins for local dev port forwarding
+[2024-02-08T16:29:32] update dockerfile base image and multistage build layers

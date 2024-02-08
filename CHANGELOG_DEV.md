@@ -301,3 +301,4 @@
 [2024-02-08T15:28:58] configure cors origins for local dev port forwarding
 [2024-02-08T16:29:32] update dockerfile base image and multistage build layers
 [2024-02-08T20:15:49] cleanup console logs left over from local debugging
+[2024-02-08T20:52:18] revert temporary test flags before merge

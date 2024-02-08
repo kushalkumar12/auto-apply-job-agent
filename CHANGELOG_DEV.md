@@ -297,3 +297,4 @@
 [2024-02-08T09:24:10] refactor database connection pool retry handling
 [2024-02-08T10:28:55] resolve race condition in websocket reconnection listener
 [2024-02-08T12:29:16] add export to csv helper utility for report generation
+[2024-02-08T14:02:13] tweak active tab indicator transition speed and easing

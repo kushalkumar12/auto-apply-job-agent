@@ -293,3 +293,4 @@
 [2024-02-07T20:59:17] add keyboard shortcut support for modal dismiss
 [2024-02-07T23:01:19] minor style fix for card shadow and border radius token
 [2024-02-07T23:39:09] fix issue where modal state was not reseting on close
+[2024-02-08T09:06:11] add gitignore entries for build cache and temp outputs

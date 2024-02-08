@@ -300,3 +300,4 @@
 [2024-02-08T14:02:13] tweak active tab indicator transition speed and easing
 [2024-02-08T15:28:58] configure cors origins for local dev port forwarding
 [2024-02-08T16:29:32] update dockerfile base image and multistage build layers
+[2024-02-08T20:15:49] cleanup console logs left over from local debugging

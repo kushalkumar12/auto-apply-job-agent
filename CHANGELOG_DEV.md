@@ -307,3 +307,4 @@
 [2024-02-09T10:49:13] update dockerfile base image and multistage build layers
 [2024-02-09T11:06:13] update dockerfile base image and multistage build layers
 [2024-02-09T11:16:39] update api endpoints docstrings and request response examples
+[2024-02-09T12:40:30] bump package dependencies and resolve vulnerability warning

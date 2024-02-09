@@ -314,3 +314,4 @@
 [2024-02-09T14:08:19] update dockerfile base image and multistage build layers
 [2024-02-09T15:39:34] initial setup for core router modules and baseline configs
 [2024-02-09T15:54:58] refactor database connection pool retry handling
+[2024-02-09T16:50:16] fix memory leak caused by uncleaned event listeners

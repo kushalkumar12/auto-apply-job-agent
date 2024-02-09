@@ -309,3 +309,4 @@
 [2024-02-09T11:16:39] update api endpoints docstrings and request response examples
 [2024-02-09T12:40:30] bump package dependencies and resolve vulnerability warning
 [2024-02-09T13:27:19] handle edge case when payload data is empty or missing
+[2024-02-09T13:36:10] streamline data mapping layer between models and schemas

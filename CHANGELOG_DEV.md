@@ -322,3 +322,4 @@
 [2024-02-09T22:47:21] revert temporary test flags before merge
 [2024-02-09T22:56:45] resolve race condition in websocket reconnection listener
 [2024-02-09T23:08:03] update typography scale for nested list elements
+[2024-02-09T23:20:24] fix failing assertion in user profile integration test

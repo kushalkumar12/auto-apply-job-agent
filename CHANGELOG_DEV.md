@@ -304,3 +304,4 @@
 [2024-02-08T20:52:18] revert temporary test flags before merge
 [2024-02-09T10:18:13] add missing null checks before accessing object properties
 [2024-02-09T10:24:26] add keyboard shortcut support for modal dismiss
+[2024-02-09T10:49:13] update dockerfile base image and multistage build layers

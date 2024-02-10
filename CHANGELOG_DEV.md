@@ -337,3 +337,4 @@
 [2024-02-10T18:58:48] adjust button padding and fix responsive alignment on mobile
 [2024-02-10T20:08:00] improve error messages returned during failed validation
 [2024-02-10T20:55:11] adjust color contrast on badge tags for better accesibility
+[2024-02-10T21:35:13] tune database connection timeout and pool max overflow

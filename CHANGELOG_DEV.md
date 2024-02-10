@@ -323,3 +323,4 @@
 [2024-02-09T22:56:45] resolve race condition in websocket reconnection listener
 [2024-02-09T23:08:03] update typography scale for nested list elements
 [2024-02-09T23:20:24] fix failing assertion in user profile integration test
+[2024-02-10T09:11:59] cache frequent lookup tables in local memory store

@@ -325,3 +325,4 @@
 [2024-02-09T23:20:24] fix failing assertion in user profile integration test
 [2024-02-10T09:11:59] cache frequent lookup tables in local memory store
 [2024-02-10T10:47:23] implement optimistic ui update for item toggle action
+[2024-02-10T11:02:15] update dockerfile base image and multistage build layers

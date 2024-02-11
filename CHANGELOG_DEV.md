@@ -340,3 +340,4 @@
 [2024-02-10T21:35:13] tune database connection timeout and pool max overflow
 [2024-02-10T22:31:19] adjust z-index stacking context for notification dropdown
 [2024-02-11T14:55:46] add missing null checks before accessing object properties
+[2024-02-11T22:48:46] fix flexbox wrapping issue on tablet screen sizes

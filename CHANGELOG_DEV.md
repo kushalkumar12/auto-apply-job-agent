@@ -344,3 +344,4 @@
 [2024-02-12T09:46:36] refactor database connection pool retry handling
 [2024-02-12T13:21:48] refactor database connection pool retry handling
 [2024-02-12T14:24:31] fix crash when parsing malformed json body in webhook
+[2024-02-12T15:17:16] fix off-by-one error in date range calculations

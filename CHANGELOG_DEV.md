@@ -343,3 +343,4 @@
 [2024-02-11T22:48:46] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-12T09:46:36] refactor database connection pool retry handling
 [2024-02-12T13:21:48] refactor database connection pool retry handling
+[2024-02-12T14:24:31] fix crash when parsing malformed json body in webhook

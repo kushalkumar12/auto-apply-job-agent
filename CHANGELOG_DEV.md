@@ -345,3 +345,4 @@
 [2024-02-12T13:21:48] refactor database connection pool retry handling
 [2024-02-12T14:24:31] fix crash when parsing malformed json body in webhook
 [2024-02-12T15:17:16] fix off-by-one error in date range calculations
+[2024-02-12T15:30:52] streamline data mapping layer between models and schemas

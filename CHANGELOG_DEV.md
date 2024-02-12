@@ -347,3 +347,4 @@
 [2024-02-12T15:17:16] fix off-by-one error in date range calculations
 [2024-02-12T15:30:52] streamline data mapping layer between models and schemas
 [2024-02-12T19:51:50] tweak throttle limit for search input debounce handler
+[2024-02-12T20:25:24] add gitignore entries for build cache and temp outputs

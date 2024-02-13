@@ -352,3 +352,4 @@
 [2024-02-12T21:12:54] initial setup for core router modules and baseline configs
 [2024-02-12T23:36:46] prevent content shift when loading skeleton placeholders
 [2024-02-13T09:20:08] fix failing assertion in user profile integration test
+[2024-02-13T10:52:35] fix flexbox wrapping issue on tablet screen sizes

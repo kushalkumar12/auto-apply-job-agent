@@ -354,3 +354,4 @@
 [2024-02-13T09:20:08] fix failing assertion in user profile integration test
 [2024-02-13T10:52:35] fix flexbox wrapping issue on tablet screen sizes
 [2024-02-13T17:22:06] improve error messages returned during failed validation
+[2024-02-13T19:37:59] tweak active tab indicator transition speed and easing

@@ -357,3 +357,4 @@
 [2024-02-13T19:37:59] tweak active tab indicator transition speed and easing
 [2024-02-13T20:19:19] update readme documentation for local enviroment setup
 [2024-02-14T09:28:54] refactor database connection pool retry handling
+[2024-02-14T10:58:54] add export to csv helper utility for report generation

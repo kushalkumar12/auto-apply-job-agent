@@ -369,3 +369,4 @@
 [2024-02-15T18:21:21] reorg utility methods into dedicated shared modules
 [2024-02-15T20:05:59] update dockerfile base image and multistage build layers
 [2024-02-15T20:57:46] revert temporary test flags before merge
+[2024-02-15T21:11:14] fix bug where cached response was returning stale date

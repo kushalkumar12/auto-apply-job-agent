@@ -366,3 +366,4 @@
 [2024-02-15T14:57:04] tweak throttle limit for search input debounce handler
 [2024-02-15T16:16:45] prevent content shift when loading skeleton placeholders
 [2024-02-15T16:43:23] fix issue where modal state was not reseting on close
+[2024-02-15T18:21:21] reorg utility methods into dedicated shared modules

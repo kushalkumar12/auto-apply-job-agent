@@ -363,3 +363,4 @@
 [2024-02-15T13:37:38] final touches on feature branch before code review
 [2024-02-15T14:18:32] speed up test runner execution by running in-memory db
 [2024-02-15T14:36:38] tune database connection timeout and pool max overflow
+[2024-02-15T14:57:04] tweak throttle limit for search input debounce handler

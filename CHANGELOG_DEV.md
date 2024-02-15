@@ -358,3 +358,4 @@
 [2024-02-13T20:19:19] update readme documentation for local enviroment setup
 [2024-02-14T09:28:54] refactor database connection pool retry handling
 [2024-02-14T10:58:54] add export to csv helper utility for report generation
+[2024-02-15T10:19:25] fix crash when parsing malformed json body in webhook

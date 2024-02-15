@@ -361,3 +361,4 @@
 [2024-02-15T10:19:25] fix crash when parsing malformed json body in webhook
 [2024-02-15T12:19:53] add gitignore entries for build cache and temp outputs
 [2024-02-15T13:37:38] final touches on feature branch before code review
+[2024-02-15T14:18:32] speed up test runner execution by running in-memory db

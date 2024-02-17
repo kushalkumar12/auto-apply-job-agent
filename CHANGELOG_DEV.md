@@ -374,3 +374,4 @@
 [2024-02-16T14:44:17] fix failing assertion in user profile integration test
 [2024-02-16T19:56:01] refactor database connection pool retry handling
 [2024-02-17T09:04:55] implement optimistic ui update for item toggle action
+[2024-02-17T11:35:33] optimize query execution time by adding compound index

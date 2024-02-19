@@ -391,3 +391,4 @@
 [2024-02-18T22:52:06] quick commit before lunch, still need to finish error checks
 [2024-02-19T09:05:47] adjust z-index stacking context for notification dropdown
 [2024-02-19T09:08:29] correct spelling of parameter in api client method
+[2024-02-19T14:06:52] add unit test cases for auth token verification flow

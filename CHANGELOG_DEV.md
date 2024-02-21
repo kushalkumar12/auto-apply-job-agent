@@ -395,3 +395,4 @@
 [2024-02-20T12:44:55] update typography scale for nested list elements
 [2024-02-20T19:58:42] add missing null checks before accessing object properties
 [2024-02-21T10:03:43] tweak default page size and pagination limits in config
+[2024-02-21T18:57:39] bump package dependencies and resolve vulnerability warning

@@ -401,3 +401,4 @@
 [2024-02-22T12:16:19] add mock test fixtures for external api responses
 [2024-02-22T14:41:00] initial setup for core router modules and baseline configs
 [2024-02-22T15:04:31] wip: working on batch record processing pipeline
+[2024-02-22T15:39:16] add export to csv helper utility for report generation

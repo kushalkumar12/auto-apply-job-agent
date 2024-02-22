@@ -398,3 +398,4 @@
 [2024-02-21T18:57:39] bump package dependencies and resolve vulnerability warning
 [2024-02-22T10:27:46] update api endpoints docstrings and request response examples
 [2024-02-22T11:59:04] streamline data mapping layer between models and schemas
+[2024-02-22T12:16:19] add mock test fixtures for external api responses

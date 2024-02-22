@@ -399,3 +399,4 @@
 [2024-02-22T10:27:46] update api endpoints docstrings and request response examples
 [2024-02-22T11:59:04] streamline data mapping layer between models and schemas
 [2024-02-22T12:16:19] add mock test fixtures for external api responses
+[2024-02-22T14:41:00] initial setup for core router modules and baseline configs

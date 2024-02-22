@@ -410,3 +410,4 @@
 [2024-02-22T20:12:50] final touches on feature branch before code review
 [2024-02-22T21:03:26] reorg utility methods into dedicated shared modules
 [2024-02-22T22:18:10] add gitignore entries for build cache and temp outputs
+[2024-02-22T22:36:52] fix off-by-one error in date range calculations

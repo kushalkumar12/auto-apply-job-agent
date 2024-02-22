@@ -406,3 +406,4 @@
 [2024-02-22T18:39:19] speed up test runner execution by running in-memory db
 [2024-02-22T18:51:41] update dockerfile base image and multistage build layers
 [2024-02-22T19:27:35] add regression test for concurrent job updates
+[2024-02-22T20:03:05] cache frequent lookup tables in local memory store

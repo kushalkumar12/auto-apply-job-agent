@@ -412,3 +412,4 @@
 [2024-02-22T22:18:10] add gitignore entries for build cache and temp outputs
 [2024-02-22T22:36:52] fix off-by-one error in date range calculations
 [2024-02-22T22:55:57] bump package dependencies and resolve vulnerability warning
+[2024-02-23T09:09:35] fix typo in helper function params and update type hints

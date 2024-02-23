@@ -415,3 +415,4 @@
 [2024-02-23T09:09:35] fix typo in helper function params and update type hints
 [2024-02-23T10:06:13] adjust z-index stacking context for notification dropdown
 [2024-02-23T10:14:49] minor style fix for card shadow and border radius token
+[2024-02-23T10:44:38] implement optimistic ui update for item toggle action

@@ -421,3 +421,4 @@
 [2024-02-23T20:10:55] fix issue with session expiration handling on reconnect
 [2024-02-23T21:14:19] fix memory leak caused by uncleaned event listeners
 [2024-02-23T21:52:52] add export to csv helper utility for report generation
+[2024-02-23T21:53:08] tune database connection timeout and pool max overflow

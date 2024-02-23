@@ -422,3 +422,4 @@
 [2024-02-23T21:14:19] fix memory leak caused by uncleaned event listeners
 [2024-02-23T21:52:52] add export to csv helper utility for report generation
 [2024-02-23T21:53:08] tune database connection timeout and pool max overflow
+[2024-02-23T22:44:53] prevent content shift when loading skeleton placeholders

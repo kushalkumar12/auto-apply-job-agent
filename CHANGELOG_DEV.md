@@ -413,3 +413,4 @@
 [2024-02-22T22:36:52] fix off-by-one error in date range calculations
 [2024-02-22T22:55:57] bump package dependencies and resolve vulnerability warning
 [2024-02-23T09:09:35] fix typo in helper function params and update type hints
+[2024-02-23T10:06:13] adjust z-index stacking context for notification dropdown

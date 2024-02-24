@@ -424,3 +424,4 @@
 [2024-02-23T21:53:08] tune database connection timeout and pool max overflow
 [2024-02-23T22:44:53] prevent content shift when loading skeleton placeholders
 [2024-02-24T18:21:51] update dockerfile base image and multistage build layers
+[2024-02-24T19:20:36] add validation schema checks for incoming request payloads

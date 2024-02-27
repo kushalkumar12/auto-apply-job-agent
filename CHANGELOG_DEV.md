@@ -427,3 +427,4 @@
 [2024-02-24T19:20:36] add validation schema checks for incoming request payloads
 [2024-02-24T22:14:47] refactor database connection pool retry handling
 [2024-02-27T11:34:48] fix memory leak caused by uncleaned event listeners
+[2024-02-27T11:48:24] adjust z-index stacking context for notification dropdown

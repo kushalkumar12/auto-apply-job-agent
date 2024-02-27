@@ -430,3 +430,4 @@
 [2024-02-27T11:48:24] adjust z-index stacking context for notification dropdown
 [2024-02-27T12:04:04] add mock test fixtures for external api responses
 [2024-02-27T14:56:44] update dockerfile base image and multistage build layers
+[2024-02-27T20:18:14] add validation schema checks for incoming request payloads

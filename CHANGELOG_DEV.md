@@ -441,3 +441,4 @@
 [2024-02-28T20:12:27] implement optimistic ui update for item toggle action
 [2024-02-28T20:31:23] optimize query execution time by adding compound index
 [2024-02-28T22:44:47] support custom headers parameter in api client service
+[2024-02-28T23:08:54] tweak default page size and pagination limits in config

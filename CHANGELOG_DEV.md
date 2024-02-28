@@ -433,3 +433,4 @@
 [2024-02-27T20:18:14] add validation schema checks for incoming request payloads
 [2024-02-27T21:59:37] reorg utility methods into dedicated shared modules
 [2024-02-27T22:47:06] prevent content shift when loading skeleton placeholders
+[2024-02-28T14:48:41] adjust z-index stacking context for notification dropdown

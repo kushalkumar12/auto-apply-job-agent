@@ -453,3 +453,4 @@
 [2024-02-29T18:03:22] cleanup console logs left over from local debugging
 [2024-02-29T18:29:33] add regression test for concurrent job updates
 [2024-02-29T20:29:10] update api endpoints docstrings and request response examples
+[2024-02-29T22:23:12] wip: working on batch record processing pipeline

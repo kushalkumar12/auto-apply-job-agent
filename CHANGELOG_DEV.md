@@ -459,3 +459,4 @@
 [2024-03-02T11:24:45] speed up test runner execution by running in-memory db
 [2024-03-02T11:40:36] minor style fix for card shadow and border radius token
 [2024-03-02T13:20:43] add missing null checks before accessing object properties
+[2024-03-02T16:14:59] fix failing assertion in user profile integration test

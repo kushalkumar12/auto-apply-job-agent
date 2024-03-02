@@ -456,3 +456,4 @@
 [2024-02-29T22:23:12] wip: working on batch record processing pipeline
 [2024-03-01T15:43:29] update dockerfile base image and multistage build layers
 [2024-03-01T16:03:16] initial setup for core router modules and baseline configs
+[2024-03-02T11:24:45] speed up test runner execution by running in-memory db

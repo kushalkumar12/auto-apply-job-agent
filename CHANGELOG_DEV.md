@@ -458,3 +458,4 @@
 [2024-03-01T16:03:16] initial setup for core router modules and baseline configs
 [2024-03-02T11:24:45] speed up test runner execution by running in-memory db
 [2024-03-02T11:40:36] minor style fix for card shadow and border radius token
+[2024-03-02T13:20:43] add missing null checks before accessing object properties

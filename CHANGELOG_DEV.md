@@ -460,3 +460,4 @@
 [2024-03-02T11:40:36] minor style fix for card shadow and border radius token
 [2024-03-02T13:20:43] add missing null checks before accessing object properties
 [2024-03-02T16:14:59] fix failing assertion in user profile integration test
+[2024-03-02T18:55:13] fix flexbox wrapping issue on tablet screen sizes

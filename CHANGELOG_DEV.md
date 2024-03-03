@@ -462,3 +462,4 @@
 [2024-03-02T16:14:59] fix failing assertion in user profile integration test
 [2024-03-02T18:55:13] fix flexbox wrapping issue on tablet screen sizes
 [2024-03-03T09:50:08] speed up test runner execution by running in-memory db
+[2024-03-03T11:13:59] prevent content shift when loading skeleton placeholders

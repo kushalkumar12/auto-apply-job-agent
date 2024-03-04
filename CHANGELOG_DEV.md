@@ -465,3 +465,4 @@
 [2024-03-03T11:13:59] prevent content shift when loading skeleton placeholders
 [2024-03-03T13:35:02] final touches on feature branch before code review
 [2024-03-03T19:53:35] implement optimistic ui update for item toggle action
+[2024-03-04T16:39:18] update readme documentation for local enviroment setup

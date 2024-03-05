@@ -471,3 +471,4 @@
 [2024-03-05T10:24:58] cleanup console logs left over from local debugging
 [2024-03-05T10:42:53] fix memory leak caused by uncleaned event listeners
 [2024-03-05T11:26:52] configure cors origins for local dev port forwarding
+[2024-03-05T11:57:48] speed up test runner execution by running in-memory db

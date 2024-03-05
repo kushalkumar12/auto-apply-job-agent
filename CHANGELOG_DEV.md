@@ -469,3 +469,4 @@
 [2024-03-04T22:36:33] tune database connection timeout and pool max overflow
 [2024-03-04T22:52:51] fix bug where cached response was returning stale date
 [2024-03-05T10:24:58] cleanup console logs left over from local debugging
+[2024-03-05T10:42:53] fix memory leak caused by uncleaned event listeners

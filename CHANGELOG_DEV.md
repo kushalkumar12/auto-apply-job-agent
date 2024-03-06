@@ -479,3 +479,4 @@
 [2024-03-06T10:37:14] quick commit before lunch, still need to finish error checks
 [2024-03-06T12:14:16] add validation schema checks for incoming request payloads
 [2024-03-06T14:18:08] fix memory leak caused by uncleaned event listeners
+[2024-03-06T14:48:45] implement error boundary fallback for broken child components

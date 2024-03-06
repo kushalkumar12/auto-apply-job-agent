@@ -475,3 +475,4 @@
 [2024-03-05T18:21:33] adjust color contrast on badge tags for better accesibility
 [2024-03-05T20:07:31] tweak active tab indicator transition speed and easing
 [2024-03-05T21:22:33] revert temporary test flags before merge
+[2024-03-06T10:11:43] bump package dependencies and resolve vulnerability warning

@@ -477,3 +477,4 @@
 [2024-03-05T21:22:33] revert temporary test flags before merge
 [2024-03-06T10:11:43] bump package dependencies and resolve vulnerability warning
 [2024-03-06T10:37:14] quick commit before lunch, still need to finish error checks
+[2024-03-06T12:14:16] add validation schema checks for incoming request payloads

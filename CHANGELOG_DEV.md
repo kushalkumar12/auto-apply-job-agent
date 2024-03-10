@@ -491,3 +491,4 @@
 [2024-03-08T22:04:13] tune database connection timeout and pool max overflow
 [2024-03-08T23:23:26] fix bug where cached response was returning stale date
 [2024-03-10T10:17:07] support custom headers parameter in api client service
+[2024-03-10T12:10:57] update typography scale for nested list elements

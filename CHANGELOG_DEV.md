@@ -495,3 +495,4 @@
 [2024-03-10T19:00:02] fix issue with session expiration handling on reconnect
 [2024-03-10T20:03:32] adjust button padding and fix responsive alignment on mobile
 [2024-03-10T22:34:42] handle edge case when payload data is empty or missing
+[2024-03-10T22:50:15] fix crash when parsing malformed json body in webhook

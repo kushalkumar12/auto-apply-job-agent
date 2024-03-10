@@ -494,3 +494,4 @@
 [2024-03-10T12:10:57] update typography scale for nested list elements
 [2024-03-10T19:00:02] fix issue with session expiration handling on reconnect
 [2024-03-10T20:03:32] adjust button padding and fix responsive alignment on mobile
+[2024-03-10T22:34:42] handle edge case when payload data is empty or missing

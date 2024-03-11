@@ -497,3 +497,4 @@
 [2024-03-10T22:34:42] handle edge case when payload data is empty or missing
 [2024-03-10T22:50:15] fix crash when parsing malformed json body in webhook
 [2024-03-10T23:54:36] fix flexbox wrapping issue on tablet screen sizes
+[2024-03-11T19:11:30] refactor logging middleware to mask sensitive headers

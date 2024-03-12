@@ -501,3 +501,4 @@
 [2024-03-11T19:15:42] add regression test for concurrent job updates
 [2024-03-11T22:49:28] setup pre-commit hook scripts for automated linting
 [2024-03-12T12:05:44] revert temporary test flags before merge
+[2024-03-12T12:28:24] tweak active tab indicator transition speed and easing

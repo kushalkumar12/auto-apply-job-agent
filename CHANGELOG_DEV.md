@@ -502,3 +502,4 @@
 [2024-03-11T22:49:28] setup pre-commit hook scripts for automated linting
 [2024-03-12T12:05:44] revert temporary test flags before merge
 [2024-03-12T12:28:24] tweak active tab indicator transition speed and easing
+[2024-03-12T16:19:24] add gitignore entries for build cache and temp outputs

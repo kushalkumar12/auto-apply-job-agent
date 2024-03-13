@@ -510,3 +510,4 @@
 [2024-03-13T13:05:43] tweak throttle limit for search input debounce handler
 [2024-03-13T13:41:38] resolve race condition in websocket reconnection listener
 [2024-03-13T22:13:13] add validation schema checks for incoming request payloads
+[2024-03-13T22:29:06] add healthcheck endpoint for load balancer monitoring

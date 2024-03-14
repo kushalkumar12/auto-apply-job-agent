@@ -520,3 +520,4 @@
 [2024-03-14T14:55:10] cleanup unused imports and format backend service files
 [2024-03-14T14:56:16] fix typo in helper function params and update type hints
 [2024-03-14T15:28:48] implement optimistic ui update for item toggle action
+[2024-03-14T15:40:47] revert temporary test flags before merge

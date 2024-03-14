@@ -513,3 +513,4 @@
 [2024-03-13T22:29:06] add healthcheck endpoint for load balancer monitoring
 [2024-03-14T09:26:05] update readme documentation for local enviroment setup
 [2024-03-14T12:09:24] cleanup console logs left over from local debugging
+[2024-03-14T12:53:44] fix typo in helper function params and update type hints

@@ -512,3 +512,4 @@
 [2024-03-13T22:13:13] add validation schema checks for incoming request payloads
 [2024-03-13T22:29:06] add healthcheck endpoint for load balancer monitoring
 [2024-03-14T09:26:05] update readme documentation for local enviroment setup
+[2024-03-14T12:09:24] cleanup console logs left over from local debugging

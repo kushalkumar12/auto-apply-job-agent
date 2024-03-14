@@ -523,3 +523,4 @@
 [2024-03-14T15:40:47] revert temporary test flags before merge
 [2024-03-14T16:07:38] fix crash when parsing malformed json body in webhook
 [2024-03-14T17:26:07] adjust color contrast on badge tags for better accesibility
+[2024-03-14T17:39:37] wip: working on batch record processing pipeline

@@ -511,3 +511,4 @@
 [2024-03-13T13:41:38] resolve race condition in websocket reconnection listener
 [2024-03-13T22:13:13] add validation schema checks for incoming request payloads
 [2024-03-13T22:29:06] add healthcheck endpoint for load balancer monitoring
+[2024-03-14T09:26:05] update readme documentation for local enviroment setup

@@ -515,3 +515,4 @@
 [2024-03-14T12:09:24] cleanup console logs left over from local debugging
 [2024-03-14T12:53:44] fix typo in helper function params and update type hints
 [2024-03-14T13:51:23] tweak throttle limit for search input debounce handler
+[2024-03-14T14:08:26] fix issue with session expiration handling on reconnect

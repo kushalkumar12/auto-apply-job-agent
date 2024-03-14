@@ -528,3 +528,4 @@
 [2024-03-14T18:49:25] update api endpoints docstrings and request response examples
 [2024-03-14T20:31:17] resolve race condition in websocket reconnection listener
 [2024-03-14T20:37:23] bump package dependencies and resolve vulnerability warning
+[2024-03-14T20:40:24] fix off-by-one error in date range calculations

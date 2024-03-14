@@ -527,3 +527,4 @@
 [2024-03-14T18:27:47] add validation schema checks for incoming request payloads
 [2024-03-14T18:49:25] update api endpoints docstrings and request response examples
 [2024-03-14T20:31:17] resolve race condition in websocket reconnection listener
+[2024-03-14T20:37:23] bump package dependencies and resolve vulnerability warning

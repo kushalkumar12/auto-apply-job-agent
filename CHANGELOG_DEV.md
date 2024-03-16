@@ -535,3 +535,4 @@
 [2024-03-16T12:04:13] add missing null checks before accessing object properties
 [2024-03-16T12:38:34] implement error boundary fallback for broken child components
 [2024-03-16T12:43:14] tweak throttle limit for search input debounce handler
+[2024-03-16T13:05:50] fix broken link in navigation menu footer and header

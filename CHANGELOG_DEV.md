@@ -543,3 +543,4 @@
 [2024-03-16T16:14:14] prevent content shift when loading skeleton placeholders
 [2024-03-16T16:37:25] bump package dependencies and resolve vulnerability warning
 [2024-03-16T16:48:15] adjust z-index stacking context for notification dropdown
+[2024-03-16T17:31:12] fix broken link in navigation menu footer and header

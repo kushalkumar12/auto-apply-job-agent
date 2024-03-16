@@ -553,3 +553,4 @@
 [2024-03-16T21:54:52] support custom headers parameter in api client service
 [2024-03-16T22:09:47] cleanup unused imports and format backend service files
 [2024-03-16T22:17:04] tune database connection timeout and pool max overflow
+[2024-03-16T23:03:31] fix memory leak caused by uncleaned event listeners

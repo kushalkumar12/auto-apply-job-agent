@@ -534,3 +534,4 @@
 [2024-03-16T10:56:20] configure cors origins for local dev port forwarding
 [2024-03-16T12:04:13] add missing null checks before accessing object properties
 [2024-03-16T12:38:34] implement error boundary fallback for broken child components
+[2024-03-16T12:43:14] tweak throttle limit for search input debounce handler

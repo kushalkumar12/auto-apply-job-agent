@@ -531,3 +531,4 @@
 [2024-03-14T20:40:24] fix off-by-one error in date range calculations
 [2024-03-16T09:03:58] speed up test runner execution by running in-memory db
 [2024-03-16T10:24:53] add validation schema checks for incoming request payloads
+[2024-03-16T10:56:20] configure cors origins for local dev port forwarding

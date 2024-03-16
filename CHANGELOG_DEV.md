@@ -532,3 +532,4 @@
 [2024-03-16T09:03:58] speed up test runner execution by running in-memory db
 [2024-03-16T10:24:53] add validation schema checks for incoming request payloads
 [2024-03-16T10:56:20] configure cors origins for local dev port forwarding
+[2024-03-16T12:04:13] add missing null checks before accessing object properties

@@ -546,3 +546,4 @@
 [2024-03-16T17:31:12] fix broken link in navigation menu footer and header
 [2024-03-16T17:57:57] refactor database connection pool retry handling
 [2024-03-16T18:15:27] add export to csv helper utility for report generation
+[2024-03-16T18:23:26] prevent content shift when loading skeleton placeholders

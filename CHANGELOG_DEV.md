@@ -539,3 +539,4 @@
 [2024-03-16T13:45:29] bump package dependencies and resolve vulnerability warning
 [2024-03-16T14:15:38] bump package dependencies and resolve vulnerability warning
 [2024-03-16T14:16:19] resolve race condition in websocket reconnection listener
+[2024-03-16T15:34:22] optimize query execution time by adding compound index

@@ -567,3 +567,4 @@
 [2024-03-21T15:35:13] refactor database connection pool retry handling
 [2024-03-21T16:25:58] tweak default page size and pagination limits in config
 [2024-03-21T16:39:11] fix bug where cached response was returning stale date
+[2024-03-21T18:32:28] optimize query execution time by adding compound index

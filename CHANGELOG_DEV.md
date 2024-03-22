@@ -571,3 +571,4 @@
 [2024-03-22T12:28:35] correct spelling of parameter in api client method
 [2024-03-22T13:06:12] update api endpoints docstrings and request response examples
 [2024-03-22T17:17:21] implement error boundary fallback for broken child components
+[2024-03-22T18:19:08] resolve race condition in websocket reconnection listener

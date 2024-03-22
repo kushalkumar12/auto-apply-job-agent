@@ -568,3 +568,4 @@
 [2024-03-21T16:25:58] tweak default page size and pagination limits in config
 [2024-03-21T16:39:11] fix bug where cached response was returning stale date
 [2024-03-21T18:32:28] optimize query execution time by adding compound index
+[2024-03-22T12:28:35] correct spelling of parameter in api client method

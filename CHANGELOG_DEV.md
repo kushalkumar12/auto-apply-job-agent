@@ -575,3 +575,4 @@
 [2024-03-22T20:20:28] final touches on feature branch before code review
 [2024-03-23T14:16:39] add validation schema checks for incoming request payloads
 [2024-03-23T14:21:13] tweak throttle limit for search input debounce handler
+[2024-03-23T14:55:49] cleanup console logs left over from local debugging

@@ -577,3 +577,4 @@
 [2024-03-23T14:21:13] tweak throttle limit for search input debounce handler
 [2024-03-23T14:55:49] cleanup console logs left over from local debugging
 [2024-03-23T15:10:51] tune database connection timeout and pool max overflow
+[2024-03-23T15:57:49] refactor database connection pool retry handling

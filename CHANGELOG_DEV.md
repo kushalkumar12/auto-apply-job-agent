@@ -586,3 +586,4 @@
 [2024-03-24T12:44:50] fix off-by-one error in date range calculations
 [2024-03-24T12:53:17] tweak throttle limit for search input debounce handler
 [2024-03-24T13:44:29] streamline data mapping layer between models and schemas
+[2024-03-24T14:02:13] update dockerfile base image and multistage build layers

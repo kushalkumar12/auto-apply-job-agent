@@ -585,3 +585,4 @@
 [2024-03-24T11:04:55] add missing null checks before accessing object properties
 [2024-03-24T12:44:50] fix off-by-one error in date range calculations
 [2024-03-24T12:53:17] tweak throttle limit for search input debounce handler
+[2024-03-24T13:44:29] streamline data mapping layer between models and schemas

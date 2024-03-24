@@ -590,3 +590,4 @@
 [2024-03-24T15:44:21] bump package dependencies and resolve vulnerability warning
 [2024-03-24T18:55:43] update api endpoints docstrings and request response examples
 [2024-03-24T20:49:20] wip: working on batch record processing pipeline
+[2024-03-24T23:01:33] resolve race condition in websocket reconnection listener

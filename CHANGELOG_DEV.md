@@ -591,3 +591,4 @@
 [2024-03-24T18:55:43] update api endpoints docstrings and request response examples
 [2024-03-24T20:49:20] wip: working on batch record processing pipeline
 [2024-03-24T23:01:33] resolve race condition in websocket reconnection listener
+[2024-03-24T23:52:17] fix typo in helper function params and update type hints

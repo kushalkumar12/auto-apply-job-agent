@@ -601,3 +601,4 @@
 [2024-03-25T18:55:44] update api endpoints docstrings and request response examples
 [2024-03-25T20:01:53] minor style fix for card shadow and border radius token
 [2024-03-25T21:35:41] tune database connection timeout and pool max overflow
+[2024-03-25T21:36:31] add mock test fixtures for external api responses

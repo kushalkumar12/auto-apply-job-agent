@@ -597,3 +597,4 @@
 [2024-03-25T14:32:16] add gitignore entries for build cache and temp outputs
 [2024-03-25T14:37:44] fix crash when parsing malformed json body in webhook
 [2024-03-25T17:06:06] tweak throttle limit for search input debounce handler
+[2024-03-25T18:09:27] fix crash when parsing malformed json body in webhook

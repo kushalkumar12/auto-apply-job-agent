@@ -594,3 +594,4 @@
 [2024-03-24T23:52:17] fix typo in helper function params and update type hints
 [2024-03-25T12:16:54] initial setup for core router modules and baseline configs
 [2024-03-25T12:24:30] fix broken link in navigation menu footer and header
+[2024-03-25T14:32:16] add gitignore entries for build cache and temp outputs

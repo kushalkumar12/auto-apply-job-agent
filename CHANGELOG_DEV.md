@@ -607,3 +607,4 @@
 [2024-03-26T10:17:35] add unit test cases for auth token verification flow
 [2024-03-26T12:23:54] speed up test runner execution by running in-memory db
 [2024-03-26T12:57:28] tweak default page size and pagination limits in config
+[2024-03-26T15:38:23] add gitignore entries for build cache and temp outputs

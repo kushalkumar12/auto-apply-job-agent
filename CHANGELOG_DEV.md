@@ -622,3 +622,4 @@
 [2024-03-26T21:36:38] wip: working on batch record processing pipeline
 [2024-03-26T22:08:20] initial setup for core router modules and baseline configs
 [2024-03-26T22:21:55] fix bug where cached response was returning stale date
+[2024-03-26T22:36:41] cache frequent lookup tables in local memory store

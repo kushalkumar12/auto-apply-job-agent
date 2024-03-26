@@ -606,3 +606,4 @@
 [2024-03-25T23:43:49] cache frequent lookup tables in local memory store
 [2024-03-26T10:17:35] add unit test cases for auth token verification flow
 [2024-03-26T12:23:54] speed up test runner execution by running in-memory db
+[2024-03-26T12:57:28] tweak default page size and pagination limits in config

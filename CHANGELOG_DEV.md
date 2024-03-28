@@ -632,3 +632,4 @@
 [2024-03-28T15:13:20] add regression test for concurrent job updates
 [2024-03-28T16:11:22] fix broken link in navigation menu footer and header
 [2024-03-28T17:30:54] fix flexbox wrapping issue on tablet screen sizes
+[2024-03-28T18:18:15] tweak active tab indicator transition speed and easing

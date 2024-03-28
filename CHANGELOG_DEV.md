@@ -633,3 +633,4 @@
 [2024-03-28T16:11:22] fix broken link in navigation menu footer and header
 [2024-03-28T17:30:54] fix flexbox wrapping issue on tablet screen sizes
 [2024-03-28T18:18:15] tweak active tab indicator transition speed and easing
+[2024-03-28T20:29:36] optimize query execution time by adding compound index

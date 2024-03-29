@@ -643,3 +643,4 @@
 [2024-03-29T14:35:54] fix failing assertion in user profile integration test
 [2024-03-29T16:07:08] add validation schema checks for incoming request payloads
 [2024-03-29T19:47:41] tweak default page size and pagination limits in config
+[2024-03-29T19:48:11] reorg utility methods into dedicated shared modules

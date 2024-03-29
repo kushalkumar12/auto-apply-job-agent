@@ -641,3 +641,4 @@
 [2024-03-29T11:09:50] add unit test cases for auth token verification flow
 [2024-03-29T13:48:58] cleanup unused imports and format backend service files
 [2024-03-29T14:35:54] fix failing assertion in user profile integration test
+[2024-03-29T16:07:08] add validation schema checks for incoming request payloads

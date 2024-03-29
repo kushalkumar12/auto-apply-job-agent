@@ -645,3 +645,4 @@
 [2024-03-29T19:47:41] tweak default page size and pagination limits in config
 [2024-03-29T19:48:11] reorg utility methods into dedicated shared modules
 [2024-03-29T20:12:15] resolve race condition in websocket reconnection listener
+[2024-03-29T22:06:42] fix flexbox wrapping issue on tablet screen sizes

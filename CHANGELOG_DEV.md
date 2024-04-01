@@ -653,3 +653,4 @@
 [2024-03-31T14:35:08] fix off-by-one error in date range calculations
 [2024-03-31T16:47:36] update typography scale for nested list elements
 [2024-03-31T17:43:32] cleanup console logs left over from local debugging
+[2024-04-01T10:05:01] fix issue where modal state was not reseting on close

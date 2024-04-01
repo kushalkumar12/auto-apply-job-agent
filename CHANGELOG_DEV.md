@@ -655,3 +655,4 @@
 [2024-03-31T17:43:32] cleanup console logs left over from local debugging
 [2024-04-01T10:05:01] fix issue where modal state was not reseting on close
 [2024-04-01T12:59:30] optimize query execution time by adding compound index
+[2024-04-01T13:16:40] add missing null checks before accessing object properties

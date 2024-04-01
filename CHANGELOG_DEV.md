@@ -654,3 +654,4 @@
 [2024-03-31T16:47:36] update typography scale for nested list elements
 [2024-03-31T17:43:32] cleanup console logs left over from local debugging
 [2024-04-01T10:05:01] fix issue where modal state was not reseting on close
+[2024-04-01T12:59:30] optimize query execution time by adding compound index

@@ -660,3 +660,4 @@
 [2024-04-01T20:22:58] update dockerfile base image and multistage build layers
 [2024-04-01T20:31:51] fix failing assertion in user profile integration test
 [2024-04-01T20:41:51] reorg utility methods into dedicated shared modules
+[2024-04-01T21:05:12] fix issue with session expiration handling on reconnect

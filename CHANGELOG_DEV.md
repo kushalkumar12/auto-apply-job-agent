@@ -664,3 +664,4 @@
 [2024-04-01T21:17:59] add keyboard shortcut support for modal dismiss
 [2024-04-01T21:26:55] configure cors origins for local dev port forwarding
 [2024-04-01T23:36:53] tweak throttle limit for search input debounce handler
+[2024-04-02T10:53:57] fix broken link in navigation menu footer and header

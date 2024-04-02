@@ -667,3 +667,4 @@
 [2024-04-02T10:53:57] fix broken link in navigation menu footer and header
 [2024-04-02T11:03:32] handle edge case when payload data is empty or missing
 [2024-04-02T16:25:03] setup pre-commit hook scripts for automated linting
+[2024-04-02T19:06:12] support custom headers parameter in api client service

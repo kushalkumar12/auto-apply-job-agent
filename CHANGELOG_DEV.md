@@ -679,3 +679,4 @@
 [2024-04-04T11:26:36] correct spelling of parameter in api client method
 [2024-04-04T14:01:41] fix broken link in navigation menu footer and header
 [2024-04-04T14:09:58] optimize query execution time by adding compound index
+[2024-04-04T18:26:09] speed up test runner execution by running in-memory db

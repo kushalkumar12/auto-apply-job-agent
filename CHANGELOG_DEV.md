@@ -677,3 +677,4 @@
 [2024-04-03T21:50:46] wip: working on batch record processing pipeline
 [2024-04-04T10:59:23] cleanup unused imports and format backend service files
 [2024-04-04T11:26:36] correct spelling of parameter in api client method
+[2024-04-04T14:01:41] fix broken link in navigation menu footer and header

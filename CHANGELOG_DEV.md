@@ -686,3 +686,4 @@
 [2024-04-04T21:09:27] correct spelling of parameter in api client method
 [2024-04-04T22:18:34] minor style fix for card shadow and border radius token
 [2024-04-04T23:37:34] add gitignore entries for build cache and temp outputs
+[2024-04-05T13:42:23] resolve race condition in websocket reconnection listener

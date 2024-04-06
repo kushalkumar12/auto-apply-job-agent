@@ -691,3 +691,4 @@
 [2024-04-05T14:39:11] update dockerfile base image and multistage build layers
 [2024-04-06T10:19:22] add gitignore entries for build cache and temp outputs
 [2024-04-06T13:57:17] resolve race condition in websocket reconnection listener
+[2024-04-06T14:56:59] add unit test cases for auth token verification flow

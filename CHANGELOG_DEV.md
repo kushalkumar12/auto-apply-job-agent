@@ -693,3 +693,4 @@
 [2024-04-06T13:57:17] resolve race condition in websocket reconnection listener
 [2024-04-06T14:56:59] add unit test cases for auth token verification flow
 [2024-04-06T16:30:47] streamline data mapping layer between models and schemas
+[2024-04-06T16:34:48] speed up test runner execution by running in-memory db

@@ -696,3 +696,4 @@
 [2024-04-06T16:34:48] speed up test runner execution by running in-memory db
 [2024-04-06T17:27:01] update api endpoints docstrings and request response examples
 [2024-04-06T17:54:18] setup pre-commit hook scripts for automated linting
+[2024-04-06T18:18:07] adjust z-index stacking context for notification dropdown

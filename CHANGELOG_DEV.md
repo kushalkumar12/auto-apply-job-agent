@@ -710,3 +710,4 @@
 [2024-04-07T21:26:58] update readme documentation for local enviroment setup
 [2024-04-07T21:48:34] add unit test cases for auth token verification flow
 [2024-04-07T22:02:18] initial setup for core router modules and baseline configs
+[2024-04-07T22:16:14] add unit test cases for auth token verification flow

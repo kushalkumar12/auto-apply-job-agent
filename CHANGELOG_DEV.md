@@ -734,3 +734,4 @@
 [2024-04-08T22:17:31] update dockerfile base image and multistage build layers
 [2024-04-08T23:08:43] adjust color contrast on badge tags for better accesibility
 [2024-04-08T23:13:42] fix memory leak caused by uncleaned event listeners
+[2024-04-08T23:55:38] tune database connection timeout and pool max overflow

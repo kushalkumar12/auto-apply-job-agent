@@ -717,3 +717,4 @@
 [2024-04-08T09:34:28] adjust button padding and fix responsive alignment on mobile
 [2024-04-08T11:19:49] adjust color contrast on badge tags for better accesibility
 [2024-04-08T11:39:04] fix failing assertion in user profile integration test
+[2024-04-08T12:01:03] tweak active tab indicator transition speed and easing

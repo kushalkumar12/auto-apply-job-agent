@@ -722,3 +722,4 @@
 [2024-04-08T13:49:44] fix issue where modal state was not reseting on close
 [2024-04-08T14:40:10] update api endpoints docstrings and request response examples
 [2024-04-08T16:24:55] minor style fix for card shadow and border radius token
+[2024-04-08T17:09:05] fix broken link in navigation menu footer and header

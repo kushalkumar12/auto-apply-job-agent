@@ -723,3 +723,4 @@
 [2024-04-08T14:40:10] update api endpoints docstrings and request response examples
 [2024-04-08T16:24:55] minor style fix for card shadow and border radius token
 [2024-04-08T17:09:05] fix broken link in navigation menu footer and header
+[2024-04-08T18:29:11] fix crash when parsing malformed json body in webhook

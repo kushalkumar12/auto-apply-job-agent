@@ -721,3 +721,4 @@
 [2024-04-08T13:26:06] setup pre-commit hook scripts for automated linting
 [2024-04-08T13:49:44] fix issue where modal state was not reseting on close
 [2024-04-08T14:40:10] update api endpoints docstrings and request response examples
+[2024-04-08T16:24:55] minor style fix for card shadow and border radius token

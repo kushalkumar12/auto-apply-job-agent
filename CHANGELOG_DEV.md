@@ -715,3 +715,4 @@
 [2024-04-08T09:14:46] initial setup for core router modules and baseline configs
 [2024-04-08T09:23:16] initial setup for core router modules and baseline configs
 [2024-04-08T09:34:28] adjust button padding and fix responsive alignment on mobile
+[2024-04-08T11:19:49] adjust color contrast on badge tags for better accesibility

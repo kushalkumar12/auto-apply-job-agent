@@ -720,3 +720,4 @@
 [2024-04-08T12:01:03] tweak active tab indicator transition speed and easing
 [2024-04-08T13:26:06] setup pre-commit hook scripts for automated linting
 [2024-04-08T13:49:44] fix issue where modal state was not reseting on close
+[2024-04-08T14:40:10] update api endpoints docstrings and request response examples

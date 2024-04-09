@@ -743,3 +743,4 @@
 [2024-04-09T13:44:02] handle edge case when payload data is empty or missing
 [2024-04-09T14:12:18] resolve race condition in websocket reconnection listener
 [2024-04-09T15:57:37] cleanup console logs left over from local debugging
+[2024-04-09T16:55:13] adjust z-index stacking context for notification dropdown

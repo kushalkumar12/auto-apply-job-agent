@@ -735,3 +735,4 @@
 [2024-04-08T23:08:43] adjust color contrast on badge tags for better accesibility
 [2024-04-08T23:13:42] fix memory leak caused by uncleaned event listeners
 [2024-04-08T23:55:38] tune database connection timeout and pool max overflow
+[2024-04-09T09:06:36] configure cors origins for local dev port forwarding

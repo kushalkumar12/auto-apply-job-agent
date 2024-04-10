@@ -749,3 +749,4 @@
 [2024-04-09T23:17:31] minor style fix for card shadow and border radius token
 [2024-04-09T23:42:16] resolve race condition in websocket reconnection listener
 [2024-04-10T12:12:38] setup pre-commit hook scripts for automated linting
+[2024-04-10T14:08:54] update typography scale for nested list elements

@@ -753,3 +753,4 @@
 [2024-04-10T17:42:26] correct spelling of parameter in api client method
 [2024-04-10T22:45:20] adjust button padding and fix responsive alignment on mobile
 [2024-04-11T09:41:40] initial setup for core router modules and baseline configs
+[2024-04-11T14:19:42] add mock test fixtures for external api responses

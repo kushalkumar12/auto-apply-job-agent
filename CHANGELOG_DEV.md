@@ -758,3 +758,4 @@
 [2024-04-12T10:03:53] adjust color contrast on badge tags for better accesibility
 [2024-04-12T10:15:50] setup pre-commit hook scripts for automated linting
 [2024-04-12T11:18:34] final touches on feature branch before code review
+[2024-04-12T11:21:48] bump package dependencies and resolve vulnerability warning

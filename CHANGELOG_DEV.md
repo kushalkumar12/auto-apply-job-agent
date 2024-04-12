@@ -765,3 +765,4 @@
 [2024-04-12T16:08:47] resolve race condition in websocket reconnection listener
 [2024-04-12T17:48:10] fix flexbox wrapping issue on tablet screen sizes
 [2024-04-12T21:07:16] cleanup console logs left over from local debugging
+[2024-04-12T21:08:08] add missing null checks before accessing object properties

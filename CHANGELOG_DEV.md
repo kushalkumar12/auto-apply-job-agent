@@ -757,3 +757,4 @@
 [2024-04-11T20:13:02] fix issue where modal state was not reseting on close
 [2024-04-12T10:03:53] adjust color contrast on badge tags for better accesibility
 [2024-04-12T10:15:50] setup pre-commit hook scripts for automated linting
+[2024-04-12T11:18:34] final touches on feature branch before code review

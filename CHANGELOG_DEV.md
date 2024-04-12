@@ -767,3 +767,4 @@
 [2024-04-12T21:07:16] cleanup console logs left over from local debugging
 [2024-04-12T21:08:08] add missing null checks before accessing object properties
 [2024-04-12T21:32:15] revert temporary test flags before merge
+[2024-04-12T22:07:01] fix issue where modal state was not reseting on close

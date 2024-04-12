@@ -760,3 +760,4 @@
 [2024-04-12T11:18:34] final touches on feature branch before code review
 [2024-04-12T11:21:48] bump package dependencies and resolve vulnerability warning
 [2024-04-12T12:06:32] resolve race condition in websocket reconnection listener
+[2024-04-12T12:45:45] update typography scale for nested list elements

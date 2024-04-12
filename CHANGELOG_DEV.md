@@ -755,3 +755,4 @@
 [2024-04-11T09:41:40] initial setup for core router modules and baseline configs
 [2024-04-11T14:19:42] add mock test fixtures for external api responses
 [2024-04-11T20:13:02] fix issue where modal state was not reseting on close
+[2024-04-12T10:03:53] adjust color contrast on badge tags for better accesibility

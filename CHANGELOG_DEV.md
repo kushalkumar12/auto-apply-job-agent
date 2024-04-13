@@ -784,3 +784,4 @@
 [2024-04-13T15:31:44] handle edge case when payload data is empty or missing
 [2024-04-13T15:43:33] fix issue where modal state was not reseting on close
 [2024-04-13T16:26:51] update typography scale for nested list elements
+[2024-04-13T16:38:47] correct spelling of parameter in api client method

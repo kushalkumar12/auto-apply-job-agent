@@ -792,3 +792,4 @@
 [2024-04-13T20:37:14] reorg utility methods into dedicated shared modules
 [2024-04-13T22:18:10] tweak throttle limit for search input debounce handler
 [2024-04-13T22:26:39] add regression test for concurrent job updates
+[2024-04-13T22:48:43] fix off-by-one error in date range calculations

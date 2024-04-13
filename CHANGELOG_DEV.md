@@ -789,3 +789,4 @@
 [2024-04-13T19:00:35] reorg utility methods into dedicated shared modules
 [2024-04-13T19:49:05] adjust button padding and fix responsive alignment on mobile
 [2024-04-13T19:51:15] fix issue where modal state was not reseting on close
+[2024-04-13T20:37:14] reorg utility methods into dedicated shared modules

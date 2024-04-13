@@ -769,3 +769,4 @@
 [2024-04-12T21:32:15] revert temporary test flags before merge
 [2024-04-12T22:07:01] fix issue where modal state was not reseting on close
 [2024-04-12T23:23:37] update api endpoints docstrings and request response examples
+[2024-04-13T09:12:51] update readme documentation for local enviroment setup

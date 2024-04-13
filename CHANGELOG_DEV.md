@@ -776,3 +776,4 @@
 [2024-04-13T09:59:19] cleanup unused imports and format backend service files
 [2024-04-13T10:52:47] update api endpoints docstrings and request response examples
 [2024-04-13T11:06:51] add validation schema checks for incoming request payloads
+[2024-04-13T11:27:04] handle edge case when payload data is empty or missing

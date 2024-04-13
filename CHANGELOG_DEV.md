@@ -795,3 +795,4 @@
 [2024-04-13T22:48:43] fix off-by-one error in date range calculations
 [2024-04-13T22:50:55] fix crash when parsing malformed json body in webhook
 [2024-04-13T23:33:17] implement error boundary fallback for broken child components
+[2024-04-13T23:47:08] tweak active tab indicator transition speed and easing

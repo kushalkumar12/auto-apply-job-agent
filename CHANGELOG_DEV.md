@@ -786,3 +786,4 @@
 [2024-04-13T16:26:51] update typography scale for nested list elements
 [2024-04-13T16:38:47] correct spelling of parameter in api client method
 [2024-04-13T17:18:29] initial setup for core router modules and baseline configs
+[2024-04-13T19:00:35] reorg utility methods into dedicated shared modules

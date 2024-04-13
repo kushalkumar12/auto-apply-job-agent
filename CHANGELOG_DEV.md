@@ -791,3 +791,4 @@
 [2024-04-13T19:51:15] fix issue where modal state was not reseting on close
 [2024-04-13T20:37:14] reorg utility methods into dedicated shared modules
 [2024-04-13T22:18:10] tweak throttle limit for search input debounce handler
+[2024-04-13T22:26:39] add regression test for concurrent job updates

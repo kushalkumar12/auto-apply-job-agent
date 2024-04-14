@@ -798,3 +798,4 @@
 [2024-04-13T23:47:08] tweak active tab indicator transition speed and easing
 [2024-04-14T09:08:13] resolve race condition in websocket reconnection listener
 [2024-04-14T09:26:25] configure cors origins for local dev port forwarding
+[2024-04-14T09:58:35] tune database connection timeout and pool max overflow

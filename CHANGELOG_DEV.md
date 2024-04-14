@@ -804,3 +804,4 @@
 [2024-04-14T12:35:03] configure cors origins for local dev port forwarding
 [2024-04-14T19:46:39] wip: working on batch record processing pipeline
 [2024-04-14T19:54:58] cleanup console logs left over from local debugging
+[2024-04-14T21:21:54] quick commit before lunch, still need to finish error checks

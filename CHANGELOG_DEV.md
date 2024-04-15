@@ -834,3 +834,4 @@
 [2024-04-15T22:41:24] revert temporary test flags before merge
 [2024-04-15T22:44:43] minor style fix for card shadow and border radius token
 [2024-04-15T23:32:49] fix off-by-one error in date range calculations
+[2024-04-15T23:40:51] fix typo in helper function params and update type hints

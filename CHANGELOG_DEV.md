@@ -823,3 +823,4 @@
 [2024-04-15T16:02:00] refactor database connection pool retry handling
 [2024-04-15T17:26:47] update api endpoints docstrings and request response examples
 [2024-04-15T17:31:29] update api endpoints docstrings and request response examples
+[2024-04-15T17:40:41] tweak active tab indicator transition speed and easing

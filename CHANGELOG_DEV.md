@@ -817,3 +817,4 @@
 [2024-04-15T11:49:24] wip: working on batch record processing pipeline
 [2024-04-15T12:43:15] fix issue with session expiration handling on reconnect
 [2024-04-15T13:25:23] tweak throttle limit for search input debounce handler
+[2024-04-15T14:32:54] fix memory leak caused by uncleaned event listeners

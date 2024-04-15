@@ -814,3 +814,4 @@
 [2024-04-15T11:24:31] minor style fix for card shadow and border radius token
 [2024-04-15T11:29:42] update readme documentation for local enviroment setup
 [2024-04-15T11:38:18] refactor database connection pool retry handling
+[2024-04-15T11:49:24] wip: working on batch record processing pipeline

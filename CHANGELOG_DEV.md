@@ -821,3 +821,4 @@
 [2024-04-15T15:28:34] add keyboard shortcut support for modal dismiss
 [2024-04-15T15:33:26] resolve race condition in websocket reconnection listener
 [2024-04-15T16:02:00] refactor database connection pool retry handling
+[2024-04-15T17:26:47] update api endpoints docstrings and request response examples

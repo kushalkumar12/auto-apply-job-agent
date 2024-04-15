@@ -826,3 +826,4 @@
 [2024-04-15T17:40:41] tweak active tab indicator transition speed and easing
 [2024-04-15T19:20:52] wip: working on batch record processing pipeline
 [2024-04-15T19:52:27] fix broken link in navigation menu footer and header
+[2024-04-15T20:26:39] prevent content shift when loading skeleton placeholders

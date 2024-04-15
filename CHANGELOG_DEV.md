@@ -831,3 +831,4 @@
 [2024-04-15T20:53:34] fix issue with session expiration handling on reconnect
 [2024-04-15T21:17:30] adjust z-index stacking context for notification dropdown
 [2024-04-15T21:38:49] add missing null checks before accessing object properties
+[2024-04-15T22:41:24] revert temporary test flags before merge

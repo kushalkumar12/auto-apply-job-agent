@@ -812,3 +812,4 @@
 [2024-04-15T10:30:33] reorg utility methods into dedicated shared modules
 [2024-04-15T10:55:15] add regression test for concurrent job updates
 [2024-04-15T11:24:31] minor style fix for card shadow and border radius token
+[2024-04-15T11:29:42] update readme documentation for local enviroment setup

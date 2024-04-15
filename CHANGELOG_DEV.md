@@ -824,3 +824,4 @@
 [2024-04-15T17:26:47] update api endpoints docstrings and request response examples
 [2024-04-15T17:31:29] update api endpoints docstrings and request response examples
 [2024-04-15T17:40:41] tweak active tab indicator transition speed and easing
+[2024-04-15T19:20:52] wip: working on batch record processing pipeline

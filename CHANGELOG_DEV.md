@@ -808,3 +808,4 @@
 [2024-04-14T21:23:00] speed up test runner execution by running in-memory db
 [2024-04-14T22:12:34] handle edge case when payload data is empty or missing
 [2024-04-14T22:29:24] handle edge case when payload data is empty or missing
+[2024-04-15T09:59:45] optimize query execution time by adding compound index

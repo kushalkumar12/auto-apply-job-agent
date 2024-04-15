@@ -827,3 +827,4 @@
 [2024-04-15T19:20:52] wip: working on batch record processing pipeline
 [2024-04-15T19:52:27] fix broken link in navigation menu footer and header
 [2024-04-15T20:26:39] prevent content shift when loading skeleton placeholders
+[2024-04-15T20:50:46] fix broken link in navigation menu footer and header

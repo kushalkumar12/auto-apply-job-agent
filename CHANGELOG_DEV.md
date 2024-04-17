@@ -841,3 +841,4 @@
 [2024-04-17T14:51:01] quick commit before lunch, still need to finish error checks
 [2024-04-17T18:17:52] add healthcheck endpoint for load balancer monitoring
 [2024-04-17T18:58:27] speed up test runner execution by running in-memory db
+[2024-04-17T19:29:18] update typography scale for nested list elements

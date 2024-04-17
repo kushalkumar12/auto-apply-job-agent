@@ -839,3 +839,4 @@
 [2024-04-17T09:11:48] tweak default page size and pagination limits in config
 [2024-04-17T10:01:48] update api endpoints docstrings and request response examples
 [2024-04-17T14:51:01] quick commit before lunch, still need to finish error checks
+[2024-04-17T18:17:52] add healthcheck endpoint for load balancer monitoring

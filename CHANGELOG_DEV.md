@@ -836,3 +836,4 @@
 [2024-04-15T23:32:49] fix off-by-one error in date range calculations
 [2024-04-15T23:40:51] fix typo in helper function params and update type hints
 [2024-04-15T23:41:23] tweak default page size and pagination limits in config
+[2024-04-17T09:11:48] tweak default page size and pagination limits in config

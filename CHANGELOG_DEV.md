@@ -845,3 +845,4 @@
 [2024-04-18T09:18:02] tweak throttle limit for search input debounce handler
 [2024-04-18T11:33:30] resolve race condition in websocket reconnection listener
 [2024-04-18T13:19:40] fix crash when parsing malformed json body in webhook
+[2024-04-18T15:57:01] fix failing assertion in user profile integration test

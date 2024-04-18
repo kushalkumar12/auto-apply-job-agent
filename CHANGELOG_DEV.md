@@ -850,3 +850,4 @@
 [2024-04-18T17:31:09] add validation schema checks for incoming request payloads
 [2024-04-18T17:49:41] add mock test fixtures for external api responses
 [2024-04-18T20:55:02] resolve race condition in websocket reconnection listener
+[2024-04-18T21:03:38] add keyboard shortcut support for modal dismiss

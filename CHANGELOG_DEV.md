@@ -847,3 +847,4 @@
 [2024-04-18T13:19:40] fix crash when parsing malformed json body in webhook
 [2024-04-18T15:57:01] fix failing assertion in user profile integration test
 [2024-04-18T16:00:34] cleanup unused imports and format backend service files
+[2024-04-18T17:31:09] add validation schema checks for incoming request payloads

@@ -852,3 +852,4 @@
 [2024-04-18T20:55:02] resolve race condition in websocket reconnection listener
 [2024-04-18T21:03:38] add keyboard shortcut support for modal dismiss
 [2024-04-18T23:59:35] fix issue where modal state was not reseting on close
+[2024-04-19T09:03:25] update api endpoints docstrings and request response examples

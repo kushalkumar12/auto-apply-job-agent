@@ -860,3 +860,4 @@
 [2024-04-19T13:54:52] refactor logging middleware to mask sensitive headers
 [2024-04-19T13:57:30] add regression test for concurrent job updates
 [2024-04-19T14:42:59] add regression test for concurrent job updates
+[2024-04-19T14:49:47] cleanup console logs left over from local debugging

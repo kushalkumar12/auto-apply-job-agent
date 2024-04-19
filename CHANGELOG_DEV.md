@@ -858,3 +858,4 @@
 [2024-04-19T11:28:19] fix broken link in navigation menu footer and header
 [2024-04-19T12:52:58] correct spelling of parameter in api client method
 [2024-04-19T13:54:52] refactor logging middleware to mask sensitive headers
+[2024-04-19T13:57:30] add regression test for concurrent job updates

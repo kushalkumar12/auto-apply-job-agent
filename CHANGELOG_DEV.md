@@ -856,3 +856,4 @@
 [2024-04-19T09:43:37] fix issue with session expiration handling on reconnect
 [2024-04-19T09:54:45] update readme documentation for local enviroment setup
 [2024-04-19T11:28:19] fix broken link in navigation menu footer and header
+[2024-04-19T12:52:58] correct spelling of parameter in api client method

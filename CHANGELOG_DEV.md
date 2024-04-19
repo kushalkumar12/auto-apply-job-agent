@@ -869,3 +869,4 @@
 [2024-04-19T21:44:59] fix issue with session expiration handling on reconnect
 [2024-04-19T22:00:48] refactor database connection pool retry handling
 [2024-04-19T22:57:50] add validation schema checks for incoming request payloads
+[2024-04-19T23:13:24] fix flexbox wrapping issue on tablet screen sizes

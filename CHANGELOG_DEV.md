@@ -870,3 +870,4 @@
 [2024-04-19T22:00:48] refactor database connection pool retry handling
 [2024-04-19T22:57:50] add validation schema checks for incoming request payloads
 [2024-04-19T23:13:24] fix flexbox wrapping issue on tablet screen sizes
+[2024-04-19T23:23:36] update api endpoints docstrings and request response examples

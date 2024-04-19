@@ -857,3 +857,4 @@
 [2024-04-19T09:54:45] update readme documentation for local enviroment setup
 [2024-04-19T11:28:19] fix broken link in navigation menu footer and header
 [2024-04-19T12:52:58] correct spelling of parameter in api client method
+[2024-04-19T13:54:52] refactor logging middleware to mask sensitive headers

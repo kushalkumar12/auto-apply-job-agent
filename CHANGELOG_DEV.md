@@ -880,3 +880,4 @@
 [2024-04-20T15:31:31] add mock test fixtures for external api responses
 [2024-04-20T15:41:29] fix bug where cached response was returning stale date
 [2024-04-20T19:07:58] fix issue with session expiration handling on reconnect
+[2024-04-20T19:38:21] adjust color contrast on badge tags for better accesibility

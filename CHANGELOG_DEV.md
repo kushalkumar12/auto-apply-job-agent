@@ -873,3 +873,4 @@
 [2024-04-19T23:23:36] update api endpoints docstrings and request response examples
 [2024-04-20T11:23:11] revert temporary test flags before merge
 [2024-04-20T11:44:59] fix memory leak caused by uncleaned event listeners
+[2024-04-20T13:20:06] fix issue with session expiration handling on reconnect

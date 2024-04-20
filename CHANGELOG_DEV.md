@@ -875,3 +875,4 @@
 [2024-04-20T11:44:59] fix memory leak caused by uncleaned event listeners
 [2024-04-20T13:20:06] fix issue with session expiration handling on reconnect
 [2024-04-20T13:43:58] cleanup unused imports and format backend service files
+[2024-04-20T15:13:27] resolve race condition in websocket reconnection listener

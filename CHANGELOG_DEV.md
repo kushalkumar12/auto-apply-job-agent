@@ -883,3 +883,4 @@
 [2024-04-20T19:38:21] adjust color contrast on badge tags for better accesibility
 [2024-04-20T20:10:02] wip: working on batch record processing pipeline
 [2024-04-20T22:33:07] update api endpoints docstrings and request response examples
+[2024-04-20T23:26:48] update dockerfile base image and multistage build layers

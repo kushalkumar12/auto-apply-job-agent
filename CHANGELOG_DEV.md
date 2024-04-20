@@ -872,3 +872,4 @@
 [2024-04-19T23:13:24] fix flexbox wrapping issue on tablet screen sizes
 [2024-04-19T23:23:36] update api endpoints docstrings and request response examples
 [2024-04-20T11:23:11] revert temporary test flags before merge
+[2024-04-20T11:44:59] fix memory leak caused by uncleaned event listeners

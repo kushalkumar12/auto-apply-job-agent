@@ -878,3 +878,4 @@
 [2024-04-20T15:13:27] resolve race condition in websocket reconnection listener
 [2024-04-20T15:25:45] fix off-by-one error in date range calculations
 [2024-04-20T15:31:31] add mock test fixtures for external api responses
+[2024-04-20T15:41:29] fix bug where cached response was returning stale date

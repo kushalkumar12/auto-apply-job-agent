@@ -886,3 +886,4 @@
 [2024-04-20T23:26:48] update dockerfile base image and multistage build layers
 [2024-04-21T11:15:06] add healthcheck endpoint for load balancer monitoring
 [2024-04-21T13:05:46] add export to csv helper utility for report generation
+[2024-04-21T17:47:51] adjust z-index stacking context for notification dropdown

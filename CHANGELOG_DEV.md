@@ -893,3 +893,4 @@
 [2024-04-23T13:57:05] add gitignore entries for build cache and temp outputs
 [2024-04-23T16:23:14] update api endpoints docstrings and request response examples
 [2024-04-23T17:59:30] streamline data mapping layer between models and schemas
+[2024-04-23T18:47:50] correct spelling of parameter in api client method

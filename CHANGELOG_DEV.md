@@ -900,3 +900,4 @@
 [2024-04-24T15:16:59] improve error messages returned during failed validation
 [2024-04-24T15:42:10] revert temporary test flags before merge
 [2024-04-24T19:45:12] setup pre-commit hook scripts for automated linting
+[2024-04-24T22:26:20] add mock test fixtures for external api responses

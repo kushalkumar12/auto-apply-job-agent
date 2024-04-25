@@ -914,3 +914,4 @@
 [2024-04-25T18:51:54] update typography scale for nested list elements
 [2024-04-25T19:31:09] fix broken link in navigation menu footer and header
 [2024-04-25T20:25:50] implement optimistic ui update for item toggle action
+[2024-04-25T22:50:10] tune database connection timeout and pool max overflow

@@ -903,3 +903,4 @@
 [2024-04-24T22:26:20] add mock test fixtures for external api responses
 [2024-04-25T10:11:05] resolve race condition in websocket reconnection listener
 [2024-04-25T11:43:02] revert temporary test flags before merge
+[2024-04-25T13:04:23] fix crash when parsing malformed json body in webhook

@@ -911,3 +911,4 @@
 [2024-04-25T16:35:49] fix issue where modal state was not reseting on close
 [2024-04-25T16:43:16] speed up test runner execution by running in-memory db
 [2024-04-25T18:23:18] minor style fix for card shadow and border radius token
+[2024-04-25T18:51:54] update typography scale for nested list elements

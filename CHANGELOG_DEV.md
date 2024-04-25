@@ -901,3 +901,4 @@
 [2024-04-24T15:42:10] revert temporary test flags before merge
 [2024-04-24T19:45:12] setup pre-commit hook scripts for automated linting
 [2024-04-24T22:26:20] add mock test fixtures for external api responses
+[2024-04-25T10:11:05] resolve race condition in websocket reconnection listener

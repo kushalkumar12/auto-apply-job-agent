@@ -905,3 +905,4 @@
 [2024-04-25T11:43:02] revert temporary test flags before merge
 [2024-04-25T13:04:23] fix crash when parsing malformed json body in webhook
 [2024-04-25T13:15:38] adjust color contrast on badge tags for better accesibility
+[2024-04-25T15:30:18] update test coverage for user registration edge cases

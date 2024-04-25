@@ -912,3 +912,4 @@
 [2024-04-25T16:43:16] speed up test runner execution by running in-memory db
 [2024-04-25T18:23:18] minor style fix for card shadow and border radius token
 [2024-04-25T18:51:54] update typography scale for nested list elements
+[2024-04-25T19:31:09] fix broken link in navigation menu footer and header

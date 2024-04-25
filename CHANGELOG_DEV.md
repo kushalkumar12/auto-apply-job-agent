@@ -909,3 +909,4 @@
 [2024-04-25T16:15:54] revert temporary test flags before merge
 [2024-04-25T16:34:55] cleanup unused imports and format backend service files
 [2024-04-25T16:35:49] fix issue where modal state was not reseting on close
+[2024-04-25T16:43:16] speed up test runner execution by running in-memory db

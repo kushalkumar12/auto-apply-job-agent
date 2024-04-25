@@ -907,3 +907,4 @@
 [2024-04-25T13:15:38] adjust color contrast on badge tags for better accesibility
 [2024-04-25T15:30:18] update test coverage for user registration edge cases
 [2024-04-25T16:15:54] revert temporary test flags before merge
+[2024-04-25T16:34:55] cleanup unused imports and format backend service files

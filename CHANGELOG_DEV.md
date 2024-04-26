@@ -927,3 +927,4 @@
 [2024-04-26T16:33:40] tune database connection timeout and pool max overflow
 [2024-04-26T18:00:51] setup pre-commit hook scripts for automated linting
 [2024-04-26T22:23:46] add mock test fixtures for external api responses
+[2024-04-26T22:43:49] fix off-by-one error in date range calculations

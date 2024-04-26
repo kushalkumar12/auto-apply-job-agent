@@ -920,3 +920,4 @@
 [2024-04-26T09:28:33] correct spelling of parameter in api client method
 [2024-04-26T09:46:07] fix flexbox wrapping issue on tablet screen sizes
 [2024-04-26T11:35:17] add regression test for concurrent job updates
+[2024-04-26T12:09:59] implement optimistic ui update for item toggle action

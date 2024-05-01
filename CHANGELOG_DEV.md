@@ -932,3 +932,4 @@
 [2024-05-01T10:07:19] minor style fix for card shadow and border radius token
 [2024-05-01T10:28:00] update api endpoints docstrings and request response examples
 [2024-05-01T11:51:18] fix failing assertion in user profile integration test
+[2024-05-01T12:14:49] adjust color contrast on badge tags for better accesibility

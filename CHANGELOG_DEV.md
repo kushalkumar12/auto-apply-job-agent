@@ -934,3 +934,4 @@
 [2024-05-01T11:51:18] fix failing assertion in user profile integration test
 [2024-05-01T12:14:49] adjust color contrast on badge tags for better accesibility
 [2024-05-01T12:20:57] setup pre-commit hook scripts for automated linting
+[2024-05-01T13:13:02] speed up test runner execution by running in-memory db

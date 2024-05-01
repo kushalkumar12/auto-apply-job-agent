@@ -930,3 +930,4 @@
 [2024-04-26T22:43:49] fix off-by-one error in date range calculations
 [2024-04-26T22:44:39] add unit test cases for auth token verification flow
 [2024-05-01T10:07:19] minor style fix for card shadow and border radius token
+[2024-05-01T10:28:00] update api endpoints docstrings and request response examples

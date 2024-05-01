@@ -931,3 +931,4 @@
 [2024-04-26T22:44:39] add unit test cases for auth token verification flow
 [2024-05-01T10:07:19] minor style fix for card shadow and border radius token
 [2024-05-01T10:28:00] update api endpoints docstrings and request response examples
+[2024-05-01T11:51:18] fix failing assertion in user profile integration test

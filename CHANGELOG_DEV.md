@@ -944,3 +944,4 @@
 [2024-05-02T09:33:38] fix flexbox wrapping issue on tablet screen sizes
 [2024-05-02T11:02:14] fix failing assertion in user profile integration test
 [2024-05-02T12:05:54] update typography scale for nested list elements
+[2024-05-02T14:19:19] tweak active tab indicator transition speed and easing

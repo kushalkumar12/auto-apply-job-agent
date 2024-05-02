@@ -942,3 +942,4 @@
 [2024-05-01T22:43:49] update dockerfile base image and multistage build layers
 [2024-05-01T23:11:24] configure cors origins for local dev port forwarding
 [2024-05-02T09:33:38] fix flexbox wrapping issue on tablet screen sizes
+[2024-05-02T11:02:14] fix failing assertion in user profile integration test

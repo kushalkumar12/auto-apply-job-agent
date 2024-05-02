@@ -947,3 +947,4 @@
 [2024-05-02T14:19:19] tweak active tab indicator transition speed and easing
 [2024-05-02T15:16:57] fix memory leak caused by uncleaned event listeners
 [2024-05-02T18:15:18] add regression test for concurrent job updates
+[2024-05-02T20:13:45] cleanup console logs left over from local debugging

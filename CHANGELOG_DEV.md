@@ -945,3 +945,4 @@
 [2024-05-02T11:02:14] fix failing assertion in user profile integration test
 [2024-05-02T12:05:54] update typography scale for nested list elements
 [2024-05-02T14:19:19] tweak active tab indicator transition speed and easing
+[2024-05-02T15:16:57] fix memory leak caused by uncleaned event listeners

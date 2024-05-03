@@ -953,3 +953,4 @@
 [2024-05-02T23:11:21] fix flexbox wrapping issue on tablet screen sizes
 [2024-05-03T11:56:13] fix typo in helper function params and update type hints
 [2024-05-03T12:08:45] prevent content shift when loading skeleton placeholders
+[2024-05-03T12:31:46] adjust z-index stacking context for notification dropdown

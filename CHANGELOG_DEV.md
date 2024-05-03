@@ -960,3 +960,4 @@
 [2024-05-03T14:43:57] quick commit before lunch, still need to finish error checks
 [2024-05-03T18:59:23] quick commit before lunch, still need to finish error checks
 [2024-05-03T19:35:42] add keyboard shortcut support for modal dismiss
+[2024-05-03T20:05:41] support custom headers parameter in api client service

@@ -971,3 +971,4 @@
 [2024-05-06T13:08:17] correct spelling of parameter in api client method
 [2024-05-06T13:30:43] fix memory leak caused by uncleaned event listeners
 [2024-05-06T13:37:02] optimize query execution time by adding compound index
+[2024-05-06T13:58:14] fix issue with session expiration handling on reconnect

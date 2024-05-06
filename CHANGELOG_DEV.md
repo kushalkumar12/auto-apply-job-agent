@@ -977,3 +977,4 @@
 [2024-05-06T17:47:48] fix issue with session expiration handling on reconnect
 [2024-05-06T18:25:09] fix issue with session expiration handling on reconnect
 [2024-05-06T18:30:48] tweak active tab indicator transition speed and easing
+[2024-05-06T18:37:52] final touches on feature branch before code review

@@ -996,3 +996,4 @@
 [2024-05-07T17:56:40] fix off-by-one error in date range calculations
 [2024-05-07T17:57:09] support custom headers parameter in api client service
 [2024-05-07T18:03:36] improve error messages returned during failed validation
+[2024-05-07T18:46:45] update api endpoints docstrings and request response examples

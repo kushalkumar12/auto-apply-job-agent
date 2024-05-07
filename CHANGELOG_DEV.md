@@ -995,3 +995,4 @@
 [2024-05-07T16:43:08] update typography scale for nested list elements
 [2024-05-07T17:56:40] fix off-by-one error in date range calculations
 [2024-05-07T17:57:09] support custom headers parameter in api client service
+[2024-05-07T18:03:36] improve error messages returned during failed validation

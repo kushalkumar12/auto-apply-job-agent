@@ -987,3 +987,4 @@
 [2024-05-07T11:12:14] tweak active tab indicator transition speed and easing
 [2024-05-07T11:50:10] implement optimistic ui update for item toggle action
 [2024-05-07T12:09:32] implement error boundary fallback for broken child components
+[2024-05-07T14:07:22] implement error boundary fallback for broken child components

@@ -979,3 +979,4 @@
 [2024-05-06T18:30:48] tweak active tab indicator transition speed and easing
 [2024-05-06T18:37:52] final touches on feature branch before code review
 [2024-05-06T23:45:10] adjust button padding and fix responsive alignment on mobile
+[2024-05-07T09:15:14] fix issue with session expiration handling on reconnect

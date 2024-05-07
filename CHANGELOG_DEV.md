@@ -983,3 +983,4 @@
 [2024-05-07T09:36:45] reorg utility methods into dedicated shared modules
 [2024-05-07T10:37:46] cleanup console logs left over from local debugging
 [2024-05-07T10:43:25] adjust color contrast on badge tags for better accesibility
+[2024-05-07T11:06:25] update dockerfile base image and multistage build layers

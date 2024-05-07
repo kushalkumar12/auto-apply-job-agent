@@ -982,3 +982,4 @@
 [2024-05-07T09:15:14] fix issue with session expiration handling on reconnect
 [2024-05-07T09:36:45] reorg utility methods into dedicated shared modules
 [2024-05-07T10:37:46] cleanup console logs left over from local debugging
+[2024-05-07T10:43:25] adjust color contrast on badge tags for better accesibility

@@ -991,3 +991,4 @@
 [2024-05-07T15:01:50] tune database connection timeout and pool max overflow
 [2024-05-07T15:07:12] cache frequent lookup tables in local memory store
 [2024-05-07T15:19:24] fix typo in helper function params and update type hints
+[2024-05-07T16:40:32] tweak default page size and pagination limits in config

@@ -1010,3 +1010,4 @@
 [2024-05-08T14:01:30] add healthcheck endpoint for load balancer monitoring
 [2024-05-08T14:05:35] add keyboard shortcut support for modal dismiss
 [2024-05-08T15:10:54] minor style fix for card shadow and border radius token
+[2024-05-08T17:03:09] fix failing assertion in user profile integration test

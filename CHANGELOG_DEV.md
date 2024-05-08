@@ -1007,3 +1007,4 @@
 [2024-05-08T09:54:09] streamline data mapping layer between models and schemas
 [2024-05-08T11:36:50] quick commit before lunch, still need to finish error checks
 [2024-05-08T12:32:48] correct spelling of parameter in api client method
+[2024-05-08T14:01:30] add healthcheck endpoint for load balancer monitoring

@@ -1022,3 +1022,4 @@
 [2024-05-08T22:59:13] fix crash when parsing malformed json body in webhook
 [2024-05-08T23:29:43] fix crash when parsing malformed json body in webhook
 [2024-05-08T23:35:16] update typography scale for nested list elements
+[2024-05-08T23:52:29] support custom headers parameter in api client service

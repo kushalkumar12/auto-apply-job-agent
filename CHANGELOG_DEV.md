@@ -1011,3 +1011,4 @@
 [2024-05-08T14:05:35] add keyboard shortcut support for modal dismiss
 [2024-05-08T15:10:54] minor style fix for card shadow and border radius token
 [2024-05-08T17:03:09] fix failing assertion in user profile integration test
+[2024-05-08T18:12:49] refactor logging middleware to mask sensitive headers

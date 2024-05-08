@@ -1005,3 +1005,4 @@
 [2024-05-07T22:52:15] update test coverage for user registration edge cases
 [2024-05-08T09:29:12] streamline data mapping layer between models and schemas
 [2024-05-08T09:54:09] streamline data mapping layer between models and schemas
+[2024-05-08T11:36:50] quick commit before lunch, still need to finish error checks

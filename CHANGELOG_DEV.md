@@ -1021,3 +1021,4 @@
 [2024-05-08T22:42:30] configure cors origins for local dev port forwarding
 [2024-05-08T22:59:13] fix crash when parsing malformed json body in webhook
 [2024-05-08T23:29:43] fix crash when parsing malformed json body in webhook
+[2024-05-08T23:35:16] update typography scale for nested list elements

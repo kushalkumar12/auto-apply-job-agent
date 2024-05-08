@@ -1009,3 +1009,4 @@
 [2024-05-08T12:32:48] correct spelling of parameter in api client method
 [2024-05-08T14:01:30] add healthcheck endpoint for load balancer monitoring
 [2024-05-08T14:05:35] add keyboard shortcut support for modal dismiss
+[2024-05-08T15:10:54] minor style fix for card shadow and border radius token

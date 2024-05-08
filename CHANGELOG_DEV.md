@@ -1006,3 +1006,4 @@
 [2024-05-08T09:29:12] streamline data mapping layer between models and schemas
 [2024-05-08T09:54:09] streamline data mapping layer between models and schemas
 [2024-05-08T11:36:50] quick commit before lunch, still need to finish error checks
+[2024-05-08T12:32:48] correct spelling of parameter in api client method

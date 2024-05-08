@@ -1018,3 +1018,4 @@
 [2024-05-08T20:58:37] fix broken link in navigation menu footer and header
 [2024-05-08T21:25:11] resolve race condition in websocket reconnection listener
 [2024-05-08T21:39:55] fix broken link in navigation menu footer and header
+[2024-05-08T22:42:30] configure cors origins for local dev port forwarding

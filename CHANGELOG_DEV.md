@@ -1020,3 +1020,4 @@
 [2024-05-08T21:39:55] fix broken link in navigation menu footer and header
 [2024-05-08T22:42:30] configure cors origins for local dev port forwarding
 [2024-05-08T22:59:13] fix crash when parsing malformed json body in webhook
+[2024-05-08T23:29:43] fix crash when parsing malformed json body in webhook

@@ -1015,3 +1015,4 @@
 [2024-05-08T19:09:28] minor style fix for card shadow and border radius token
 [2024-05-08T20:37:34] configure cors origins for local dev port forwarding
 [2024-05-08T20:47:24] add export to csv helper utility for report generation
+[2024-05-08T20:58:37] fix broken link in navigation menu footer and header

@@ -1025,3 +1025,4 @@
 [2024-05-08T23:52:29] support custom headers parameter in api client service
 [2024-05-10T09:38:19] tweak active tab indicator transition speed and easing
 [2024-05-10T11:16:04] add validation schema checks for incoming request payloads
+[2024-05-10T11:21:35] minor style fix for card shadow and border radius token

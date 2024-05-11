@@ -1033,3 +1033,4 @@
 [2024-05-10T21:38:13] fix broken link in navigation menu footer and header
 [2024-05-10T22:18:52] fix bug where cached response was returning stale date
 [2024-05-10T23:17:35] add missing null checks before accessing object properties
+[2024-05-11T10:22:47] add mock test fixtures for external api responses

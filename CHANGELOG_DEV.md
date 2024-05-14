@@ -1051,3 +1051,4 @@
 [2024-05-14T11:49:27] wip: working on batch record processing pipeline
 [2024-05-14T12:50:46] wip: working on batch record processing pipeline
 [2024-05-14T13:05:52] add keyboard shortcut support for modal dismiss
+[2024-05-14T13:18:16] optimize query execution time by adding compound index

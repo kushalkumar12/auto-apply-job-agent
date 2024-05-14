@@ -1062,3 +1062,4 @@
 [2024-05-14T19:39:09] refactor database connection pool retry handling
 [2024-05-14T21:22:55] add unit test cases for auth token verification flow
 [2024-05-14T22:40:54] handle edge case when payload data is empty or missing
+[2024-05-14T23:47:22] update test coverage for user registration edge cases

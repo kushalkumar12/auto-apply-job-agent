@@ -1057,3 +1057,4 @@
 [2024-05-14T14:35:47] refactor database connection pool retry handling
 [2024-05-14T14:44:27] update dockerfile base image and multistage build layers
 [2024-05-14T16:03:12] fix flexbox wrapping issue on tablet screen sizes
+[2024-05-14T17:06:47] correct spelling of parameter in api client method

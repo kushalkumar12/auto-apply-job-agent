@@ -1066,3 +1066,4 @@
 [2024-05-14T23:58:34] fix flexbox wrapping issue on tablet screen sizes
 [2024-05-15T09:12:28] support custom headers parameter in api client service
 [2024-05-15T09:13:08] prevent content shift when loading skeleton placeholders
+[2024-05-15T09:20:07] fix off-by-one error in date range calculations

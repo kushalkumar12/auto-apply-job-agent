@@ -1064,3 +1064,4 @@
 [2024-05-14T22:40:54] handle edge case when payload data is empty or missing
 [2024-05-14T23:47:22] update test coverage for user registration edge cases
 [2024-05-14T23:58:34] fix flexbox wrapping issue on tablet screen sizes
+[2024-05-15T09:12:28] support custom headers parameter in api client service

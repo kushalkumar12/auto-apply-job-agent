@@ -1068,3 +1068,4 @@
 [2024-05-15T09:13:08] prevent content shift when loading skeleton placeholders
 [2024-05-15T09:20:07] fix off-by-one error in date range calculations
 [2024-05-15T10:58:34] fix issue with session expiration handling on reconnect
+[2024-05-15T11:17:49] update readme documentation for local enviroment setup

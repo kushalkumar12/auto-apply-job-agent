@@ -1081,3 +1081,4 @@
 [2024-05-15T23:26:38] add healthcheck endpoint for load balancer monitoring
 [2024-05-16T12:24:09] revert temporary test flags before merge
 [2024-05-16T13:23:12] implement error boundary fallback for broken child components
+[2024-05-16T14:16:32] quick commit before lunch, still need to finish error checks

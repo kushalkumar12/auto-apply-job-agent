@@ -1083,3 +1083,4 @@
 [2024-05-16T13:23:12] implement error boundary fallback for broken child components
 [2024-05-16T14:16:32] quick commit before lunch, still need to finish error checks
 [2024-05-16T14:41:23] add keyboard shortcut support for modal dismiss
+[2024-05-16T18:37:07] initial setup for core router modules and baseline configs

@@ -1091,3 +1091,4 @@
 [2024-05-17T16:39:52] update dockerfile base image and multistage build layers
 [2024-05-17T18:31:01] cache frequent lookup tables in local memory store
 [2024-05-17T20:36:10] update readme documentation for local enviroment setup
+[2024-05-17T20:47:30] minor style fix for card shadow and border radius token

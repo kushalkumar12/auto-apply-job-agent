@@ -1088,3 +1088,4 @@
 [2024-05-16T22:58:58] configure cors origins for local dev port forwarding
 [2024-05-17T09:15:36] update dockerfile base image and multistage build layers
 [2024-05-17T14:35:09] fix crash when parsing malformed json body in webhook
+[2024-05-17T16:39:52] update dockerfile base image and multistage build layers

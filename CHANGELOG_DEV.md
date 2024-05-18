@@ -1096,3 +1096,4 @@
 [2024-05-18T11:09:47] tweak throttle limit for search input debounce handler
 [2024-05-18T11:42:35] update dockerfile base image and multistage build layers
 [2024-05-18T13:00:07] minor style fix for card shadow and border radius token
+[2024-05-18T19:40:10] add keyboard shortcut support for modal dismiss

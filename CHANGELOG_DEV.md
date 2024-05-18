@@ -1094,3 +1094,4 @@
 [2024-05-17T20:47:30] minor style fix for card shadow and border radius token
 [2024-05-17T21:21:33] cleanup console logs left over from local debugging
 [2024-05-18T11:09:47] tweak throttle limit for search input debounce handler
+[2024-05-18T11:42:35] update dockerfile base image and multistage build layers

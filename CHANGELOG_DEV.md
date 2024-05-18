@@ -1093,3 +1093,4 @@
 [2024-05-17T20:36:10] update readme documentation for local enviroment setup
 [2024-05-17T20:47:30] minor style fix for card shadow and border radius token
 [2024-05-17T21:21:33] cleanup console logs left over from local debugging
+[2024-05-18T11:09:47] tweak throttle limit for search input debounce handler

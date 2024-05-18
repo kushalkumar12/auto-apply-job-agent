@@ -1097,3 +1097,4 @@
 [2024-05-18T11:42:35] update dockerfile base image and multistage build layers
 [2024-05-18T13:00:07] minor style fix for card shadow and border radius token
 [2024-05-18T19:40:10] add keyboard shortcut support for modal dismiss
+[2024-05-18T20:00:58] fix issue where modal state was not reseting on close

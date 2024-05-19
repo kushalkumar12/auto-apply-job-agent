@@ -1101,3 +1101,4 @@
 [2024-05-18T22:11:00] tweak default page size and pagination limits in config
 [2024-05-18T23:30:58] add keyboard shortcut support for modal dismiss
 [2024-05-19T18:44:26] add missing null checks before accessing object properties
+[2024-05-19T19:00:37] fix broken link in navigation menu footer and header

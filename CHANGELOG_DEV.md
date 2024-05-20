@@ -1106,3 +1106,4 @@
 [2024-05-19T22:35:42] improve error messages returned during failed validation
 [2024-05-20T11:45:00] improve error messages returned during failed validation
 [2024-05-20T13:41:21] minor style fix for card shadow and border radius token
+[2024-05-20T13:51:00] fix typo in helper function params and update type hints

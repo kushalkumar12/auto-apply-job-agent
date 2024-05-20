@@ -1107,3 +1107,4 @@
 [2024-05-20T11:45:00] improve error messages returned during failed validation
 [2024-05-20T13:41:21] minor style fix for card shadow and border radius token
 [2024-05-20T13:51:00] fix typo in helper function params and update type hints
+[2024-05-20T14:06:15] handle edge case when payload data is empty or missing

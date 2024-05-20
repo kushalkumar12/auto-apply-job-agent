@@ -1112,3 +1112,4 @@
 [2024-05-20T14:54:41] speed up test runner execution by running in-memory db
 [2024-05-20T17:15:32] speed up test runner execution by running in-memory db
 [2024-05-20T17:55:19] revert temporary test flags before merge
+[2024-05-20T18:01:29] fix crash when parsing malformed json body in webhook

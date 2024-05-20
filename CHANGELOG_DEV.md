@@ -1119,3 +1119,4 @@
 [2024-05-20T20:09:23] adjust color contrast on badge tags for better accesibility
 [2024-05-20T20:50:50] handle edge case when payload data is empty or missing
 [2024-05-20T20:57:19] update readme documentation for local enviroment setup
+[2024-05-20T21:05:03] speed up test runner execution by running in-memory db

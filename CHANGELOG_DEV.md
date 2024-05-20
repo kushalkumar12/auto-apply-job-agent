@@ -1122,3 +1122,4 @@
 [2024-05-20T21:05:03] speed up test runner execution by running in-memory db
 [2024-05-20T21:05:46] prevent content shift when loading skeleton placeholders
 [2024-05-20T21:49:54] cleanup unused imports and format backend service files
+[2024-05-20T22:00:23] configure cors origins for local dev port forwarding

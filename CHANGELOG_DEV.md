@@ -1117,3 +1117,4 @@
 [2024-05-20T19:36:38] update dockerfile base image and multistage build layers
 [2024-05-20T19:43:20] speed up test runner execution by running in-memory db
 [2024-05-20T20:09:23] adjust color contrast on badge tags for better accesibility
+[2024-05-20T20:50:50] handle edge case when payload data is empty or missing

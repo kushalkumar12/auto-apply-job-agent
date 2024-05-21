@@ -1137,3 +1137,4 @@
 [2024-05-21T18:52:56] quick commit before lunch, still need to finish error checks
 [2024-05-21T18:56:47] resolve race condition in websocket reconnection listener
 [2024-05-21T19:07:24] update readme documentation for local enviroment setup
+[2024-05-21T19:52:11] adjust z-index stacking context for notification dropdown

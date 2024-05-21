@@ -1135,3 +1135,4 @@
 [2024-05-21T17:30:45] add healthcheck endpoint for load balancer monitoring
 [2024-05-21T17:54:21] final touches on feature branch before code review
 [2024-05-21T18:52:56] quick commit before lunch, still need to finish error checks
+[2024-05-21T18:56:47] resolve race condition in websocket reconnection listener

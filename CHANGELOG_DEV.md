@@ -1142,3 +1142,4 @@
 [2024-05-21T22:33:39] adjust z-index stacking context for notification dropdown
 [2024-05-22T12:08:50] adjust z-index stacking context for notification dropdown
 [2024-05-22T23:02:08] fix broken link in navigation menu footer and header
+[2024-05-22T23:30:13] update readme documentation for local enviroment setup

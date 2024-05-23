@@ -1145,3 +1145,4 @@
 [2024-05-22T23:30:13] update readme documentation for local enviroment setup
 [2024-05-23T11:14:31] correct spelling of parameter in api client method
 [2024-05-23T11:22:30] fix bug where cached response was returning stale date
+[2024-05-23T11:41:37] correct spelling of parameter in api client method

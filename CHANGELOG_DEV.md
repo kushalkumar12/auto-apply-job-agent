@@ -1151,3 +1151,4 @@
 [2024-05-23T11:57:49] add healthcheck endpoint for load balancer monitoring
 [2024-05-23T13:05:26] correct spelling of parameter in api client method
 [2024-05-23T13:31:51] initial setup for core router modules and baseline configs
+[2024-05-23T14:29:41] add validation schema checks for incoming request payloads

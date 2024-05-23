@@ -1143,3 +1143,4 @@
 [2024-05-22T12:08:50] adjust z-index stacking context for notification dropdown
 [2024-05-22T23:02:08] fix broken link in navigation menu footer and header
 [2024-05-22T23:30:13] update readme documentation for local enviroment setup
+[2024-05-23T11:14:31] correct spelling of parameter in api client method

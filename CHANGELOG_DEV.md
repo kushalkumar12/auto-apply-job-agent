@@ -1147,3 +1147,4 @@
 [2024-05-23T11:22:30] fix bug where cached response was returning stale date
 [2024-05-23T11:41:37] correct spelling of parameter in api client method
 [2024-05-23T11:47:15] fix issue with session expiration handling on reconnect
+[2024-05-23T11:53:21] update typography scale for nested list elements

@@ -1153,3 +1153,4 @@
 [2024-05-23T13:31:51] initial setup for core router modules and baseline configs
 [2024-05-23T14:29:41] add validation schema checks for incoming request payloads
 [2024-05-23T16:10:46] handle edge case when payload data is empty or missing
+[2024-05-23T16:59:49] fix issue where modal state was not reseting on close

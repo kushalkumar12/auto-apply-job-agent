@@ -1154,3 +1154,4 @@
 [2024-05-23T14:29:41] add validation schema checks for incoming request payloads
 [2024-05-23T16:10:46] handle edge case when payload data is empty or missing
 [2024-05-23T16:59:49] fix issue where modal state was not reseting on close
+[2024-05-23T18:11:48] add missing null checks before accessing object properties

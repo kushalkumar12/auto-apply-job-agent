@@ -1155,3 +1155,4 @@
 [2024-05-23T16:10:46] handle edge case when payload data is empty or missing
 [2024-05-23T16:59:49] fix issue where modal state was not reseting on close
 [2024-05-23T18:11:48] add missing null checks before accessing object properties
+[2024-05-23T19:35:08] bump package dependencies and resolve vulnerability warning

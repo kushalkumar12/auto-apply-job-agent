@@ -1162,3 +1162,4 @@
 [2024-05-23T23:51:59] cache frequent lookup tables in local memory store
 [2024-05-27T09:18:19] initial setup for core router modules and baseline configs
 [2024-05-27T11:34:05] tweak default page size and pagination limits in config
+[2024-05-27T12:05:53] fix failing assertion in user profile integration test

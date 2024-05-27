@@ -1164,3 +1164,4 @@
 [2024-05-27T11:34:05] tweak default page size and pagination limits in config
 [2024-05-27T12:05:53] fix failing assertion in user profile integration test
 [2024-05-27T12:25:34] setup pre-commit hook scripts for automated linting
+[2024-05-27T12:39:15] prevent content shift when loading skeleton placeholders

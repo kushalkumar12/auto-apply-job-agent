@@ -1161,3 +1161,4 @@
 [2024-05-23T23:14:58] add keyboard shortcut support for modal dismiss
 [2024-05-23T23:51:59] cache frequent lookup tables in local memory store
 [2024-05-27T09:18:19] initial setup for core router modules and baseline configs
+[2024-05-27T11:34:05] tweak default page size and pagination limits in config

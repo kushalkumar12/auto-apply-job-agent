@@ -1169,3 +1169,4 @@
 [2024-05-27T13:34:59] final touches on feature branch before code review
 [2024-05-27T14:30:37] fix broken link in navigation menu footer and header
 [2024-05-27T14:49:56] fix flexbox wrapping issue on tablet screen sizes
+[2024-05-27T14:54:32] resolve race condition in websocket reconnection listener

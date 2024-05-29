@@ -1197,3 +1197,4 @@
 [2024-05-29T09:20:47] fix issue where modal state was not reseting on close
 [2024-05-29T10:32:06] revert temporary test flags before merge
 [2024-05-29T10:55:04] resolve race condition in websocket reconnection listener
+[2024-05-29T11:05:32] tune database connection timeout and pool max overflow

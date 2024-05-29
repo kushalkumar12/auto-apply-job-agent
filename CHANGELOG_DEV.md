@@ -1198,3 +1198,4 @@
 [2024-05-29T10:32:06] revert temporary test flags before merge
 [2024-05-29T10:55:04] resolve race condition in websocket reconnection listener
 [2024-05-29T11:05:32] tune database connection timeout and pool max overflow
+[2024-05-29T11:24:11] update test coverage for user registration edge cases

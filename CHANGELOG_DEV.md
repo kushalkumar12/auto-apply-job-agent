@@ -1206,3 +1206,4 @@
 [2024-05-29T16:36:42] tweak default page size and pagination limits in config
 [2024-05-29T18:34:34] initial setup for core router modules and baseline configs
 [2024-05-29T18:51:29] improve error messages returned during failed validation
+[2024-05-29T20:12:01] correct spelling of parameter in api client method

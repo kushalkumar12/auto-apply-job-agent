@@ -1201,3 +1201,4 @@
 [2024-05-29T11:24:11] update test coverage for user registration edge cases
 [2024-05-29T14:15:45] adjust color contrast on badge tags for better accesibility
 [2024-05-29T14:41:13] add mock test fixtures for external api responses
+[2024-05-29T14:44:31] quick commit before lunch, still need to finish error checks

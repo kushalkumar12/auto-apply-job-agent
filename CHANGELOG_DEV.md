@@ -1195,3 +1195,4 @@
 [2024-05-28T20:19:37] final touches on feature branch before code review
 [2024-05-28T20:48:48] resolve race condition in websocket reconnection listener
 [2024-05-29T09:20:47] fix issue where modal state was not reseting on close
+[2024-05-29T10:32:06] revert temporary test flags before merge

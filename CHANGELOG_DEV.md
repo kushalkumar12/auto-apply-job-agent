@@ -1203,3 +1203,4 @@
 [2024-05-29T14:41:13] add mock test fixtures for external api responses
 [2024-05-29T14:44:31] quick commit before lunch, still need to finish error checks
 [2024-05-29T15:42:13] fix broken link in navigation menu footer and header
+[2024-05-29T16:36:42] tweak default page size and pagination limits in config

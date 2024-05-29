@@ -1204,3 +1204,4 @@
 [2024-05-29T14:44:31] quick commit before lunch, still need to finish error checks
 [2024-05-29T15:42:13] fix broken link in navigation menu footer and header
 [2024-05-29T16:36:42] tweak default page size and pagination limits in config
+[2024-05-29T18:34:34] initial setup for core router modules and baseline configs

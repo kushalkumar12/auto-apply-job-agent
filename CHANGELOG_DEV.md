@@ -1214,3 +1214,4 @@
 [2024-05-30T12:53:22] correct spelling of parameter in api client method
 [2024-05-30T13:11:29] update api endpoints docstrings and request response examples
 [2024-05-30T13:20:36] add missing null checks before accessing object properties
+[2024-05-30T15:25:00] prevent content shift when loading skeleton placeholders

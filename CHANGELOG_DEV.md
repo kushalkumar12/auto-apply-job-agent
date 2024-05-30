@@ -1211,3 +1211,4 @@
 [2024-05-29T22:16:34] add unit test cases for auth token verification flow
 [2024-05-29T23:17:03] tweak active tab indicator transition speed and easing
 [2024-05-30T11:01:32] prevent content shift when loading skeleton placeholders
+[2024-05-30T12:53:22] correct spelling of parameter in api client method

@@ -1217,3 +1217,4 @@
 [2024-05-30T15:25:00] prevent content shift when loading skeleton placeholders
 [2024-05-30T15:42:52] improve error messages returned during failed validation
 [2024-05-31T10:50:19] quick commit before lunch, still need to finish error checks
+[2024-05-31T16:24:08] speed up test runner execution by running in-memory db

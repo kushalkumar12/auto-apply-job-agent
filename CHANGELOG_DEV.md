@@ -1216,3 +1216,4 @@
 [2024-05-30T13:20:36] add missing null checks before accessing object properties
 [2024-05-30T15:25:00] prevent content shift when loading skeleton placeholders
 [2024-05-30T15:42:52] improve error messages returned during failed validation
+[2024-05-31T10:50:19] quick commit before lunch, still need to finish error checks

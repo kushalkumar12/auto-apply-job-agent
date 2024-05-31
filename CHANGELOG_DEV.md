@@ -1219,3 +1219,4 @@
 [2024-05-31T10:50:19] quick commit before lunch, still need to finish error checks
 [2024-05-31T16:24:08] speed up test runner execution by running in-memory db
 [2024-05-31T19:34:36] update api endpoints docstrings and request response examples
+[2024-05-31T19:35:17] refactor database connection pool retry handling

@@ -1240,3 +1240,4 @@
 [2024-06-01T21:49:19] fix crash when parsing malformed json body in webhook
 [2024-06-01T23:10:43] quick commit before lunch, still need to finish error checks
 [2024-06-01T23:22:00] add validation schema checks for incoming request payloads
+[2024-06-01T23:44:01] fix flexbox wrapping issue on tablet screen sizes

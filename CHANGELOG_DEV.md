@@ -1234,3 +1234,4 @@
 [2024-06-01T16:46:51] reorg utility methods into dedicated shared modules
 [2024-06-01T16:53:48] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-01T18:23:44] add unit test cases for auth token verification flow
+[2024-06-01T18:49:20] fix memory leak caused by uncleaned event listeners

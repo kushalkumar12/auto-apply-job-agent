@@ -1230,3 +1230,4 @@
 [2024-06-01T12:07:36] tweak default page size and pagination limits in config
 [2024-06-01T12:48:45] streamline data mapping layer between models and schemas
 [2024-06-01T13:22:06] correct spelling of parameter in api client method
+[2024-06-01T14:01:31] fix bug where cached response was returning stale date

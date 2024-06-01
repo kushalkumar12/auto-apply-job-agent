@@ -1224,3 +1224,4 @@
 [2024-05-31T21:35:54] update api endpoints docstrings and request response examples
 [2024-06-01T09:09:41] tweak throttle limit for search input debounce handler
 [2024-06-01T09:34:26] minor style fix for card shadow and border radius token
+[2024-06-01T10:12:04] fix broken link in navigation menu footer and header

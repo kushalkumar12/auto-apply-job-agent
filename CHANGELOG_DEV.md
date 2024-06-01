@@ -1239,3 +1239,4 @@
 [2024-06-01T20:10:48] add keyboard shortcut support for modal dismiss
 [2024-06-01T21:49:19] fix crash when parsing malformed json body in webhook
 [2024-06-01T23:10:43] quick commit before lunch, still need to finish error checks
+[2024-06-01T23:22:00] add validation schema checks for incoming request payloads

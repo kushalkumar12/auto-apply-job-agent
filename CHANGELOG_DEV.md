@@ -1233,3 +1233,4 @@
 [2024-06-01T14:01:31] fix bug where cached response was returning stale date
 [2024-06-01T16:46:51] reorg utility methods into dedicated shared modules
 [2024-06-01T16:53:48] fix flexbox wrapping issue on tablet screen sizes
+[2024-06-01T18:23:44] add unit test cases for auth token verification flow

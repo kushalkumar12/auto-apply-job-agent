@@ -1249,3 +1249,4 @@
 [2024-06-02T15:05:43] add export to csv helper utility for report generation
 [2024-06-02T15:09:24] fix memory leak caused by uncleaned event listeners
 [2024-06-02T15:11:57] bump package dependencies and resolve vulnerability warning
+[2024-06-02T16:20:40] configure cors origins for local dev port forwarding

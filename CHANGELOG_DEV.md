@@ -1248,3 +1248,4 @@
 [2024-06-02T13:43:35] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-02T15:05:43] add export to csv helper utility for report generation
 [2024-06-02T15:09:24] fix memory leak caused by uncleaned event listeners
+[2024-06-02T15:11:57] bump package dependencies and resolve vulnerability warning

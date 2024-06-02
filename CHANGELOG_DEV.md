@@ -1255,3 +1255,4 @@
 [2024-06-02T17:26:32] cache frequent lookup tables in local memory store
 [2024-06-02T17:48:34] add mock test fixtures for external api responses
 [2024-06-02T18:49:23] fix broken link in navigation menu footer and header
+[2024-06-02T20:13:10] update api endpoints docstrings and request response examples

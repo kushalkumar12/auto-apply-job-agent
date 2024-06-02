@@ -1244,3 +1244,4 @@
 [2024-06-02T10:15:25] fix crash when parsing malformed json body in webhook
 [2024-06-02T10:57:04] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-02T12:00:00] fix memory leak caused by uncleaned event listeners
+[2024-06-02T13:09:07] configure cors origins for local dev port forwarding

@@ -1259,3 +1259,4 @@
 [2024-06-02T20:37:59] add regression test for concurrent job updates
 [2024-06-02T20:58:43] add regression test for concurrent job updates
 [2024-06-02T21:01:52] add validation schema checks for incoming request payloads
+[2024-06-02T23:45:53] add healthcheck endpoint for load balancer monitoring

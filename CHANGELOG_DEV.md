@@ -1253,3 +1253,4 @@
 [2024-06-02T16:51:22] quick commit before lunch, still need to finish error checks
 [2024-06-02T17:02:33] add missing null checks before accessing object properties
 [2024-06-02T17:26:32] cache frequent lookup tables in local memory store
+[2024-06-02T17:48:34] add mock test fixtures for external api responses

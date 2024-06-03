@@ -1262,3 +1262,4 @@
 [2024-06-02T23:45:53] add healthcheck endpoint for load balancer monitoring
 [2024-06-03T09:38:47] wip: working on batch record processing pipeline
 [2024-06-03T09:54:52] configure cors origins for local dev port forwarding
+[2024-06-03T12:48:23] update dockerfile base image and multistage build layers

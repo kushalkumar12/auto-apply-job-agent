@@ -1278,3 +1278,4 @@
 [2024-06-03T23:07:15] update api endpoints docstrings and request response examples
 [2024-06-03T23:18:59] improve error messages returned during failed validation
 [2024-06-03T23:29:26] setup pre-commit hook scripts for automated linting
+[2024-06-03T23:47:33] adjust color contrast on badge tags for better accesibility

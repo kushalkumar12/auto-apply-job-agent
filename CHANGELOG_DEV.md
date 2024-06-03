@@ -1272,3 +1272,4 @@
 [2024-06-03T20:06:42] fix issue with session expiration handling on reconnect
 [2024-06-03T20:07:53] optimize query execution time by adding compound index
 [2024-06-03T21:13:31] setup pre-commit hook scripts for automated linting
+[2024-06-03T21:45:16] fix issue where modal state was not reseting on close

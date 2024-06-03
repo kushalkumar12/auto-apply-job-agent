@@ -1268,3 +1268,4 @@
 [2024-06-03T15:19:49] fix crash when parsing malformed json body in webhook
 [2024-06-03T15:39:40] prevent content shift when loading skeleton placeholders
 [2024-06-03T17:25:52] update readme documentation for local enviroment setup
+[2024-06-03T18:19:56] resolve race condition in websocket reconnection listener

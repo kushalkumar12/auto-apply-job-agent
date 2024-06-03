@@ -1264,3 +1264,4 @@
 [2024-06-03T09:54:52] configure cors origins for local dev port forwarding
 [2024-06-03T12:48:23] update dockerfile base image and multistage build layers
 [2024-06-03T13:14:51] handle edge case when payload data is empty or missing
+[2024-06-03T14:19:27] fix failing assertion in user profile integration test

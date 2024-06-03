@@ -1263,3 +1263,4 @@
 [2024-06-03T09:38:47] wip: working on batch record processing pipeline
 [2024-06-03T09:54:52] configure cors origins for local dev port forwarding
 [2024-06-03T12:48:23] update dockerfile base image and multistage build layers
+[2024-06-03T13:14:51] handle edge case when payload data is empty or missing

@@ -1282,3 +1282,4 @@
 [2024-06-04T11:08:05] wip: working on batch record processing pipeline
 [2024-06-04T13:05:16] configure cors origins for local dev port forwarding
 [2024-06-04T17:12:42] support custom headers parameter in api client service
+[2024-06-04T19:10:07] fix broken link in navigation menu footer and header

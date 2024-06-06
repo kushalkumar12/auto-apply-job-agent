@@ -1283,3 +1283,4 @@
 [2024-06-04T13:05:16] configure cors origins for local dev port forwarding
 [2024-06-04T17:12:42] support custom headers parameter in api client service
 [2024-06-04T19:10:07] fix broken link in navigation menu footer and header
+[2024-06-06T16:22:35] fix broken link in navigation menu footer and header

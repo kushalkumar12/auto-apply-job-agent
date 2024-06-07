@@ -1292,3 +1292,4 @@
 [2024-06-07T16:44:26] fix off-by-one error in date range calculations
 [2024-06-07T16:50:21] fix failing assertion in user profile integration test
 [2024-06-07T17:24:13] fix bug where cached response was returning stale date
+[2024-06-07T17:41:58] fix bug where cached response was returning stale date

@@ -1296,3 +1296,4 @@
 [2024-06-07T19:11:41] fix issue where modal state was not reseting on close
 [2024-06-07T20:34:27] adjust z-index stacking context for notification dropdown
 [2024-06-07T22:18:14] support custom headers parameter in api client service
+[2024-06-07T23:05:46] adjust button padding and fix responsive alignment on mobile

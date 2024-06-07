@@ -1290,3 +1290,4 @@
 [2024-06-07T15:49:48] fix broken link in navigation menu footer and header
 [2024-06-07T16:16:36] correct spelling of parameter in api client method
 [2024-06-07T16:44:26] fix off-by-one error in date range calculations
+[2024-06-07T16:50:21] fix failing assertion in user profile integration test

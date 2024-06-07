@@ -1294,3 +1294,4 @@
 [2024-06-07T17:24:13] fix bug where cached response was returning stale date
 [2024-06-07T17:41:58] fix bug where cached response was returning stale date
 [2024-06-07T19:11:41] fix issue where modal state was not reseting on close
+[2024-06-07T20:34:27] adjust z-index stacking context for notification dropdown

@@ -1286,3 +1286,4 @@
 [2024-06-06T16:22:35] fix broken link in navigation menu footer and header
 [2024-06-06T19:21:36] improve error messages returned during failed validation
 [2024-06-06T20:19:08] cleanup console logs left over from local debugging
+[2024-06-07T14:59:18] tweak throttle limit for search input debounce handler

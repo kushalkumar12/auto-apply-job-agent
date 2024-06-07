@@ -1289,3 +1289,4 @@
 [2024-06-07T14:59:18] tweak throttle limit for search input debounce handler
 [2024-06-07T15:49:48] fix broken link in navigation menu footer and header
 [2024-06-07T16:16:36] correct spelling of parameter in api client method
+[2024-06-07T16:44:26] fix off-by-one error in date range calculations

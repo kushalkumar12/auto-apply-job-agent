@@ -1310,3 +1310,4 @@
 [2024-06-08T15:14:12] add keyboard shortcut support for modal dismiss
 [2024-06-08T15:33:26] final touches on feature branch before code review
 [2024-06-08T16:47:41] fix bug where cached response was returning stale date
+[2024-06-08T18:21:52] quick commit before lunch, still need to finish error checks

@@ -1298,3 +1298,4 @@
 [2024-06-07T22:18:14] support custom headers parameter in api client service
 [2024-06-07T23:05:46] adjust button padding and fix responsive alignment on mobile
 [2024-06-07T23:50:05] support custom headers parameter in api client service
+[2024-06-08T09:33:08] tune database connection timeout and pool max overflow

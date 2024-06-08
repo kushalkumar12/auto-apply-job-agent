@@ -1313,3 +1313,4 @@
 [2024-06-08T18:21:52] quick commit before lunch, still need to finish error checks
 [2024-06-08T22:34:43] update test coverage for user registration edge cases
 [2024-06-08T23:01:10] setup pre-commit hook scripts for automated linting
+[2024-06-08T23:59:11] fix flexbox wrapping issue on tablet screen sizes

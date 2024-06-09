@@ -1315,3 +1315,4 @@
 [2024-06-08T23:01:10] setup pre-commit hook scripts for automated linting
 [2024-06-08T23:59:11] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-09T10:03:10] fix flexbox wrapping issue on tablet screen sizes
+[2024-06-09T11:28:19] improve error messages returned during failed validation

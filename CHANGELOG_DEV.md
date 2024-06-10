@@ -1316,3 +1316,4 @@
 [2024-06-08T23:59:11] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-09T10:03:10] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-09T11:28:19] improve error messages returned during failed validation
+[2024-06-10T09:30:46] tweak active tab indicator transition speed and easing

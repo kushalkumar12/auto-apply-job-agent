@@ -1317,3 +1317,4 @@
 [2024-06-09T10:03:10] fix flexbox wrapping issue on tablet screen sizes
 [2024-06-09T11:28:19] improve error messages returned during failed validation
 [2024-06-10T09:30:46] tweak active tab indicator transition speed and easing
+[2024-06-10T15:05:14] correct spelling of parameter in api client method

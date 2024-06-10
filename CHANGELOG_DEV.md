@@ -1319,3 +1319,4 @@
 [2024-06-10T09:30:46] tweak active tab indicator transition speed and easing
 [2024-06-10T15:05:14] correct spelling of parameter in api client method
 [2024-06-10T15:56:52] prevent content shift when loading skeleton placeholders
+[2024-06-10T16:25:21] fix off-by-one error in date range calculations

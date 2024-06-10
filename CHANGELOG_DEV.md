@@ -1324,3 +1324,4 @@
 [2024-06-10T19:08:10] configure cors origins for local dev port forwarding
 [2024-06-10T20:07:28] fix issue with session expiration handling on reconnect
 [2024-06-10T21:40:06] tweak active tab indicator transition speed and easing
+[2024-06-10T22:13:17] tweak throttle limit for search input debounce handler

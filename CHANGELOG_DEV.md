@@ -1326,3 +1326,4 @@
 [2024-06-10T21:40:06] tweak active tab indicator transition speed and easing
 [2024-06-10T22:13:17] tweak throttle limit for search input debounce handler
 [2024-06-10T23:55:08] bump package dependencies and resolve vulnerability warning
+[2024-06-12T10:21:46] add mock test fixtures for external api responses

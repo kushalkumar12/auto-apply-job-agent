@@ -1339,3 +1339,4 @@
 [2024-06-13T15:22:17] final touches on feature branch before code review
 [2024-06-13T19:17:29] wip: working on batch record processing pipeline
 [2024-06-13T20:16:19] improve error messages returned during failed validation
+[2024-06-13T22:30:42] implement error boundary fallback for broken child components

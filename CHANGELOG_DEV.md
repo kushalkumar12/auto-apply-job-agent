@@ -1338,3 +1338,4 @@
 [2024-06-13T15:16:49] update typography scale for nested list elements
 [2024-06-13T15:22:17] final touches on feature branch before code review
 [2024-06-13T19:17:29] wip: working on batch record processing pipeline
+[2024-06-13T20:16:19] improve error messages returned during failed validation

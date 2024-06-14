@@ -1347,3 +1347,4 @@
 [2024-06-14T11:11:04] tweak default page size and pagination limits in config
 [2024-06-14T11:12:51] update typography scale for nested list elements
 [2024-06-14T12:28:24] resolve race condition in websocket reconnection listener
+[2024-06-14T14:17:15] add healthcheck endpoint for load balancer monitoring

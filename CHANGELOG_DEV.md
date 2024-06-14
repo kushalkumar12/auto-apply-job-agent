@@ -1345,3 +1345,4 @@
 [2024-06-14T09:06:22] add healthcheck endpoint for load balancer monitoring
 [2024-06-14T09:58:32] add healthcheck endpoint for load balancer monitoring
 [2024-06-14T11:11:04] tweak default page size and pagination limits in config
+[2024-06-14T11:12:51] update typography scale for nested list elements

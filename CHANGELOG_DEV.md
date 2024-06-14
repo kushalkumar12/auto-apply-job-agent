@@ -1344,3 +1344,4 @@
 [2024-06-13T23:10:00] fix issue with session expiration handling on reconnect
 [2024-06-14T09:06:22] add healthcheck endpoint for load balancer monitoring
 [2024-06-14T09:58:32] add healthcheck endpoint for load balancer monitoring
+[2024-06-14T11:11:04] tweak default page size and pagination limits in config

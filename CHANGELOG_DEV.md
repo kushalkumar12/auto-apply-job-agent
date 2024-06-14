@@ -1353,3 +1353,4 @@
 [2024-06-14T18:16:45] fix broken link in navigation menu footer and header
 [2024-06-14T18:52:51] streamline data mapping layer between models and schemas
 [2024-06-14T20:40:58] cleanup unused imports and format backend service files
+[2024-06-14T23:47:27] add validation schema checks for incoming request payloads

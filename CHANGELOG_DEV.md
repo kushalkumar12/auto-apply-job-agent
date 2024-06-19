@@ -1370,3 +1370,4 @@
 [2024-06-17T19:20:06] add gitignore entries for build cache and temp outputs
 [2024-06-18T10:53:54] fix issue where modal state was not reseting on close
 [2024-06-18T20:29:23] final touches on feature branch before code review
+[2024-06-19T14:19:35] fix crash when parsing malformed json body in webhook

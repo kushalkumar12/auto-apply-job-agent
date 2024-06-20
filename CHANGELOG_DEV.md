@@ -1378,3 +1378,4 @@
 [2024-06-20T12:21:19] update typography scale for nested list elements
 [2024-06-20T12:42:35] prevent content shift when loading skeleton placeholders
 [2024-06-20T15:16:58] implement error boundary fallback for broken child components
+[2024-06-20T15:59:34] support custom headers parameter in api client service

@@ -1377,3 +1377,4 @@
 [2024-06-20T12:04:53] final touches on feature branch before code review
 [2024-06-20T12:21:19] update typography scale for nested list elements
 [2024-06-20T12:42:35] prevent content shift when loading skeleton placeholders
+[2024-06-20T15:16:58] implement error boundary fallback for broken child components

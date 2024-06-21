@@ -1394,3 +1394,4 @@
 [2024-06-20T22:57:16] adjust button padding and fix responsive alignment on mobile
 [2024-06-20T23:22:04] optimize query execution time by adding compound index
 [2024-06-20T23:23:51] update readme documentation for local enviroment setup
+[2024-06-21T17:15:30] tweak default page size and pagination limits in config

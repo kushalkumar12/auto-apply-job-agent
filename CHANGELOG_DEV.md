@@ -1395,3 +1395,4 @@
 [2024-06-20T23:22:04] optimize query execution time by adding compound index
 [2024-06-20T23:23:51] update readme documentation for local enviroment setup
 [2024-06-21T17:15:30] tweak default page size and pagination limits in config
+[2024-06-21T18:18:32] quick commit before lunch, still need to finish error checks

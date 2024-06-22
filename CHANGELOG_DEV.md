@@ -1398,3 +1398,4 @@
 [2024-06-21T18:18:32] quick commit before lunch, still need to finish error checks
 [2024-06-21T22:04:05] add healthcheck endpoint for load balancer monitoring
 [2024-06-22T12:54:20] fix typo in helper function params and update type hints
+[2024-06-22T15:16:44] fix off-by-one error in date range calculations

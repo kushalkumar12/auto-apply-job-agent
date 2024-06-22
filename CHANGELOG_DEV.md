@@ -1401,3 +1401,4 @@
 [2024-06-22T15:16:44] fix off-by-one error in date range calculations
 [2024-06-22T16:00:00] fix bug where cached response was returning stale date
 [2024-06-22T17:57:09] refactor logging middleware to mask sensitive headers
+[2024-06-22T22:07:39] add export to csv helper utility for report generation

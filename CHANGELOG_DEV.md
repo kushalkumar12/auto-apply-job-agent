@@ -1414,3 +1414,4 @@
 [2024-06-23T18:45:12] update dockerfile base image and multistage build layers
 [2024-06-23T18:48:59] fix issue where modal state was not reseting on close
 [2024-06-23T19:57:56] implement optimistic ui update for item toggle action
+[2024-06-23T19:58:51] fix failing assertion in user profile integration test

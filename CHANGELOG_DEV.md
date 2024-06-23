@@ -1406,3 +1406,4 @@
 [2024-06-23T10:21:45] add gitignore entries for build cache and temp outputs
 [2024-06-23T10:32:48] fix memory leak caused by uncleaned event listeners
 [2024-06-23T11:50:30] update readme documentation for local enviroment setup
+[2024-06-23T12:44:53] tweak throttle limit for search input debounce handler

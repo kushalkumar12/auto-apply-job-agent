@@ -1405,3 +1405,4 @@
 [2024-06-23T09:06:13] quick commit before lunch, still need to finish error checks
 [2024-06-23T10:21:45] add gitignore entries for build cache and temp outputs
 [2024-06-23T10:32:48] fix memory leak caused by uncleaned event listeners
+[2024-06-23T11:50:30] update readme documentation for local enviroment setup

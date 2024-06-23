@@ -1404,3 +1404,4 @@
 [2024-06-22T22:07:39] add export to csv helper utility for report generation
 [2024-06-23T09:06:13] quick commit before lunch, still need to finish error checks
 [2024-06-23T10:21:45] add gitignore entries for build cache and temp outputs
+[2024-06-23T10:32:48] fix memory leak caused by uncleaned event listeners

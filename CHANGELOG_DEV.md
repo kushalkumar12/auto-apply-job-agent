@@ -1416,3 +1416,4 @@
 [2024-06-23T19:57:56] implement optimistic ui update for item toggle action
 [2024-06-23T19:58:51] fix failing assertion in user profile integration test
 [2024-06-23T21:15:35] refactor database connection pool retry handling
+[2024-06-23T23:40:06] tweak active tab indicator transition speed and easing

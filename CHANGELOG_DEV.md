@@ -1433,3 +1433,4 @@
 [2024-06-24T14:47:45] adjust z-index stacking context for notification dropdown
 [2024-06-24T18:38:44] update dockerfile base image and multistage build layers
 [2024-06-24T18:46:08] cleanup console logs left over from local debugging
+[2024-06-24T19:12:57] fix memory leak caused by uncleaned event listeners

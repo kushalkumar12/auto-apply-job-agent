@@ -1435,3 +1435,4 @@
 [2024-06-24T18:46:08] cleanup console logs left over from local debugging
 [2024-06-24T19:12:57] fix memory leak caused by uncleaned event listeners
 [2024-06-24T19:15:05] fix bug where cached response was returning stale date
+[2024-06-24T19:48:16] tweak default page size and pagination limits in config

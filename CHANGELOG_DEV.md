@@ -1431,3 +1431,4 @@
 [2024-06-24T13:53:58] correct spelling of parameter in api client method
 [2024-06-24T14:14:32] final touches on feature branch before code review
 [2024-06-24T14:47:45] adjust z-index stacking context for notification dropdown
+[2024-06-24T18:38:44] update dockerfile base image and multistage build layers

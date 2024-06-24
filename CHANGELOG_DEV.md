@@ -1437,3 +1437,4 @@
 [2024-06-24T19:15:05] fix bug where cached response was returning stale date
 [2024-06-24T19:48:16] tweak default page size and pagination limits in config
 [2024-06-24T21:14:23] update readme documentation for local enviroment setup
+[2024-06-24T21:25:19] refactor database connection pool retry handling

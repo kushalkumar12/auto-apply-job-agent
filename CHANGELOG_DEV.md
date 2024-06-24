@@ -1428,3 +1428,4 @@
 [2024-06-24T11:17:20] add healthcheck endpoint for load balancer monitoring
 [2024-06-24T11:39:46] add unit test cases for auth token verification flow
 [2024-06-24T12:39:56] fix typo in helper function params and update type hints
+[2024-06-24T13:53:58] correct spelling of parameter in api client method

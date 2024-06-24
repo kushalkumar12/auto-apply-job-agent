@@ -1423,3 +1423,4 @@
 [2024-06-24T09:49:02] correct spelling of parameter in api client method
 [2024-06-24T10:15:58] update readme documentation for local enviroment setup
 [2024-06-24T10:29:20] tweak default page size and pagination limits in config
+[2024-06-24T10:35:24] update typography scale for nested list elements

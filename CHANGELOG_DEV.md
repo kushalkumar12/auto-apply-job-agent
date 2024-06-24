@@ -1419,3 +1419,4 @@
 [2024-06-23T23:40:06] tweak active tab indicator transition speed and easing
 [2024-06-24T09:01:47] add export to csv helper utility for report generation
 [2024-06-24T09:37:59] fix issue where modal state was not reseting on close
+[2024-06-24T09:40:54] add mock test fixtures for external api responses

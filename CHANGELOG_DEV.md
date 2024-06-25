@@ -1449,3 +1449,4 @@
 [2024-06-25T12:42:40] quick commit before lunch, still need to finish error checks
 [2024-06-25T12:57:57] update typography scale for nested list elements
 [2024-06-25T13:39:37] update typography scale for nested list elements
+[2024-06-25T14:18:54] resolve race condition in websocket reconnection listener

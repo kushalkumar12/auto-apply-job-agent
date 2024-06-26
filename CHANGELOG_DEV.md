@@ -1470,3 +1470,4 @@
 [2024-06-26T14:06:33] quick commit before lunch, still need to finish error checks
 [2024-06-26T15:09:10] speed up test runner execution by running in-memory db
 [2024-06-26T16:01:22] correct spelling of parameter in api client method
+[2024-06-26T17:10:38] fix crash when parsing malformed json body in webhook

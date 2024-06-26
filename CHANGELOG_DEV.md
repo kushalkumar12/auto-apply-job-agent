@@ -1472,3 +1472,4 @@
 [2024-06-26T16:01:22] correct spelling of parameter in api client method
 [2024-06-26T17:10:38] fix crash when parsing malformed json body in webhook
 [2024-06-26T17:20:53] adjust button padding and fix responsive alignment on mobile
+[2024-06-26T17:29:02] minor style fix for card shadow and border radius token

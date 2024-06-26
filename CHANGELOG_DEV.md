@@ -1474,3 +1474,4 @@
 [2024-06-26T17:20:53] adjust button padding and fix responsive alignment on mobile
 [2024-06-26T17:29:02] minor style fix for card shadow and border radius token
 [2024-06-26T17:59:23] add missing null checks before accessing object properties
+[2024-06-26T18:28:29] fix crash when parsing malformed json body in webhook

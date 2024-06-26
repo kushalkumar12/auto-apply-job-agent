@@ -1477,3 +1477,4 @@
 [2024-06-26T18:28:29] fix crash when parsing malformed json body in webhook
 [2024-06-26T18:31:54] fix broken link in navigation menu footer and header
 [2024-06-26T18:55:42] add mock test fixtures for external api responses
+[2024-06-26T18:59:02] fix broken link in navigation menu footer and header

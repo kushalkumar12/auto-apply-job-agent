@@ -1463,3 +1463,4 @@
 [2024-06-26T10:04:52] update typography scale for nested list elements
 [2024-06-26T10:35:22] fix issue where modal state was not reseting on close
 [2024-06-26T11:06:13] adjust button padding and fix responsive alignment on mobile
+[2024-06-26T11:43:16] tune database connection timeout and pool max overflow

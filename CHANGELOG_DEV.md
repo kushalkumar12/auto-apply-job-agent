@@ -1461,3 +1461,4 @@
 [2024-06-26T09:07:00] correct spelling of parameter in api client method
 [2024-06-26T09:12:57] setup pre-commit hook scripts for automated linting
 [2024-06-26T10:04:52] update typography scale for nested list elements
+[2024-06-26T10:35:22] fix issue where modal state was not reseting on close

@@ -1490,3 +1490,4 @@
 [2024-06-28T19:10:38] add regression test for concurrent job updates
 [2024-06-29T09:28:19] fix broken link in navigation menu footer and header
 [2024-06-29T09:51:43] revert temporary test flags before merge
+[2024-06-29T13:28:15] implement error boundary fallback for broken child components

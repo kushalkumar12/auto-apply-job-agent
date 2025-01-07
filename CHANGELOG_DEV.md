@@ -1649,3 +1649,4 @@
 [2026-10-25T18:35:04] wip: working on batch record processing pipeline
 [2026-10-27T16:29:19] prevent content shift when loading skeleton placeholders
 [2025-01-03T20:30:30] add unit test cases for auth token verification flow
+[2025-01-07T14:09:32] add export to csv helper utility for report generation

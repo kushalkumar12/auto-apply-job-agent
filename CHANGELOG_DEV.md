@@ -1652,3 +1652,4 @@
 [2025-01-07T14:09:32] add export to csv helper utility for report generation
 [2025-01-07T15:14:07] adjust color contrast on badge tags for better accesibility
 [2025-01-08T15:59:43] add export to csv helper utility for report generation
+[2025-01-09T15:16:06] update api endpoints docstrings and request response examples

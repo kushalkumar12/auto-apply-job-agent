@@ -1653,3 +1653,4 @@
 [2025-01-07T15:14:07] adjust color contrast on badge tags for better accesibility
 [2025-01-08T15:59:43] add export to csv helper utility for report generation
 [2025-01-09T15:16:06] update api endpoints docstrings and request response examples
+[2025-01-10T10:00:00] update dockerfile base image and multistage build layers

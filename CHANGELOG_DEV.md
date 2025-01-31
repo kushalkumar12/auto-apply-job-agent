@@ -1667,3 +1667,4 @@
 [2025-01-30T11:44:31] correct spelling of parameter in api client method
 [2025-01-30T20:59:07] add missing null checks before accessing object properties
 [2025-01-31T16:07:53] implement optimistic ui update for item toggle action
+[2025-01-31T22:59:40] correct spelling of parameter in api client method

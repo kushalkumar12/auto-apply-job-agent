@@ -1669,3 +1669,4 @@
 [2025-01-31T16:07:53] implement optimistic ui update for item toggle action
 [2025-01-31T22:59:40] correct spelling of parameter in api client method
 [2025-02-02T17:16:17] minor style fix for card shadow and border radius token
+[2025-02-06T17:07:48] streamline data mapping layer between models and schemas

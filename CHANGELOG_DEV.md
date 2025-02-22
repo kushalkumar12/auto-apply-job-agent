@@ -1680,3 +1680,4 @@
 [2025-02-19T10:46:00] add gitignore entries for build cache and temp outputs
 [2025-02-22T11:48:14] adjust z-index stacking context for notification dropdown
 [2025-02-22T12:30:36] speed up test runner execution by running in-memory db
+[2025-02-22T14:33:20] add missing null checks before accessing object properties

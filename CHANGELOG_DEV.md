@@ -1687,3 +1687,4 @@
 [2025-02-23T16:04:59] reorg utility methods into dedicated shared modules
 [2025-02-25T11:05:28] prevent content shift when loading skeleton placeholders
 [2025-02-26T17:28:42] add missing null checks before accessing object properties
+[2025-02-27T20:38:48] fix issue with session expiration handling on reconnect

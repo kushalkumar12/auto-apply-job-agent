@@ -1696,3 +1696,4 @@
 [2025-03-05T09:55:01] add regression test for concurrent job updates
 [2025-03-05T17:45:43] support custom headers parameter in api client service
 [2025-03-09T13:44:46] update typography scale for nested list elements
+[2025-03-09T15:59:08] fix issue with session expiration handling on reconnect

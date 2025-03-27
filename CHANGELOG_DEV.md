@@ -1706,3 +1706,4 @@
 [2025-03-23T09:20:58] reorg utility methods into dedicated shared modules
 [2025-03-24T16:14:49] support custom headers parameter in api client service
 [2025-03-26T20:37:23] fix crash when parsing malformed json body in webhook
+[2025-03-27T18:56:02] add healthcheck endpoint for load balancer monitoring

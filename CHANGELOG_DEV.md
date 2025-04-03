@@ -1708,3 +1708,4 @@
 [2025-03-26T20:37:23] fix crash when parsing malformed json body in webhook
 [2025-03-27T18:56:02] add healthcheck endpoint for load balancer monitoring
 [2025-03-31T21:29:00] quick commit before lunch, still need to finish error checks
+[2025-04-03T12:22:03] fix issue with session expiration handling on reconnect

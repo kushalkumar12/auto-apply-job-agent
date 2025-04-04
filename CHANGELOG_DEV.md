@@ -1711,3 +1711,4 @@
 [2025-04-03T12:22:03] fix issue with session expiration handling on reconnect
 [2025-04-03T19:17:06] update test coverage for user registration edge cases
 [2025-04-04T12:43:52] fix memory leak caused by uncleaned event listeners
+[2025-04-04T19:56:19] tweak default page size and pagination limits in config

@@ -1714,3 +1714,4 @@
 [2025-04-04T19:56:19] tweak default page size and pagination limits in config
 [2025-04-06T14:40:03] tweak throttle limit for search input debounce handler
 [2025-04-07T13:30:58] streamline data mapping layer between models and schemas
+[2025-04-11T15:06:31] adjust z-index stacking context for notification dropdown

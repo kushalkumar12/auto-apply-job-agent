@@ -1720,3 +1720,4 @@
 [2025-04-14T09:45:24] quick commit before lunch, still need to finish error checks
 [2025-04-18T10:13:33] adjust z-index stacking context for notification dropdown
 [2025-04-18T20:09:11] add mock test fixtures for external api responses
+[2025-04-19T09:21:37] tweak throttle limit for search input debounce handler

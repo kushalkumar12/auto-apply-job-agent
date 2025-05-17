@@ -1736,3 +1736,4 @@
 [2025-05-08T22:49:15] speed up test runner execution by running in-memory db
 [2025-05-12T11:08:23] fix flexbox wrapping issue on tablet screen sizes
 [2025-05-13T13:28:15] update api endpoints docstrings and request response examples
+[2025-05-17T09:25:58] streamline data mapping layer between models and schemas

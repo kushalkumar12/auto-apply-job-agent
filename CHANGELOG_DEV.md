@@ -1738,3 +1738,4 @@
 [2025-05-13T13:28:15] update api endpoints docstrings and request response examples
 [2025-05-17T09:25:58] streamline data mapping layer between models and schemas
 [2025-05-17T14:06:24] refactor logging middleware to mask sensitive headers
+[2025-05-18T11:38:11] refactor logging middleware to mask sensitive headers

@@ -1740,3 +1740,4 @@
 [2025-05-17T14:06:24] refactor logging middleware to mask sensitive headers
 [2025-05-18T11:38:11] refactor logging middleware to mask sensitive headers
 [2025-05-18T13:35:44] fix bug where cached response was returning stale date
+[2025-05-19T20:39:21] fix crash when parsing malformed json body in webhook

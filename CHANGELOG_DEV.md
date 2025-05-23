@@ -1741,3 +1741,4 @@
 [2025-05-18T11:38:11] refactor logging middleware to mask sensitive headers
 [2025-05-18T13:35:44] fix bug where cached response was returning stale date
 [2025-05-19T20:39:21] fix crash when parsing malformed json body in webhook
+[2025-05-23T10:06:46] correct spelling of parameter in api client method

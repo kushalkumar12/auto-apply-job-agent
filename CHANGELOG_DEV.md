@@ -1743,3 +1743,4 @@
 [2025-05-19T20:39:21] fix crash when parsing malformed json body in webhook
 [2025-05-23T10:06:46] correct spelling of parameter in api client method
 [2025-05-25T13:40:23] implement optimistic ui update for item toggle action
+[2025-05-25T21:39:11] fix crash when parsing malformed json body in webhook

@@ -1745,3 +1745,4 @@
 [2025-05-25T13:40:23] implement optimistic ui update for item toggle action
 [2025-05-25T21:39:11] fix crash when parsing malformed json body in webhook
 [2025-05-26T19:15:05] add regression test for concurrent job updates
+[2025-05-26T19:21:56] adjust z-index stacking context for notification dropdown

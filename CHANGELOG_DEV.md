@@ -1748,3 +1748,4 @@
 [2025-05-26T19:21:56] adjust z-index stacking context for notification dropdown
 [2025-05-26T22:42:23] revert temporary test flags before merge
 [2025-05-28T13:42:54] correct spelling of parameter in api client method
+[2025-06-02T22:57:34] add regression test for concurrent job updates

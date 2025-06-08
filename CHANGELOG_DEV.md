@@ -1750,3 +1750,4 @@
 [2025-05-28T13:42:54] correct spelling of parameter in api client method
 [2025-06-02T22:57:34] add regression test for concurrent job updates
 [2025-06-03T16:35:33] update typography scale for nested list elements
+[2025-06-08T17:17:39] tweak active tab indicator transition speed and easing

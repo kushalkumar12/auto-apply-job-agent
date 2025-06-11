@@ -1753,3 +1753,4 @@
 [2025-06-08T17:17:39] tweak active tab indicator transition speed and easing
 [2025-06-09T16:35:07] adjust color contrast on badge tags for better accesibility
 [2025-06-10T21:40:25] refactor logging middleware to mask sensitive headers
+[2025-06-11T18:03:51] tweak default page size and pagination limits in config

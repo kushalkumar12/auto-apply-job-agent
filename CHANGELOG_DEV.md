@@ -1756,3 +1756,4 @@
 [2025-06-11T18:03:51] tweak default page size and pagination limits in config
 [2025-06-13T13:32:30] add mock test fixtures for external api responses
 [2025-06-15T15:29:55] fix off-by-one error in date range calculations
+[2025-06-16T15:21:44] streamline data mapping layer between models and schemas

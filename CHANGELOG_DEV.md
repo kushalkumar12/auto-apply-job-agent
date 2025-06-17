@@ -1758,3 +1758,4 @@
 [2025-06-15T15:29:55] fix off-by-one error in date range calculations
 [2025-06-16T15:21:44] streamline data mapping layer between models and schemas
 [2025-06-17T15:42:42] add missing null checks before accessing object properties
+[2025-06-17T16:25:56] speed up test runner execution by running in-memory db

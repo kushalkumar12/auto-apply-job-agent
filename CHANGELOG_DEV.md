@@ -1762,3 +1762,4 @@
 [2025-06-17T18:30:24] update typography scale for nested list elements
 [2025-06-17T21:22:27] cache frequent lookup tables in local memory store
 [2025-06-21T15:29:03] resolve race condition in websocket reconnection listener
+[2025-06-23T09:25:50] fix issue with session expiration handling on reconnect

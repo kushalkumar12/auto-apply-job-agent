@@ -1764,3 +1764,4 @@
 [2025-06-21T15:29:03] resolve race condition in websocket reconnection listener
 [2025-06-23T09:25:50] fix issue with session expiration handling on reconnect
 [2025-06-25T13:53:31] add export to csv helper utility for report generation
+[2025-06-25T13:57:37] handle edge case when payload data is empty or missing

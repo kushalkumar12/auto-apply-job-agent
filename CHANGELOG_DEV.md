@@ -1768,3 +1768,4 @@
 [2025-06-27T19:38:15] setup pre-commit hook scripts for automated linting
 [2025-06-27T20:33:44] refactor database connection pool retry handling
 [2025-06-29T11:14:21] revert temporary test flags before merge
+[2025-07-05T18:25:55] speed up test runner execution by running in-memory db

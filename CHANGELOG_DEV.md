@@ -1770,3 +1770,4 @@
 [2025-06-29T11:14:21] revert temporary test flags before merge
 [2025-07-05T18:25:55] speed up test runner execution by running in-memory db
 [2025-07-07T20:14:34] fix crash when parsing malformed json body in webhook
+[2025-07-10T11:47:20] update dockerfile base image and multistage build layers

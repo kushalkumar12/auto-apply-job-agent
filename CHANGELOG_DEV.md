@@ -1777,3 +1777,4 @@
 [2025-07-12T22:50:19] add mock test fixtures for external api responses
 [2025-07-14T12:40:19] fix bug where cached response was returning stale date
 [2025-07-15T11:12:37] configure cors origins for local dev port forwarding
+[2025-07-16T10:43:48] revert temporary test flags before merge

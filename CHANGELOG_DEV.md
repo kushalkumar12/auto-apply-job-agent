@@ -1779,3 +1779,4 @@
 [2025-07-15T11:12:37] configure cors origins for local dev port forwarding
 [2025-07-16T10:43:48] revert temporary test flags before merge
 [2025-07-16T17:30:29] tune database connection timeout and pool max overflow
+[2025-07-19T20:19:14] setup pre-commit hook scripts for automated linting

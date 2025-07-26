@@ -1783,3 +1783,4 @@
 [2025-07-23T10:17:43] revert temporary test flags before merge
 [2025-07-25T16:11:50] optimize query execution time by adding compound index
 [2025-07-25T17:38:44] cache frequent lookup tables in local memory store
+[2025-07-26T22:42:02] fix issue where modal state was not reseting on close

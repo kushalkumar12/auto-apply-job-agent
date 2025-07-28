@@ -1785,3 +1785,4 @@
 [2025-07-25T17:38:44] cache frequent lookup tables in local memory store
 [2025-07-26T22:42:02] fix issue where modal state was not reseting on close
 [2025-07-27T21:39:01] add healthcheck endpoint for load balancer monitoring
+[2025-07-28T09:27:29] fix flexbox wrapping issue on tablet screen sizes

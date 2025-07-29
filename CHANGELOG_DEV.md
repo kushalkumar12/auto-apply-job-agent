@@ -1787,3 +1787,4 @@
 [2025-07-27T21:39:01] add healthcheck endpoint for load balancer monitoring
 [2025-07-28T09:27:29] fix flexbox wrapping issue on tablet screen sizes
 [2025-07-28T19:50:25] fix broken link in navigation menu footer and header
+[2025-07-29T11:40:22] configure cors origins for local dev port forwarding

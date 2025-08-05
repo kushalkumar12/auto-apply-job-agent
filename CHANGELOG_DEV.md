@@ -1788,3 +1788,4 @@
 [2025-07-28T09:27:29] fix flexbox wrapping issue on tablet screen sizes
 [2025-07-28T19:50:25] fix broken link in navigation menu footer and header
 [2025-07-29T11:40:22] configure cors origins for local dev port forwarding
+[2025-08-05T13:20:31] add validation schema checks for incoming request payloads

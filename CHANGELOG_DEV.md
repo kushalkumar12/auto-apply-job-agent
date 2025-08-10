@@ -1794,3 +1794,4 @@
 [2025-08-07T10:17:56] fix memory leak caused by uncleaned event listeners
 [2025-08-10T11:02:09] refactor logging middleware to mask sensitive headers
 [2025-08-10T16:44:48] update readme documentation for local enviroment setup
+[2025-08-10T18:51:37] add validation schema checks for incoming request payloads

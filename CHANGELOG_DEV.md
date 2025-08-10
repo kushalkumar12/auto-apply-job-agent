@@ -1792,3 +1792,4 @@
 [2025-08-05T14:40:36] add unit test cases for auth token verification flow
 [2025-08-05T19:38:11] configure cors origins for local dev port forwarding
 [2025-08-07T10:17:56] fix memory leak caused by uncleaned event listeners
+[2025-08-10T11:02:09] refactor logging middleware to mask sensitive headers

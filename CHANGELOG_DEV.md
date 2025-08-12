@@ -1795,3 +1795,4 @@
 [2025-08-10T11:02:09] refactor logging middleware to mask sensitive headers
 [2025-08-10T16:44:48] update readme documentation for local enviroment setup
 [2025-08-10T18:51:37] add validation schema checks for incoming request payloads
+[2025-08-12T12:15:15] add unit test cases for auth token verification flow

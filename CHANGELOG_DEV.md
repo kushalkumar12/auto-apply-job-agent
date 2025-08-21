@@ -1802,3 +1802,4 @@
 [2025-08-20T10:03:23] cleanup console logs left over from local debugging
 [2025-08-21T15:23:04] adjust color contrast on badge tags for better accesibility
 [2025-08-21T18:02:22] optimize query execution time by adding compound index
+[2025-08-21T21:49:36] update readme documentation for local enviroment setup

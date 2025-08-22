@@ -1803,3 +1803,4 @@
 [2025-08-21T15:23:04] adjust color contrast on badge tags for better accesibility
 [2025-08-21T18:02:22] optimize query execution time by adding compound index
 [2025-08-21T21:49:36] update readme documentation for local enviroment setup
+[2025-08-22T22:20:43] fix off-by-one error in date range calculations

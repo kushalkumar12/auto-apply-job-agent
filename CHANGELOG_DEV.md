@@ -1808,3 +1808,4 @@
 [2025-08-24T17:17:15] implement error boundary fallback for broken child components
 [2025-08-28T11:24:08] reorg utility methods into dedicated shared modules
 [2025-08-29T20:28:51] refactor logging middleware to mask sensitive headers
+[2025-09-04T21:25:05] tweak active tab indicator transition speed and easing

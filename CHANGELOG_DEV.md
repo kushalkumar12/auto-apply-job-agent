@@ -1809,3 +1809,4 @@
 [2025-08-28T11:24:08] reorg utility methods into dedicated shared modules
 [2025-08-29T20:28:51] refactor logging middleware to mask sensitive headers
 [2025-09-04T21:25:05] tweak active tab indicator transition speed and easing
+[2025-09-05T17:04:40] add regression test for concurrent job updates

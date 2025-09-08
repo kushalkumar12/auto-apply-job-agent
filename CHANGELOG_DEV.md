@@ -1810,3 +1810,4 @@
 [2025-08-29T20:28:51] refactor logging middleware to mask sensitive headers
 [2025-09-04T21:25:05] tweak active tab indicator transition speed and easing
 [2025-09-05T17:04:40] add regression test for concurrent job updates
+[2025-09-08T20:39:22] tweak throttle limit for search input debounce handler

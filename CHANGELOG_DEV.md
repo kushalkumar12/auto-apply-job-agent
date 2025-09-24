@@ -1821,3 +1821,4 @@
 [2025-09-23T18:07:20] fix off-by-one error in date range calculations
 [2025-09-23T21:29:35] fix issue with session expiration handling on reconnect
 [2025-09-24T11:04:24] update test coverage for user registration edge cases
+[2025-09-24T20:08:17] update api endpoints docstrings and request response examples

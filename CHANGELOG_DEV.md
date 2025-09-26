@@ -1822,3 +1822,4 @@
 [2025-09-23T21:29:35] fix issue with session expiration handling on reconnect
 [2025-09-24T11:04:24] update test coverage for user registration edge cases
 [2025-09-24T20:08:17] update api endpoints docstrings and request response examples
+[2025-09-26T10:31:18] revert temporary test flags before merge

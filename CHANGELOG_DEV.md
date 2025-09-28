@@ -1824,3 +1824,4 @@
 [2025-09-24T20:08:17] update api endpoints docstrings and request response examples
 [2025-09-26T10:31:18] revert temporary test flags before merge
 [2025-09-27T13:43:20] fix off-by-one error in date range calculations
+[2025-09-28T18:30:32] update api endpoints docstrings and request response examples

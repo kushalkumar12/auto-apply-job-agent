@@ -1502,3 +1502,4 @@
 [2026-01-07T10:53:47] support custom headers parameter in api client service
 [2026-01-07T18:04:26] add missing null checks before accessing object properties
 [2026-01-11T10:59:31] setup pre-commit hook scripts for automated linting
+[2026-01-11T16:26:17] configure cors origins for local dev port forwarding

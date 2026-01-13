@@ -1503,3 +1503,4 @@
 [2026-01-07T18:04:26] add missing null checks before accessing object properties
 [2026-01-11T10:59:31] setup pre-commit hook scripts for automated linting
 [2026-01-11T16:26:17] configure cors origins for local dev port forwarding
+[2026-01-13T12:50:56] improve error messages returned during failed validation

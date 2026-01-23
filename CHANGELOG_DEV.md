@@ -1509,3 +1509,4 @@
 [2026-01-18T14:04:21] tune database connection timeout and pool max overflow
 [2026-01-19T19:16:51] initial setup for core router modules and baseline configs
 [2026-01-20T09:02:54] update readme documentation for local enviroment setup
+[2026-01-23T16:28:39] update readme documentation for local enviroment setup

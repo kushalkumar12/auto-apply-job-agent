@@ -1511,3 +1511,4 @@
 [2026-01-20T09:02:54] update readme documentation for local enviroment setup
 [2026-01-23T16:28:39] update readme documentation for local enviroment setup
 [2026-01-24T14:39:25] fix broken link in navigation menu footer and header
+[2026-01-30T15:30:40] configure cors origins for local dev port forwarding

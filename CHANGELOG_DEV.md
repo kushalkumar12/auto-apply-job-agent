@@ -1521,3 +1521,4 @@
 [2026-02-09T12:21:11] optimize query execution time by adding compound index
 [2026-02-15T13:09:18] setup pre-commit hook scripts for automated linting
 [2026-02-19T09:29:58] reorg utility methods into dedicated shared modules
+[2026-02-20T22:19:59] tweak default page size and pagination limits in config

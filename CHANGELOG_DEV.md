@@ -1522,3 +1522,4 @@
 [2026-02-15T13:09:18] setup pre-commit hook scripts for automated linting
 [2026-02-19T09:29:58] reorg utility methods into dedicated shared modules
 [2026-02-20T22:19:59] tweak default page size and pagination limits in config
+[2026-02-21T10:35:23] update typography scale for nested list elements

@@ -1524,3 +1524,4 @@
 [2026-02-20T22:19:59] tweak default page size and pagination limits in config
 [2026-02-21T10:35:23] update typography scale for nested list elements
 [2026-02-21T18:41:59] improve error messages returned during failed validation
+[2026-02-22T11:45:47] fix crash when parsing malformed json body in webhook

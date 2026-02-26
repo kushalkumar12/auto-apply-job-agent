@@ -1526,3 +1526,4 @@
 [2026-02-21T18:41:59] improve error messages returned during failed validation
 [2026-02-22T11:45:47] fix crash when parsing malformed json body in webhook
 [2026-02-26T09:02:01] add keyboard shortcut support for modal dismiss
+[2026-02-26T19:12:41] adjust z-index stacking context for notification dropdown

@@ -1529,3 +1529,4 @@
 [2026-02-26T19:12:41] adjust z-index stacking context for notification dropdown
 [2026-02-28T09:48:08] fix crash when parsing malformed json body in webhook
 [2026-03-06T12:14:08] setup pre-commit hook scripts for automated linting
+[2026-03-06T17:48:10] revert temporary test flags before merge

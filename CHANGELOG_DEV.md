@@ -1532,3 +1532,4 @@
 [2026-03-06T17:48:10] revert temporary test flags before merge
 [2026-03-07T22:46:52] update readme documentation for local enviroment setup
 [2026-03-07T22:52:38] cleanup console logs left over from local debugging
+[2026-03-08T19:52:56] fix crash when parsing malformed json body in webhook

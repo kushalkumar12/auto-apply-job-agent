@@ -1534,3 +1534,4 @@
 [2026-03-07T22:52:38] cleanup console logs left over from local debugging
 [2026-03-08T19:52:56] fix crash when parsing malformed json body in webhook
 [2026-03-15T19:14:49] fix off-by-one error in date range calculations
+[2026-03-17T20:37:36] implement error boundary fallback for broken child components

@@ -1536,3 +1536,4 @@
 [2026-03-15T19:14:49] fix off-by-one error in date range calculations
 [2026-03-17T20:37:36] implement error boundary fallback for broken child components
 [2026-03-18T21:57:37] initial setup for core router modules and baseline configs
+[2026-03-20T20:37:44] improve error messages returned during failed validation

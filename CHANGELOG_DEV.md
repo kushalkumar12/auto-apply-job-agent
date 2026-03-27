@@ -1539,3 +1539,4 @@
 [2026-03-20T20:37:44] improve error messages returned during failed validation
 [2026-03-21T10:03:23] add mock test fixtures for external api responses
 [2026-03-27T12:49:13] tweak default page size and pagination limits in config
+[2026-03-27T13:30:52] update readme documentation for local enviroment setup

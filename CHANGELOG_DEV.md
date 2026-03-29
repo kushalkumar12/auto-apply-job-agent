@@ -1540,3 +1540,4 @@
 [2026-03-21T10:03:23] add mock test fixtures for external api responses
 [2026-03-27T12:49:13] tweak default page size and pagination limits in config
 [2026-03-27T13:30:52] update readme documentation for local enviroment setup
+[2026-03-29T09:57:50] support custom headers parameter in api client service

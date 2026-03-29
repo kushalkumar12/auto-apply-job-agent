@@ -1541,3 +1541,4 @@
 [2026-03-27T12:49:13] tweak default page size and pagination limits in config
 [2026-03-27T13:30:52] update readme documentation for local enviroment setup
 [2026-03-29T09:57:50] support custom headers parameter in api client service
+[2026-03-29T18:29:18] support custom headers parameter in api client service

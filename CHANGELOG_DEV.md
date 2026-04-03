@@ -1543,3 +1543,4 @@
 [2026-03-29T09:57:50] support custom headers parameter in api client service
 [2026-03-29T18:29:18] support custom headers parameter in api client service
 [2026-03-30T10:00:15] refactor logging middleware to mask sensitive headers
+[2026-04-03T21:24:33] fix failing assertion in user profile integration test

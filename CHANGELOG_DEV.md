@@ -1545,3 +1545,4 @@
 [2026-03-30T10:00:15] refactor logging middleware to mask sensitive headers
 [2026-04-03T21:24:33] fix failing assertion in user profile integration test
 [2026-04-05T16:40:58] add unit test cases for auth token verification flow
+[2026-04-10T13:48:38] update readme documentation for local enviroment setup

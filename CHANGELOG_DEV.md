@@ -1551,3 +1551,4 @@
 [2026-04-20T13:46:44] revert temporary test flags before merge
 [2026-04-20T22:57:49] cleanup unused imports and format backend service files
 [2026-04-21T12:57:15] add mock test fixtures for external api responses
+[2026-04-21T21:17:50] speed up test runner execution by running in-memory db

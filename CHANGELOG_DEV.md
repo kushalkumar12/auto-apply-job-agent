@@ -1554,3 +1554,4 @@
 [2026-04-21T21:17:50] speed up test runner execution by running in-memory db
 [2026-04-23T11:06:47] fix crash when parsing malformed json body in webhook
 [2026-04-23T14:12:06] cache frequent lookup tables in local memory store
+[2026-04-25T16:34:43] resolve race condition in websocket reconnection listener

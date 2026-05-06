@@ -1560,3 +1560,4 @@
 [2026-04-29T16:17:35] adjust color contrast on badge tags for better accesibility
 [2026-05-02T22:17:31] adjust z-index stacking context for notification dropdown
 [2026-05-05T22:08:39] bump package dependencies and resolve vulnerability warning
+[2026-05-06T09:11:40] prevent content shift when loading skeleton placeholders

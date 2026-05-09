@@ -1564,3 +1564,4 @@
 [2026-05-06T21:37:01] initial setup for core router modules and baseline configs
 [2026-05-07T18:01:48] correct spelling of parameter in api client method
 [2026-05-09T16:05:34] support custom headers parameter in api client service
+[2026-05-09T17:11:30] revert temporary test flags before merge

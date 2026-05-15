@@ -1566,3 +1566,4 @@
 [2026-05-09T16:05:34] support custom headers parameter in api client service
 [2026-05-09T17:11:30] revert temporary test flags before merge
 [2026-05-12T11:07:48] correct spelling of parameter in api client method
+[2026-05-15T11:37:57] tune database connection timeout and pool max overflow

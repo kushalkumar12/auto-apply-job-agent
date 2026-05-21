@@ -1568,3 +1568,4 @@
 [2026-05-12T11:07:48] correct spelling of parameter in api client method
 [2026-05-15T11:37:57] tune database connection timeout and pool max overflow
 [2026-05-15T14:14:55] tweak active tab indicator transition speed and easing
+[2026-05-21T19:40:20] update test coverage for user registration edge cases

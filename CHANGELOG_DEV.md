@@ -1572,3 +1572,4 @@
 [2026-05-21T20:29:13] implement error boundary fallback for broken child components
 [2026-05-23T18:33:58] final touches on feature branch before code review
 [2026-05-27T10:34:53] cleanup console logs left over from local debugging
+[2026-05-31T12:43:53] fix typo in helper function params and update type hints

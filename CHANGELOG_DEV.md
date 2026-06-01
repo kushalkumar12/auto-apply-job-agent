@@ -1573,3 +1573,4 @@
 [2026-05-23T18:33:58] final touches on feature branch before code review
 [2026-05-27T10:34:53] cleanup console logs left over from local debugging
 [2026-05-31T12:43:53] fix typo in helper function params and update type hints
+[2026-06-01T20:18:30] add keyboard shortcut support for modal dismiss

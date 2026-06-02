@@ -1575,3 +1575,4 @@
 [2026-05-31T12:43:53] fix typo in helper function params and update type hints
 [2026-06-01T20:18:30] add keyboard shortcut support for modal dismiss
 [2026-06-01T22:21:05] update dockerfile base image and multistage build layers
+[2026-06-02T21:52:06] fix broken link in navigation menu footer and header

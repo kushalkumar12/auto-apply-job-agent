@@ -1578,3 +1578,4 @@
 [2026-06-02T21:52:06] fix broken link in navigation menu footer and header
 [2026-06-06T18:23:08] add missing null checks before accessing object properties
 [2026-06-06T19:00:06] add gitignore entries for build cache and temp outputs
+[2026-06-09T14:04:30] adjust z-index stacking context for notification dropdown

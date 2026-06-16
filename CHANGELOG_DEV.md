@@ -1581,3 +1581,4 @@
 [2026-06-09T14:04:30] adjust z-index stacking context for notification dropdown
 [2026-06-15T11:29:13] implement error boundary fallback for broken child components
 [2026-06-16T09:47:25] fix failing assertion in user profile integration test
+[2026-06-16T16:56:03] refactor logging middleware to mask sensitive headers

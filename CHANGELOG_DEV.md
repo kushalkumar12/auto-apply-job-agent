@@ -1583,3 +1583,4 @@
 [2026-06-16T09:47:25] fix failing assertion in user profile integration test
 [2026-06-16T16:56:03] refactor logging middleware to mask sensitive headers
 [2026-06-16T22:37:35] tweak active tab indicator transition speed and easing
+[2026-06-21T12:02:23] fix broken link in navigation menu footer and header

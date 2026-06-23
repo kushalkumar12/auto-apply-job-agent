@@ -1584,3 +1584,4 @@
 [2026-06-16T16:56:03] refactor logging middleware to mask sensitive headers
 [2026-06-16T22:37:35] tweak active tab indicator transition speed and easing
 [2026-06-21T12:02:23] fix broken link in navigation menu footer and header
+[2026-06-23T21:20:24] adjust color contrast on badge tags for better accesibility

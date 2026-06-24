@@ -1585,3 +1585,4 @@
 [2026-06-16T22:37:35] tweak active tab indicator transition speed and easing
 [2026-06-21T12:02:23] fix broken link in navigation menu footer and header
 [2026-06-23T21:20:24] adjust color contrast on badge tags for better accesibility
+[2026-06-24T15:41:35] fix crash when parsing malformed json body in webhook

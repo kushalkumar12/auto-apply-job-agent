@@ -1587,3 +1587,4 @@
 [2026-06-23T21:20:24] adjust color contrast on badge tags for better accesibility
 [2026-06-24T15:41:35] fix crash when parsing malformed json body in webhook
 [2026-06-24T22:44:17] implement optimistic ui update for item toggle action
+[2026-06-27T20:47:37] improve error messages returned during failed validation

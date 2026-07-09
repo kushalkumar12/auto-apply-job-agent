@@ -1593,3 +1593,4 @@
 [2026-07-06T16:21:41] add missing null checks before accessing object properties
 [2026-07-08T13:13:25] fix bug where cached response was returning stale date
 [2026-07-08T13:59:21] update typography scale for nested list elements
+[2026-07-09T09:23:10] improve error messages returned during failed validation

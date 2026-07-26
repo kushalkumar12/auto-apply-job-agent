@@ -1599,3 +1599,4 @@
 [2026-07-20T17:27:55] fix flexbox wrapping issue on tablet screen sizes
 [2026-07-21T16:10:16] handle edge case when payload data is empty or missing
 [2026-07-25T14:32:03] fix crash when parsing malformed json body in webhook
+[2026-07-26T14:39:42] fix issue with session expiration handling on reconnect

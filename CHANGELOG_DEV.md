@@ -1601,3 +1601,4 @@
 [2026-07-25T14:32:03] fix crash when parsing malformed json body in webhook
 [2026-07-26T14:39:42] fix issue with session expiration handling on reconnect
 [2026-07-26T21:43:12] adjust z-index stacking context for notification dropdown
+[2026-07-27T09:21:38] resolve race condition in websocket reconnection listener

@@ -1611,3 +1611,4 @@
 [2026-08-22T11:56:45] refactor database connection pool retry handling
 [2026-08-24T11:46:33] wip: working on batch record processing pipeline
 [2026-08-25T11:35:39] fix issue with session expiration handling on reconnect
+[2026-08-25T22:37:11] add gitignore entries for build cache and temp outputs

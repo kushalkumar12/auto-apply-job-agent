@@ -1619,3 +1619,4 @@
 [2026-08-29T13:47:05] streamline data mapping layer between models and schemas
 [2026-08-30T19:53:55] update api endpoints docstrings and request response examples
 [2026-09-04T20:46:12] improve error messages returned during failed validation
+[2026-09-05T10:01:00] tweak throttle limit for search input debounce handler

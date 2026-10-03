@@ -1633,3 +1633,4 @@
 [2026-09-24T17:31:34] update dockerfile base image and multistage build layers
 [2026-09-27T14:35:11] optimize query execution time by adding compound index
 [2026-09-30T12:46:05] update readme documentation for local enviroment setup
+[2026-10-03T15:12:01] tweak default page size and pagination limits in config

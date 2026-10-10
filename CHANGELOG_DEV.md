@@ -1639,3 +1639,4 @@
 [2026-10-05T10:59:59] add mock test fixtures for external api responses
 [2026-10-07T11:16:10] adjust button padding and fix responsive alignment on mobile
 [2026-10-08T17:38:29] add missing null checks before accessing object properties
+[2026-10-10T11:38:47] prevent content shift when loading skeleton placeholders

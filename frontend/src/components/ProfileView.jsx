@@ -85,6 +85,18 @@ const SAMPLE_COUNTRIES = [
   { code: 'AI', flag: '🇦🇮', name: 'Anguilla' }
 ];
 
+const SUB_TABS = [
+  { id: 'profile', label: 'Profile', icon: User, title: 'Profile', tagline: 'Your CV, skills and role — measured against live market demand.' },
+  { id: 'contacts', label: 'Contacts', icon: Contact, title: 'Contacts', tagline: 'Edit without re-uploading. A new CV parse only fills empty fields — it will not overwrite what you typed.' },
+  { id: 'location', label: 'Location', icon: MapPin, title: 'Location', tagline: 'Set where and how you want to work — remote, hybrid, or on-site.' },
+  { id: 'skills', label: 'Skills', icon: Tag, title: 'Skills', tagline: 'List your skills to compare your profile against live market demand.' },
+  { id: 'avoid', label: 'Avoid', icon: Ban, title: 'Avoid', tagline: 'Filter out specific technologies, job portals, or companies you do not want to see.' },
+  { id: 'experience', label: 'Experience', icon: Briefcase, title: 'Experience', tagline: 'Your professional work history and previous positions.' },
+  { id: 'education', label: 'Education', icon: GraduationCap, title: 'Education', tagline: 'Degrees, certifications, and educational background.' },
+  { id: 'screening', label: 'Screening answers', icon: FileText, title: 'Screening answers', tagline: 'Pre-filled answers for quick job application questionnaires.' },
+  { id: 'settings', label: 'Settings', icon: Settings, title: 'Settings', tagline: 'Manage your profile visibility, notification, and parsing preferences.' }
+];
+
 export default function ProfileView() {
   const [activeSubTab, setActiveSubTab] = useState('profile');
   const [setupDismissed, setSetupDismissed] = useState(false);
@@ -251,141 +263,87 @@ export default function ProfileView() {
     r.toLowerCase().includes(roleSearch.toLowerCase())
   );
 
+  const currentTab = SUB_TABS.find(t => t.id === activeSubTab) || SUB_TABS[0];
+
   return (
     <div className="profile-container">
-      {/* 1. Header Section */}
-      <header className="profile-header">
-        <h1 className="profile-title">Profile</h1>
-        <p className="profile-tagline">
-          Your CV, skills and role — measured against live market demand.
-        </p>
-      </header>
+      {/* 1. Left Vertical Navigation Sidebar (Exact Match to User Reference) */}
+      <aside className="profile-sidebar-nav" aria-label="Profile Sections">
+        <div className="profile-nav-list">
+          {SUB_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSubTab === tab.id;
+            return (
+              <button 
+                key={tab.id}
+                type="button"
+                className={`profile-nav-btn ${isActive ? 'is-active' : ''}`}
+                onClick={() => setActiveSubTab(tab.id)}
+              >
+                <Icon size={16} className="profile-nav-icon" />
+                <span className="profile-nav-text">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </aside>
 
-      {/* 2. Onboarding Setup Progress Card */}
-      {!setupDismissed && (
-        <div className="setup-banner-card">
-          <div className="setup-banner-header">
-            <span className="setup-banner-title">Finish setting up your account</span>
-            <span className="setup-banner-progress">4 of 5 done</span>
-          </div>
+      {/* 2. Right Main Scrollable Content Area */}
+      <div className="profile-main-panel">
+        {/* Header Section */}
+        <header className="profile-header">
+          <h1 className="profile-title">{currentTab.title}</h1>
+          <p className="profile-tagline">{currentTab.tagline}</p>
+        </header>
 
-          <div className="setup-checklist">
-            <div className="setup-item is-completed">
-              <span className="setup-check-icon"><Check size={13} strokeWidth={2.5} /></span>
-              <span>Add your CV</span>
+        {/* Onboarding Setup Progress Card (Shown on Profile tab) */}
+        {activeSubTab === 'profile' && !setupDismissed && (
+          <div className="setup-banner-card">
+            <div className="setup-banner-header">
+              <span className="setup-banner-title">Finish setting up your account</span>
+              <span className="setup-banner-progress">4 of 5 done</span>
             </div>
-            <div className="setup-item is-completed">
-              <span className="setup-check-icon"><Check size={13} strokeWidth={2.5} /></span>
-              <span>Say what you do, and at what level</span>
-            </div>
-            <div className="setup-item is-completed">
-              <span className="setup-check-icon"><Check size={13} strokeWidth={2.5} /></span>
-              <span>List your skills</span>
-            </div>
-            <div className="setup-item is-completed">
-              <span className="setup-check-icon"><Check size={13} strokeWidth={2.5} /></span>
-              <span>Set where and how you want to work</span>
-            </div>
-            <div className="setup-item is-pending">
-              <span className="setup-pending-icon"></span>
-              <span>Get new matches sent to you</span>
-              <div className="setup-item-actions">
-                <button className="setup-action-btn" title="Setup alert matches">
-                  <ArrowRight size={13} />
-                </button>
-                <button 
-                  className="setup-action-btn" 
-                  onClick={() => setSetupDismissed(true)} 
-                  title="Dismiss checklist"
-                >
-                  <X size={13} />
-                </button>
+
+            <div className="setup-checklist">
+              <div className="setup-item is-completed">
+                <span className="setup-check-icon"><Check size={14} strokeWidth={2.5} /></span>
+                <span>Add your CV</span>
+              </div>
+              <div className="setup-item is-completed">
+                <span className="setup-check-icon"><Check size={14} strokeWidth={2.5} /></span>
+                <span>Say what you do, and at what level</span>
+              </div>
+              <div className="setup-item is-completed">
+                <span className="setup-check-icon"><Check size={14} strokeWidth={2.5} /></span>
+                <span>List your skills</span>
+              </div>
+              <div className="setup-item is-completed">
+                <span className="setup-check-icon"><Check size={14} strokeWidth={2.5} /></span>
+                <span>Set where and how you want to work</span>
+              </div>
+              <div className="setup-item is-pending">
+                <span className="setup-pending-icon"></span>
+                <span>Get new matches sent to you</span>
+                <div className="setup-item-actions">
+                  <button className="setup-action-btn" title="Setup alert matches">
+                    <ArrowRight size={13} />
+                  </button>
+                  <button 
+                    className="setup-action-btn" 
+                    onClick={() => setSetupDismissed(true)} 
+                    title="Dismiss checklist"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* 3. Horizontal Sub-Navigation Tab Bar */}
-      <nav className="profile-tabs-nav" aria-label="Profile Sections">
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'profile' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('profile')}
-        >
-          <User size={15} />
-          <span>Profile</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'contacts' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('contacts')}
-        >
-          <Contact size={15} />
-          <span>Contacts</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'location' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('location')}
-        >
-          <MapPin size={15} />
-          <span>Location</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'skills' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('skills')}
-        >
-          <Tag size={15} />
-          <span>Skills</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'avoid' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('avoid')}
-        >
-          <Ban size={15} />
-          <span>Avoid</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'experience' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('experience')}
-        >
-          <Briefcase size={15} />
-          <span>Experience</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'education' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('education')}
-        >
-          <GraduationCap size={15} />
-          <span>Education</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'screening' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('screening')}
-        >
-          <FileText size={15} />
-          <span>Screening answers</span>
-        </button>
-
-        <button 
-          className={`profile-tab-btn ${activeSubTab === 'settings' ? 'is-active' : ''}`}
-          onClick={() => setActiveSubTab('settings')}
-        >
-          <Settings size={15} />
-          <span>Settings</span>
-        </button>
-      </nav>
-
-      {/* 4. Tab Contents */}
-
-      {/* ===================== TAB 1: PROFILE ===================== */}
-      {activeSubTab === 'profile' && (
-        <section className="profile-section-content">
+        {/* ===================== TAB 1: PROFILE ===================== */}
+        {activeSubTab === 'profile' && (
+          <section className="profile-section-content">
           {/* Your Photo */}
           <div className="section-block">
             <h2 className="block-title">Your photo</h2>
@@ -974,6 +932,7 @@ export default function ProfileView() {
           </div>
         </section>
       )}
+      </div>
     </div>
   );
 }

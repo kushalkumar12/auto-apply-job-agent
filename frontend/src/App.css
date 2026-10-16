@@ -309,29 +309,27 @@ body {
    ========================================================================== */
 html.viewport-locked,
 body.viewport-locked,
-html.explore-active,
-body.explore-active,
-html:has(.explore-view),
-body:has(.explore-view),
-html:has(.generation-view-screen),
-body:has(.generation-view-screen) {
+html:has(.viewport-locked),
+body:has(.viewport-locked) {
   height: 100vh;
   max-height: 100vh;
   overflow: hidden !important;
+  margin: 0;
+  padding: 0;
 }
 
-.app-shell.explore-view,
-.app-shell.generation-view-screen {
+.app-shell.viewport-locked {
   height: 100vh;
   max-height: 100vh;
   overflow: hidden;
   padding: 10px 24px 12px;
   gap: 8px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
-.explore-view .content-container,
-.generation-view-screen .content-container {
+.app-shell.viewport-locked .content-container {
   flex: 1;
   min-height: 0;
   display: flex;

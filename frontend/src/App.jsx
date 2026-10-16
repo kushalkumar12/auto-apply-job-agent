@@ -8,6 +8,7 @@ import ToolsView from './components/ToolsView';
 import GenerationView from './components/GenerationView';
 import ProfileView from './components/ProfileView';
 import AnalyticsView from './components/AnalyticsView';
+import AutomationView from './components/AutomationView';
 import ThemesModal from './components/ThemesModal';
 import SettingsModal from './components/SettingsModal';
 import HelpPrivacyModal from './components/HelpPrivacyModal';
@@ -90,9 +91,9 @@ export default function App() {
     localStorage.setItem('rp_anim_data', String(dataFlowAnimation));
   }, [dataFlowAnimation]);
 
-  // Sync Body/HTML screen lock for Explorer and Generation tabs (prevent entire screen scroll)
+  // Global Viewport Lock across all tabs (no window-level scrollbar anywhere)
   useEffect(() => {
-    if (activeTab === 'explore' || activeTab === 'generation') {
+    if (VALID_TABS.includes(activeTab)) {
       document.body.classList.add('viewport-locked');
       document.documentElement.classList.add('viewport-locked');
     } else {
@@ -293,7 +294,7 @@ export default function App() {
   };
 
   return (
-    <div className={`app-shell ${activeTab === 'explore' ? 'explore-view' : ''} ${activeTab === 'generation' ? 'generation-view-screen' : ''}`} style={{ position: 'relative' }}>
+    <div className={`app-shell viewport-locked ${activeTab === 'explore' ? 'explore-view' : ''} ${activeTab === 'generation' ? 'generation-view-screen' : ''}`} style={{ position: 'relative' }}>
       {/* Universal Top Navigation Bar with Embedded Profile Menu */}
       <Navbar 
         activeTab={activeTab} 
@@ -306,9 +307,9 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Content Area */}
+      {/* 1. Explore Tab */}
       {activeTab === 'explore' && (
-        <main className="content-container">
+        <main className="content-container explore-content-container">
           {/* Hardware Accelerated Radar Engine */}
           <JobDiscoveryEngine 
             onSelectCompany={handleSelectCompanyFromRadar}
@@ -345,42 +346,39 @@ export default function App() {
         </main>
       )}
 
-      {/* Tools Menu Tab */}
-      {activeTab === 'tools' && (
-        <ToolsView onBackToExplore={() => handleTabChange('explore')} />
-      )}
-
-      {/* Generation View */}
+      {/* 2. Generation View */}
       {activeTab === 'generation' && (
         <main className="content-container generation-content-container">
           <GenerationView />
         </main>
       )}
 
-      {/* Automated Application Pipelines */}
+      {/* 3. Automated Application Pipelines View */}
       {activeTab === 'automation' && (
-        <section className="tab-view-container">
-          <div className="tab-icon-large">
-            <Play size={28} />
-          </div>
-          <h2 className="tab-view-title">Automated Job Application Pipelines</h2>
-          <p className="tab-view-desc">
-            Configure autonomous application schedules across LinkedIn Easy Apply, Indeed, and Naukri with customized questionnaires.
-          </p>
-          <button onClick={() => handleTabChange('explore')} className="back-to-explore-btn">
-            Return to Explore
-          </button>
-        </section>
+        <main className="content-container automation-content-container">
+          <AutomationView onNavigateTab={handleTabChange} />
+        </main>
       )}
 
-      {/* Profile & Preferences View */}
+      {/* 4. Profile & Preferences View */}
       {activeTab === 'profile' && (
-        <ProfileView />
+        <main className="content-container profile-content-container">
+          <ProfileView />
+        </main>
       )}
 
-      {/* Application Analytics View */}
+      {/* 5. Application Analytics View */}
       {activeTab === 'analytics' && (
-        <AnalyticsView />
+        <main className="content-container analytics-content-container">
+          <AnalyticsView />
+        </main>
+      )}
+
+      {/* 6. Tools Menu Tab */}
+      {activeTab === 'tools' && (
+        <main className="content-container tools-content-container">
+          <ToolsView onBackToExplore={() => handleTabChange('explore')} />
+        </main>
       )}
 
       {/* ======================================================================

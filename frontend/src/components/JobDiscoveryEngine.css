@@ -1,0 +1,416 @@
+/* ==========================================================================
+   ORBIT RADAR SCENE - Silky Smooth 60FPS Hardware Accelerated (210px / 120px)
+   ========================================================================== */
+
+.radar-scene {
+  --field-background: oklch(17.5% 0.007 150);
+  --field-ink: oklch(84% 0.007 150);
+  --field-glow: oklch(95% 0.013 145);
+  --field-muted: oklch(61% 0.009 150);
+  background: var(--field-background);
+  border: 1px solid var(--foreground, oklch(20% 0.008 150));
+  border-radius: 9px;
+  height: 210px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+  font-family: 'DM Sans', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  transform: translateZ(0);
+}
+
+.attraction-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+.scene-topline,
+.scene-bottomline {
+  color: var(--field-muted, oklch(61% 0.009 150));
+  letter-spacing: 1.2px;
+  pointer-events: none;
+  justify-content: space-between;
+  font-size: 7.5px;
+  display: flex;
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  z-index: 5;
+  text-transform: uppercase;
+  font-weight: 550;
+  user-select: none;
+}
+
+.scene-topline {
+  top: 10px;
+}
+
+.scene-bottomline {
+  bottom: 10px;
+  right: 42px;
+}
+
+.scene-topline > span,
+.scene-bottomline > span {
+  align-items: center;
+  gap: 6px;
+  display: flex;
+}
+
+.scene-topline .status-dot {
+  width: 3.5px;
+  height: 3.5px;
+}
+
+/* Central Collector Core (Maintained exact 120px x 120px) */
+.collector {
+  z-index: 2;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  contain: layout;
+}
+
+/* Rotating Gradient Shadow around Orbit (Reduced, tight glow length) */
+.orbit-gradient-shadow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #ffffff 0deg,
+    #22c55e 65deg,
+    #06b6d4 135deg,
+    #6366f1 205deg,
+    #ec4899 275deg,
+    #ffffff 360deg
+  );
+  filter: blur(6px);
+  opacity: 0.75;
+  animation: rotateOrbitShadow 5s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes rotateOrbitShadow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.is-paused .orbit-gradient-shadow {
+  animation-play-state: paused;
+  opacity: 0.35;
+}
+
+.collector-outer {
+  background: var(--card, #FFFFFF);
+  height: 100%;
+  box-shadow: 0 0 0 1px oklch(100% 0 0 / 0.2), 0 0 12px oklch(100% 0 0 / 0.1);
+  border: 1px solid var(--border, #DDE2DE);
+  border-radius: 50%;
+  padding: 8px;
+  position: relative;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.collector-outer::before {
+  content: "";
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  position: absolute;
+  inset: -5px;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .collector-outer::before {
+    border: 1px solid color-mix(in oklch, var(--field-glow, #FFFFFF) 18%, transparent);
+  }
+}
+
+.collector-inner {
+  border: 1px dashed #DDE2DE;
+  border-radius: 50%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  display: flex;
+}
+
+.collector-caption {
+  letter-spacing: 1.4px;
+  color: var(--muted-foreground, #777D79);
+  margin-bottom: 3px;
+  font-size: 7.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.found-count {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+  color: #171A18;
+}
+
+.collector-status {
+  color: #16a34a;
+  align-items: baseline;
+  justify-content: center;
+  margin-top: 6px;
+  font-size: 8px;
+  font-weight: 600;
+  display: flex;
+  letter-spacing: 0.4px;
+}
+
+.collector-status.is-paused {
+  color: #888888;
+}
+
+/* Loading animation for the three dots */
+.loading-dots {
+  display: inline-flex;
+  margin-left: 1px;
+}
+
+.loading-dots .dot {
+  display: inline-block;
+  opacity: 0.2;
+  animation: loadingEllipsis 1.4s infinite ease-in-out both;
+}
+
+.loading-dots .dot-1 {
+  animation-delay: 0s;
+}
+
+.loading-dots .dot-2 {
+  animation-delay: 0.25s;
+}
+
+.loading-dots .dot-3 {
+  animation-delay: 0.5s;
+}
+
+@keyframes loadingEllipsis {
+  0%, 80%, 100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-1.5px);
+  }
+}
+
+/* Collector Command Button */
+.collector-command {
+  z-index: 6;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scan-button {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  height: 22px;
+  padding: 0 9px;
+  font-size: 9px;
+  background: #171A18;
+  color: #F7F9F8;
+  box-shadow: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.scan-button:hover {
+  background: #242925;
+  color: #FFFFFF;
+}
+
+.scan-button svg {
+  width: 9px;
+  height: 9px;
+}
+
+/* Floating Sources (Inward Wave-Surfing Boundary Ray Anchors) */
+.floating-source {
+  z-index: 1;
+  background: #FFFFFF;
+  height: 28px;
+  color: #171A18;
+  border: 1px solid #DDE2DE;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  gap: 6px;
+  padding: 0 8px 0 5px;
+  font-size: 9.5px;
+  font-weight: 500;
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  visibility: hidden;
+  transition: border-color 0.12s ease;
+}
+
+.floating-source:hover,
+.source-selected {
+  border-color: #23864B !important;
+  background: #FFFFFF !important;
+}
+
+/* Ray projection anchor positions for 210px height */
+.source-0 {
+  top: 25%;
+  left: 16%;
+}
+
+.source-1 {
+  top: 55%;
+  right: 18%;
+}
+
+.source-2 {
+  top: 20%;
+  right: 24%;
+}
+
+.source-3 {
+  top: 68%;
+  left: 22%;
+}
+
+.source-4 {
+  top: 30%;
+  right: 10%;
+}
+
+.source-ats-badge {
+  font-size: 8px;
+  background: #E8F5E9;
+  color: #1B5E20;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-left: 3px;
+}
+
+.source-live-dot {
+  width: 5px;
+  height: 5px;
+  background: #10B981;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 2px;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.source-mark {
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.source-mark svg {
+  width: 15px;
+  height: 15px;
+}
+
+.google {
+  color: #4285F4;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.linkedin {
+  background: #0A66C2;
+  width: 15px;
+  height: 15px;
+  color: #FFFFFF;
+  border-radius: 2px;
+  margin: 1px;
+  font-size: 10px;
+}
+
+.indeed {
+  color: #2164F3;
+  font-size: 17px;
+  font-style: italic;
+  font-family: serif;
+}
+
+.naukri {
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  margin: 1px;
+  font-size: 11px;
+}
+
+.apple {
+  color: #171A18;
+}
+
+.source-signal {
+  background: #23864B;
+  border-radius: 50%;
+  width: 3.5px;
+  height: 3.5px;
+  margin-left: 3px;
+}
+
+.scene-corner {
+  color: oklch(61% 0.009 150);
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.scene-corner svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tiny-cross {
+  font-size: 13px;
+  font-weight: 400;
+}

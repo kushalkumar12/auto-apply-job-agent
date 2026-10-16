@@ -1,0 +1,136 @@
+/* ==========================================================================
+   MINIMAL UI DESIGN SYSTEM - UNIVERSAL DESIGN TOKENS
+   Spatial Minimalism + Swiss Design + Editorial Minimalism
+   ========================================================================== */
+
+:root {
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Typography Scale */
+  --text-hero: 46px;
+  --text-page-title: 30px;
+  --text-section-title: 19px;
+  --text-component-title: 15px;
+  --text-body: 13.5px;
+  --text-button: 13.5px;
+  --text-label: 11.5px;
+  --text-meta: 10.5px;
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Color System */
+  --bg-main: #F7F9F8;
+  --surface-primary: #FFFFFF;
+  --text-primary: #171A18;
+  --text-secondary: #777D79;
+  --text-muted: #929993;
+  --border-main: #DDE2DE;
+  --border-divider: #E6E9E6;
+  --surface-subtle: #F0F2F0;
+  
+  /* Semantic Accent Colors */
+  --action-primary: #2563EB;
+  --action-hover: #1D4ED8;
+  --success: #23864B;
+  --success-bg: #ECFDF3;
+  --error: #DC5252;
+  --error-bg: #FEF3F2;
+
+  /* Dimensions & Spacing */
+  --control-height: 40px;
+  --control-height-sm: 32px;
+  --control-height-lg: 44px;
+  --radius-control: 6px;
+  --radius-card: 9px;
+  --radius-pill: 9999px;
+
+  /* Spacing Scale (4px-based) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Shadow (Default none per design system rule) */
+  --shadow-none: none;
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.03);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.015em;
+}
+
+/* Base Buttons */
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: var(--text-button);
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-fast);
+}
+
+/* Base Inputs & Controls */
+input, select, textarea {
+  font-family: var(--font-sans);
+  outline: none;
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* Accessible focus ring */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--action-primary) !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-main);
+  border-radius: var(--radius-control);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

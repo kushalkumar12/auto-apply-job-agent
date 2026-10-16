@@ -2,8 +2,7 @@
    UNIVERSAL MODAL & POPUP DESIGN SYSTEM (100% UNIFIED ACROSS ENTIRE APP)
    ========================================================================== */
 
-/* Backdrop overlay with smooth blur */
-/* Backdrop overlay with smooth blur - Locked to full viewport */
+/* Backdrop overlay matching Image 1 effect: clean opacity maintenance, zero hazy blur */
 .app-modal-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -13,9 +12,9 @@
   width: 100vw !important;
   height: 100vh !important;
   z-index: 99999 !important;
-  background-color: rgba(10, 15, 13, 0.72) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background-color: rgba(23, 26, 24, 0.45) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -29,12 +28,12 @@
   to { opacity: 1; }
 }
 
-/* Base Modal Container Card */
+/* Base Modal Container Card - Swiss Minimalist (Matching Image 1) */
 .app-modal-card {
-  background-color: var(--card, #FFFFFF);
-  border: 1px solid var(--border, #E5E7EB);
-  border-radius: 16px;
-  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  background-color: var(--surface-primary, #FFFFFF);
+  border: 1px solid var(--border-card, #DDE2DE);
+  border-radius: var(--radius-card, 9px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   width: 100%;
   max-width: 620px;
   height: 600px;
@@ -232,27 +231,28 @@
   gap: 8px;
 }
 
-/* Close button - Styled exactly like the red circular (X) button in user diagram */
+/* Close button - Styled clean and minimal exactly like Image 1 (.modal-close-btn) */
 .app-modal-close-btn {
-  background: #FFF1F2;
-  border: 1px solid #FECDD3;
-  color: #E11D48;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  background: var(--surface-primary, #FFFFFF);
+  border: 1px solid var(--border-card, #DDE2DE);
+  color: var(--text-secondary, #777D79);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control, 6px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
   transition: all 150ms ease;
+  box-shadow: none;
 }
 
 .app-modal-close-btn:hover {
-  background: #FFE4E6;
-  border-color: #FDA4AF;
-  color: #BE123C;
-  transform: rotate(90deg);
+  background: var(--bg-main, #F7F9F8);
+  border-color: #B0B8B2;
+  color: var(--text-primary, #171A18);
+  transform: none;
 }
 
 /* Modal Scrollable Body */
@@ -285,18 +285,19 @@
 }
 
 /* ==========================================================================
-   THEMES MODAL (EXACT REPLICA OF USER SCREENSHOT)
+   THEMES MODAL (EXACT REPLICA MATCHING IMAGE 1 CLEAN MINIMALIST STANDARD)
    ========================================================================== */
 .app-modal-card.themes-modal-card {
   max-width: 580px;
   width: 92%;
   height: auto;
   min-height: unset;
-  border-radius: 20px;
+  border-radius: 9px;
+  border: 1px solid var(--border-card, #DDE2DE);
   background-color: #FFFFFF;
-  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   overflow: hidden;
-  padding: 24px 26px;
+  padding: 22px 24px;
   box-sizing: border-box;
 }
 
@@ -321,21 +322,23 @@
 .themes-modal-close-btn {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background: #FEE2E2;
-  border: none;
-  color: #EF4444;
+  border-radius: var(--radius-control, 6px);
+  background: var(--surface-primary, #FFFFFF);
+  border: 1px solid var(--border-card, #DDE2DE);
+  color: var(--text-secondary, #777D79);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 150ms ease;
+  box-shadow: none;
 }
 
 .themes-modal-close-btn:hover {
-  background: #FECDD3;
-  color: #DC2626;
-  transform: scale(1.05);
+  background: var(--bg-main, #F7F9F8);
+  border-color: #B0B8B2;
+  color: var(--text-primary, #171A18);
+  transform: none;
 }
 
 .themes-modal-body {

@@ -1738,6 +1738,8 @@ body:has(.viewport-locked) {
   position: fixed;
   inset: 0;
   background-color: rgba(23, 26, 24, 0.45);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;

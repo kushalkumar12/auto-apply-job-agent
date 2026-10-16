@@ -153,3 +153,23 @@ Adapt layouts to the content and viewport rather than forcing every page into th
 Do not change functionality, invent features, or impose a particular product layout as part of this design system.
 
 **The result should be minimalist by design, not merely an interface with fewer colors.**
+
+## 11. Modal Dialogs, Popups, and Overlays
+
+Every popup, modal dialog, and dropdown overlay across the application must adhere to the high-clarity opacity standard:
+
+- **Backdrop Overlay Color:** `rgba(23, 26, 24, 0.45)` (or `var(--text-primary, #171A18)` with 45% alpha).
+- **Zero Blur Rule:** `backdrop-filter: none; -webkit-backdrop-filter: none;` — Under no circumstances should `backdrop-filter: blur(...)` or hazy glassmorphism be applied to modal overlays. Background page content (such as job tables, feeds, and analytics charts) must remain sharply legible and transparently dimmed.
+- **Modal Card Container:**
+  - Background: `var(--surface-primary, #FFFFFF)`
+  - Border: `1px solid var(--border-card, #DDE2DE)`
+  - Radius: `9–10px` (`var(--radius-card)`)
+  - Elevation: Minimal ambient depth (`0 10px 25px -5px rgba(0, 0, 0, 0.1)`). Avoid heavy dark shadows.
+- **Close Button Standard:**
+  - Size: 32×32px square.
+  - Radius: 6px (`var(--radius-control)`).
+  - Border: `1px solid var(--border-card, #DDE2DE)`.
+  - Background: `var(--surface-primary, #FFFFFF)`.
+  - Color: `var(--text-secondary, #777D79)`.
+  - Hover: Background `#F7F9F8`, border `#B0B8B2`, color `#171A18`. Avoid colored circular pill buttons.
+

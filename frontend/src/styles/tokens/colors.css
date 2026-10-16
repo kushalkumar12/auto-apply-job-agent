@@ -1,0 +1,124 @@
+/* ==========================================================================
+   RESUME PORTER — MASTER DESIGN TOKENS: COLORS (60–30–10 HIERARCHY)
+   ========================================================================== */
+
+:root {
+  /* ------------------------------------------------------------------------
+     DEFAULT / LIGHT MODE (Sync Range: 60 - 30 - 10 - 5)
+     Dominant Canvas (60%): Off-white / Crisp Alabaster
+     Secondary Surface (30%): Pure White Cards & Structural Separations
+     Primary Accent (10%): Core Brand Triggers (Cobalt / Deep Olive)
+     Semantic Feedback (5%): Realtime Signals (ATS, Live, Error)
+     ------------------------------------------------------------------------ */
+  
+  /* 60% - Dominant Surface */
+  --rp-dominant-bg: #F7F9F8;
+  --rp-dominant-bg-rgb: 247, 249, 248;
+  --rp-dominant-canvas: #F0F2F0;
+
+  /* 30% - Secondary Structures (Panels, Workstations, Sidebars, Cards) */
+  --rp-secondary-surface: #FFFFFF;
+  --rp-secondary-surface-rgb: 255, 255, 255;
+  --rp-secondary-border: #DDE2DE;
+  --rp-secondary-border-hover: #B0B8B2;
+  --rp-secondary-divider: #E6E9E6;
+
+  /* Text Tier (Neutrals) */
+  --rp-text-dominant: #171A18;
+  --rp-text-secondary: #777D79;
+  --rp-text-muted: #929993;
+  --rp-text-inverse: #FFFFFF;
+
+  /* 10% - Intentional Accent (Brand Triggers & Focus) */
+  --rp-accent-primary: #2563EB;
+  --rp-accent-primary-hover: #1D4ED8;
+  --rp-accent-secondary: #2D5A27; /* Forest Olive */
+  --rp-accent-secondary-hover: #22431D;
+  --rp-accent-focus-ring: rgba(37, 99, 235, 0.25);
+
+  /* 5% - Semantic Micro-Tier */
+  --rp-semantic-success: #23864B;
+  --rp-semantic-success-bg: #ECFDF3;
+  --rp-semantic-warning: #D97706;
+  --rp-semantic-warning-bg: #FFFBEB;
+  --rp-semantic-danger: #DC2626;
+  --rp-semantic-danger-bg: #FEF2F2;
+  --rp-semantic-info: #0284C7;
+  --rp-semantic-info-bg: #F0F9FF;
+
+  /* Modal Overlay Base Standard (Image 1 Rule) */
+  --rp-modal-overlay-bg: rgba(23, 26, 24, 0.45);
+  --rp-modal-overlay-blur: none;
+}
+
+/* ------------------------------------------------------------------------
+   EXPLICIT LIGHT MODE (Sync Range: 60 - 30 - 10 - 5)
+   Scaled separation via clean 1px borders rather than heavy blur/shadows
+   ------------------------------------------------------------------------ */
+[data-mode="light"] {
+  --rp-dominant-bg: #F8FAF9;
+  --rp-dominant-bg-rgb: 248, 250, 249;
+  --rp-dominant-canvas: #EEF2EF;
+
+  --rp-secondary-surface: #FFFFFF;
+  --rp-secondary-surface-rgb: 255, 255, 255;
+  --rp-secondary-border: #D6DCD8;
+  --rp-secondary-border-hover: #A8B2AA;
+  --rp-secondary-divider: #E2E7E3;
+
+  --rp-text-dominant: #111412;
+  --rp-text-secondary: #686F6A;
+  --rp-text-muted: #8E9690;
+  --rp-text-inverse: #FFFFFF;
+
+  --rp-accent-primary: #2563EB;
+  --rp-accent-primary-hover: #1D4ED8;
+  --rp-accent-secondary: #2D5A27;
+
+  --rp-modal-overlay-bg: rgba(17, 20, 18, 0.42);
+}
+
+/* ------------------------------------------------------------------------
+   EXPLICIT DARK MODE (Sync Range: 60 - 30 - 10 - 5)
+   Decrease pure black harshness: Zinc / Charcoal step elevation
+   Canvas (60%) -> Panels (30%) -> Accents (10%) -> Semantic (5%)
+   ------------------------------------------------------------------------ */
+[data-mode="dark"] {
+  /* 60% Dominant (Viewport Base) */
+  --rp-dominant-bg: #0F1210;
+  --rp-dominant-bg-rgb: 15, 18, 16;
+  --rp-dominant-canvas: #090B0A;
+
+  /* 30% Secondary Structures (Elevated Surfaces) */
+  --rp-secondary-surface: #181D1A;
+  --rp-secondary-surface-rgb: 24, 29, 26;
+  --rp-secondary-border: #28312B;
+  --rp-secondary-border-hover: #3E4C43;
+  --rp-secondary-divider: #222924;
+
+  /* Text Tier (Anti-Halation Balanced) */
+  --rp-text-dominant: #E6EAE7;
+  --rp-text-secondary: #9AA39D;
+  --rp-text-muted: #6C756F;
+  --rp-text-inverse: #0F1210;
+
+  /* 10% Accent (Luminous in Dark Environments) */
+  --rp-accent-primary: #3B82F6;
+  --rp-accent-primary-hover: #60A5FA;
+  --rp-accent-secondary: #3D7A35;
+  --rp-accent-secondary-hover: #4D9A42;
+  --rp-accent-focus-ring: rgba(59, 130, 246, 0.35);
+
+  /* 5% Semantic Status */
+  --rp-semantic-success: #34D399;
+  --rp-semantic-success-bg: rgba(52, 211, 153, 0.12);
+  --rp-semantic-warning: #FBBF24;
+  --rp-semantic-warning-bg: rgba(251, 191, 36, 0.12);
+  --rp-semantic-danger: #F87171;
+  --rp-semantic-danger-bg: rgba(248, 113, 113, 0.12);
+  --rp-semantic-info: #38BDF8;
+  --rp-semantic-info-bg: rgba(56, 189, 248, 0.12);
+
+  /* Modal Overlay in Dark Mode */
+  --rp-modal-overlay-bg: rgba(0, 0, 0, 0.65);
+}

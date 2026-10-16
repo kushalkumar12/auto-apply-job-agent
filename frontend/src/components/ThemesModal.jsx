@@ -75,9 +75,9 @@ const THEMES_LIST = [
   {
     id: 'difference',
     title: 'Difference',
-    subtitle: 'Vibrant and colorful.',
+    subtitle: 'Vibrant per-page tints.',
     variant: 'difference',
-    isBlocked: true,
+    isBlocked: false,
   },
   {
     id: 'glass',
@@ -100,13 +100,19 @@ export default function ThemesModal({
   onClose,
   currentTheme,
   onSelectTheme,
+  colorMode = 'default',
+  setColorMode,
   mouseCursorAnimation,
   setMouseCursorAnimation,
   dataFlowAnimation,
   setDataFlowAnimation
 }) {
-  const [colorMode, setColorMode] = useState('default');
-  const [selectedThemeId, setSelectedThemeId] = useState('default');
+  const [selectedThemeId, setSelectedThemeId] = useState(currentTheme || 'default');
+
+  // Keep local selection in sync with currentTheme prop
+  React.useEffect(() => {
+    setSelectedThemeId(currentTheme || 'default');
+  }, [currentTheme]);
 
   if (!isOpen) return null;
 

@@ -1,0 +1,93 @@
+/* ==========================================================================
+   RESUME PORTER — MASTER FOUNDATIONS: PANELS & SURFACES (30% TIER)
+   ========================================================================== */
+
+/* Universal Surface Card Container */
+.rp-card,
+.surface-card {
+  background-color: var(--rp-secondary-surface, #FFFFFF);
+  border: 1px solid var(--rp-secondary-border, #DDE2DE);
+  border-radius: 9px;
+  box-sizing: border-box;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.rp-card-hover:hover {
+  border-color: var(--rp-secondary-border-hover, #B0B8B2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* 2-Column Split Layout Panel (Profile, Generation, Automation standard) */
+.rp-split-view {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.rp-sidebar-panel {
+  width: 210px;
+  min-width: 210px;
+  max-width: 210px;
+  height: 100%;
+  background-color: var(--rp-secondary-surface, #FFFFFF);
+  border-right: 1px solid var(--rp-secondary-border, #DDE2DE);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.rp-content-panel {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 24px;
+}
+
+/* Master Divider */
+.rp-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--rp-secondary-divider, #E6E9E6);
+  margin: 16px 0;
+  border: none;
+}
+
+/* Status Pill Primitive (5% Semantic Tier) */
+.rp-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.rp-status-pill.success {
+  background-color: var(--rp-semantic-success-bg, #ECFDF3);
+  color: var(--rp-semantic-success, #23864B);
+  border: 1px solid rgba(35, 134, 75, 0.2);
+}
+
+.rp-status-pill.warning {
+  background-color: var(--rp-semantic-warning-bg, #FFFBEB);
+  color: var(--rp-semantic-warning, #D97706);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.rp-status-pill.danger {
+  background-color: var(--rp-semantic-danger-bg, #FEF2F2);
+  color: var(--rp-semantic-danger, #DC2626);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.rp-status-pill.info {
+  background-color: var(--rp-semantic-info-bg, #F0F9FF);
+  color: var(--rp-semantic-info, #0284C7);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}

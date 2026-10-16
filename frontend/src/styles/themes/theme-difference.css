@@ -1,0 +1,86 @@
+/* ==========================================================================
+   RESUME PORTER — THEME 2: DIFFERENCE (DYNAMIC PAGE IDENTITIES & MOTION)
+   Each page has its own contextual background color and active flow effects
+   ========================================================================== */
+
+[data-theme="difference"] {
+  --rp-theme-name: "difference";
+  --rp-accent-primary: #10B981;
+  --rp-accent-primary-hover: #059669;
+}
+
+/* 1. Explorer Page Contextual Identity (Fresh Emerald Mint Tint) */
+[data-theme="difference"] .discovery-container,
+[data-theme="difference"][data-page="explore"] body {
+  background-color: #F0F6F2 !important;
+}
+
+/* 2. Generation Page Contextual Identity (Warm Archival Paper) */
+[data-theme="difference"] .generation-container,
+[data-theme="difference"][data-page="generation"] body {
+  background-color: #FAF6F0 !important;
+}
+
+/* 3. Automation Page Contextual Identity (Deep Cybernetic Terminal) */
+[data-theme="difference"] .automation-container,
+[data-theme="difference"][data-page="automation"] body {
+  background-color: #0F1613 !important;
+}
+
+[data-theme="difference"] .automation-container .auto-sidebar,
+[data-theme="difference"] .automation-container .auto-terminal-header {
+  background-color: #17221D !important;
+  border-color: #26382F !important;
+}
+
+/* 4. Profile Page Contextual Identity (Executive Ice Slate) */
+[data-theme="difference"] .profile-container,
+[data-theme="difference"][data-page="profile"] body {
+  background-color: #F1F4F9 !important;
+}
+
+/* 5. Analytics Page Contextual Identity (Telemetry Indigo Slate) */
+[data-theme="difference"] .analytics-container,
+[data-theme="difference"][data-page="analytics"] body {
+  background-color: #F3F1F8 !important;
+}
+
+/* 6. Tools Page Contextual Identity (Artisan Coral Ochre) */
+[data-theme="difference"] .tools-page,
+[data-theme="difference"][data-page="tools"] body {
+  background-color: #F9F4F1 !important;
+}
+
+/* --------------------------------------------------------------------------
+   MOUSE CURSOR ANIMATION (When enabled)
+   -------------------------------------------------------------------------- */
+body.anim-cursor-active * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="%232563EB" opacity="0.8"/><circle cx="12" cy="12" r="10" stroke="%232563EB" stroke-width="1.5" fill="none" opacity="0.4"/></svg>') 12 12, auto !important;
+}
+
+/* --------------------------------------------------------------------------
+   DATA FLOW ANIMATION (When enabled)
+   Ambient linear gradient energy stream moving across structural dividers
+   -------------------------------------------------------------------------- */
+body.anim-dataflow-active .rp-divider,
+body.anim-dataflow-active .table-header,
+body.anim-dataflow-active .navbar-container {
+  position: relative;
+  overflow: hidden;
+}
+
+body.anim-dataflow-active .navbar-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--rp-accent-primary, #10B981), transparent);
+  animation: rpDataflowStream 3.5s linear infinite;
+}
+
+@keyframes rpDataflowStream {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}

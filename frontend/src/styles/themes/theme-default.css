@@ -1,0 +1,41 @@
+/* ==========================================================================
+   RESUME PORTER — THEME 1: DEFAULT (SWISS MINIMALIST SAAS)
+   ========================================================================== */
+
+[data-theme="default"] {
+  --rp-theme-name: "default";
+  
+  /* 60% Dominant */
+  --rp-dominant-bg: #F7F9F8;
+  --rp-dominant-canvas: #F0F2F0;
+
+  /* 30% Secondary Structures */
+  --rp-secondary-surface: #FFFFFF;
+  --rp-secondary-border: #DDE2DE;
+  --rp-secondary-border-hover: #B0B8B2;
+  --rp-secondary-divider: #E6E9E6;
+
+  /* 10% Accent */
+  --rp-accent-primary: #2563EB;
+  --rp-accent-primary-hover: #1D4ED8;
+  --rp-accent-secondary: #2D5A27;
+
+  /* Typography */
+  --rp-text-dominant: #171A18;
+  --rp-text-secondary: #777D79;
+  --rp-text-muted: #929993;
+}
+
+[data-theme="default"][data-mode="dark"] {
+  --rp-dominant-bg: #0F1210;
+  --rp-dominant-canvas: #090B0A;
+  --rp-secondary-surface: #181D1A;
+  --rp-secondary-border: #28312B;
+  --rp-secondary-border-hover: #3E4C43;
+  --rp-secondary-divider: #222924;
+  --rp-accent-primary: #3B82F6;
+  --rp-accent-primary-hover: #60A5FA;
+  --rp-text-dominant: #E6EAE7;
+  --rp-text-secondary: #9AA39D;
+  --rp-text-muted: #6C756F;
+}

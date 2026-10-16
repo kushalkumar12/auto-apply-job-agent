@@ -69,6 +69,9 @@ export default function App() {
   const [currentTheme, setCurrentTheme] = useState(() => {
     return localStorage.getItem('rp_theme') || 'default';
   });
+  const [colorMode, setColorMode] = useState(() => {
+    return localStorage.getItem('rp_color_mode') || 'default';
+  });
   const [mouseCursorAnimation, setMouseCursorAnimation] = useState(() => {
     return localStorage.getItem('rp_anim_cursor') === 'true';
   });
@@ -82,12 +85,33 @@ export default function App() {
     localStorage.setItem('rp_theme', currentTheme);
   }, [currentTheme]);
 
-  // Sync Animation Settings
+  // Apply Color Mode on Root Element (Default, Light, Dark)
   useEffect(() => {
+    document.documentElement.setAttribute('data-mode', colorMode);
+    localStorage.setItem('rp_color_mode', colorMode);
+  }, [colorMode]);
+
+  // Apply Active Page on Root Element for Per-Page Contextual Theming
+  useEffect(() => {
+    document.documentElement.setAttribute('data-page', activeTab);
+  }, [activeTab]);
+
+  // Sync Animation Settings & Body Classes
+  useEffect(() => {
+    if (mouseCursorAnimation) {
+      document.body.classList.add('anim-cursor-active');
+    } else {
+      document.body.classList.remove('anim-cursor-active');
+    }
     localStorage.setItem('rp_anim_cursor', String(mouseCursorAnimation));
   }, [mouseCursorAnimation]);
 
   useEffect(() => {
+    if (dataFlowAnimation) {
+      document.body.classList.add('anim-dataflow-active');
+    } else {
+      document.body.classList.remove('anim-dataflow-active');
+    }
     localStorage.setItem('rp_anim_data', String(dataFlowAnimation));
   }, [dataFlowAnimation]);
 
@@ -391,6 +415,8 @@ export default function App() {
         onClose={() => setIsThemesModalOpen(false)}
         currentTheme={currentTheme}
         onSelectTheme={setCurrentTheme}
+        colorMode={colorMode}
+        setColorMode={setColorMode}
         mouseCursorAnimation={mouseCursorAnimation}
         setMouseCursorAnimation={setMouseCursorAnimation}
         dataFlowAnimation={dataFlowAnimation}

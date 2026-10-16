@@ -1,0 +1,40 @@
+/* ==========================================================================
+   RESUME PORTER — MASTER CSS (CENTRAL ARCHITECTURAL HUB)
+   Links Tokens, Reusable Foundations, Multi-Themes & Component Standard
+   ========================================================================== */
+
+/* 1. Design Tokens */
+@import './tokens/colors.css';
+
+/* 2. Master Foundations for Reusable Elements */
+@import './foundations/buttons.css';
+@import './foundations/popups.css';
+@import './foundations/panels.css';
+
+/* 3. Multi-Theme Engines */
+@import './themes/theme-default.css';
+@import './themes/theme-difference.css';
+@import './themes/theme-glass.css';
+@import './themes/theme-minimal.css';
+
+/* 4. Global Viewport Lock Standard (Zero-Scroll 100vh) */
+html.viewport-locked,
+body.viewport-locked {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: fixed !important;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--rp-dominant-bg, #F7F9F8);
+  color: var(--rp-text-dominant, #171A18);
+  transition: background-color 200ms ease, color 200ms ease;
+}

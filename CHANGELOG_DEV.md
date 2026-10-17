@@ -1641,3 +1641,4 @@
 [2026-10-08T17:38:29] add missing null checks before accessing object properties
 [2026-10-10T11:38:47] prevent content shift when loading skeleton placeholders
 [2026-10-13T12:14:31] tweak active tab indicator transition speed and easing
+[2026-10-17T18:40:04] tweak active tab indicator transition speed and easing

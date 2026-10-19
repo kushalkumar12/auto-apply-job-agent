@@ -21,7 +21,8 @@ graph TD
     App --> HelpModal[HelpPrivacyModal.jsx - Compliance & Feedback Tickets]
     App --> AuthModal[AuthModal.jsx - Multi-Step Authentication]
     
-    App <---> SQLite[(SQLite DB / better-sqlite3 with WAL)]
+    App <---> FastAPI[FastAPI Backend - Python 3.12 / Uvicorn]
+    FastAPI <---> SQLite[(SQLite DB with WAL mode & 15,500+ records)]
 ```
 
 ### Key Architectural Tenets
@@ -48,7 +49,7 @@ graph TD
 
 ## 3. Database Schema & Security Engineering
 
-The backend uses **SQLite** with Write-Ahead Logging (`WAL`) mode and busy timeout protections (`backend/db.js`).
+The backend is powered by **Python (FastAPI & Uvicorn)** with an optimized **SQLite** engine operating in Write-Ahead Logging (`WAL`) mode with automatic connection pooling and busy timeout protections (`backend/database.py`).
 
 ### 3.1 `users` Table
 ```sql
@@ -95,10 +96,21 @@ CREATE TABLE IF NOT EXISTS feedback_tickets (
 );
 ```
 
-### 3.4 Security & Injection Protections
+### 3.4 `settings_menu` Table
+Stores user navigation layout customization, tab ordering, and visibility states:
+```sql
+CREATE TABLE IF NOT EXISTS settings_menu (
+  id TEXT PRIMARY KEY,
+  items TEXT NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+```
+
+### 3.5 Security & Injection Protections
 - **Zero Raw String Concatenation**: All database operations use prepared statements (`db.prepare(...).run(...)`).
 - **Cryptographic Hashing**: User passwords hashed using standard SHA-256 with salts before storage.
 - **Masked Secrets**: Settings endpoint masks sensitive API keys (`sk-••••••••••••`) during retrieval.
+- **Fail-safe Navigation Safeguards**: Reorder and toggle endpoints validate that at least one primary navigation tab remains active.
 
 ---
 

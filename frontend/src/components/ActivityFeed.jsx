@@ -1,40 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trash2, Loader2, RotateCcw } from 'lucide-react';
 import { PlatformIcon } from './BrandIcons';
+import ConfirmDialog from './ConfirmDialog';
 
 export default function ActivityFeed({ activities, onClear, onReset }) {
+  const [showConfirmClear, setShowConfirmClear] = useState(false);
+
+  const handleConfirmClear = () => {
+    onClear();
+    setShowConfirmClear(false);
+  };
+
   return (
     <div className="activity-feed-container">
       {/* Header */}
       <div className="activity-feed-topbar">
         <h2 className="activity-feed-title">Activity Feed</h2>
-        {activities.length > 0 ? (
+        {activities.length > 0 && (
           <button 
             className="btn-clear-outline"
-            onClick={onClear}
+            onClick={() => setShowConfirmClear(true)}
             title="Clear activity log"
+            aria-label="Clear activity log"
           >
             <Trash2 size={14} />
             <span>Clear</span>
           </button>
-        ) : (
-          <button 
-            className="btn-clear-outline"
-            onClick={onReset}
-            title="Restore activity log"
-          >
-            <RotateCcw size={14} />
-            <span>Reset</span>
-          </button>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirmClear}
+        title="Clear Activity Log?"
+        message="This action will clear all entries from your current activity history."
+        confirmLabel="Clear Log"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={handleConfirmClear}
+        onCancel={() => setShowConfirmClear(false)}
+      />
 
       {/* Activity Items List */}
       <div className="activity-stream-list">
         {activities.length === 0 ? (
-          <div className="empty-feed-placeholder">
-            <p>Activity feed is empty.</p>
-            <button onClick={onReset} className="btn-restore-stream">Restore Log</button>
+          <div className="empty-feed-placeholder" style={{ padding: '36px 16px', textAlign: 'center' }}>
+            <p style={{ fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0', fontSize: '14px' }}>No activity logged yet</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
+              Live job applications, discovery scans, and profile sync events will be recorded here in real time.
+            </p>
           </div>
         ) : (
           activities.map((item) => (

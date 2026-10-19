@@ -5,70 +5,10 @@
    Spatial Minimalism + Swiss Design + Editorial Minimalism
    ========================================================================== */
 
+/* Design tokens are centralized in styles/tokens/colors.css. 
+   index.css establishes base resets and typographic defaults. */
 :root {
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  /* Typography Scale */
-  --text-hero: 46px;
-  --text-page-title: 30px;
-  --text-section-title: 19px;
-  --text-component-title: 15px;
-  --text-body: 13.5px;
-  --text-button: 13.5px;
-  --text-label: 11.5px;
-  --text-meta: 10.5px;
-
-  /* Font Weights */
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-
-  /* Color System */
-  --bg-main: #F7F9F8;
-  --surface-primary: #FFFFFF;
-  --text-primary: #171A18;
-  --text-secondary: #777D79;
-  --text-muted: #929993;
-  --border-main: #DDE2DE;
-  --border-divider: #E6E9E6;
-  --surface-subtle: #F0F2F0;
-  
-  /* Semantic Accent Colors */
-  --action-primary: #2563EB;
-  --action-hover: #1D4ED8;
-  --success: #23864B;
-  --success-bg: #ECFDF3;
-  --error: #DC5252;
-  --error-bg: #FEF3F2;
-
-  /* Dimensions & Spacing */
-  --control-height: 40px;
-  --control-height-sm: 32px;
-  --control-height-lg: 44px;
-  --radius-control: 6px;
-  --radius-card: 9px;
-  --radius-pill: 9999px;
-
-  /* Spacing Scale (4px-based) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-
-  /* Shadow (Default none per design system rule) */
-  --shadow-none: none;
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.03);
-
-  /* Transitions */
-  --transition-fast: 150ms ease;
+  color-scheme: light dark;
 }
 
 * {

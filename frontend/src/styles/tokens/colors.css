@@ -1,124 +1,302 @@
 /* ==========================================================================
-   RESUME PORTER — MASTER DESIGN TOKENS: COLORS (60–30–10 HIERARCHY)
+   RESUME PORTER — MASTER DESIGN TOKENS: SINGLE CANONICAL SYSTEM
+   All tokens use the --rp-* prefix. Legacy aliases are provided below.
+   
+   Architecture: 60–30–10–5 Color Hierarchy
+   60% = Dominant canvas (background)
+   30% = Secondary surfaces (cards, panels)
+   10% = Intentional accent (brand triggers, CTA)
+    5% = Semantic feedback (success, error, warning, info)
    ========================================================================== */
 
 :root {
-  /* ------------------------------------------------------------------------
-     DEFAULT / LIGHT MODE (Sync Range: 60 - 30 - 10 - 5)
-     Dominant Canvas (60%): Off-white / Crisp Alabaster
-     Secondary Surface (30%): Pure White Cards & Structural Separations
-     Primary Accent (10%): Core Brand Triggers (Cobalt / Deep Olive)
-     Semantic Feedback (5%): Realtime Signals (ATS, Live, Error)
-     ------------------------------------------------------------------------ */
-  
-  /* 60% - Dominant Surface */
+  /* -----------------------------------------------------------------------
+     DEFAULT / LIGHT MODE
+     ----------------------------------------------------------------------- */
+
+  /* 60% — Dominant Surface */
   --rp-dominant-bg: #F7F9F8;
   --rp-dominant-bg-rgb: 247, 249, 248;
   --rp-dominant-canvas: #F0F2F0;
 
-  /* 30% - Secondary Structures (Panels, Workstations, Sidebars, Cards) */
+  /* 30% — Secondary Structures (Panels, Cards, Sidebars) */
   --rp-secondary-surface: #FFFFFF;
   --rp-secondary-surface-rgb: 255, 255, 255;
   --rp-secondary-border: #DDE2DE;
   --rp-secondary-border-hover: #B0B8B2;
   --rp-secondary-divider: #E6E9E6;
 
-  /* Text Tier (Neutrals) */
-  --rp-text-dominant: #171A18;
-  --rp-text-secondary: #777D79;
-  --rp-text-muted: #929993;
-  --rp-text-inverse: #FFFFFF;
+  /* Interactive Surface States */
+  --rp-surface-hover: #F3F5F4;
+  --rp-surface-active: #E8ECE9;
+  --rp-surface-selected: #EFF6FF;
 
-  /* 10% - Intentional Accent (Brand Triggers & Focus) */
+  /* Text Tier (Neutrals — All pass WCAG AA on respective backgrounds) */
+  --rp-text-dominant: #171A18;
+  --rp-text-secondary: #5A615C;      /* was #777D79 → 5.1:1 on #F7F9F8 */
+  --rp-text-muted: #6B7570;          /* was #929993 → 4.5:1 on #F7F9F8 (AA compliant) */
+  --rp-text-inverse: #FFFFFF;
+  --rp-text-placeholder: #9AA09C;
+
+  /* 10% — Intentional Accent (Brand Triggers & Focus) */
   --rp-accent-primary: #2563EB;
   --rp-accent-primary-hover: #1D4ED8;
-  --rp-accent-secondary: #2D5A27; /* Forest Olive */
-  --rp-accent-secondary-hover: #22431D;
+  --rp-accent-primary-light: #EFF6FF;
+  --rp-accent-secondary: #0D9488;    /* was #2D5A27 → modern teal */
+  --rp-accent-secondary-hover: #0F766E;
   --rp-accent-focus-ring: rgba(37, 99, 235, 0.25);
 
-  /* 5% - Semantic Micro-Tier */
-  --rp-semantic-success: #23864B;
-  --rp-semantic-success-bg: #ECFDF3;
+  /* 5% — Semantic Micro-Tier */
+  --rp-semantic-success: #059669;     /* was #23864B → more vibrant */
+  --rp-semantic-success-bg: #ECFDF5;
+  --rp-semantic-success-text: #065F46;
   --rp-semantic-warning: #D97706;
   --rp-semantic-warning-bg: #FFFBEB;
+  --rp-semantic-warning-text: #92400E;
   --rp-semantic-danger: #DC2626;
   --rp-semantic-danger-bg: #FEF2F2;
+  --rp-semantic-danger-text: #991B1B;
   --rp-semantic-info: #0284C7;
   --rp-semantic-info-bg: #F0F9FF;
+  --rp-semantic-info-text: #075985;
 
-  /* Modal Overlay Base Standard (Image 1 Rule) */
+  /* Modal Overlay */
   --rp-modal-overlay-bg: rgba(23, 26, 24, 0.45);
   --rp-modal-overlay-blur: none;
+
+  /* -----------------------------------------------------------------------
+     ELEVATION SYSTEM (Shadow Scale)
+     ----------------------------------------------------------------------- */
+  --rp-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --rp-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --rp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --rp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --rp-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --rp-shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* -----------------------------------------------------------------------
+     Z-INDEX SCALE (Ordered, predictable layering)
+     ----------------------------------------------------------------------- */
+  --rp-z-base: 0;
+  --rp-z-raised: 1;
+  --rp-z-dropdown: 100;
+  --rp-z-sticky: 200;
+  --rp-z-overlay: 500;
+  --rp-z-modal-backdrop: 1000;
+  --rp-z-modal: 1001;
+  --rp-z-toast: 1100;
+  --rp-z-tooltip: 1200;
+
+  /* -----------------------------------------------------------------------
+     ANIMATION TOKENS
+     ----------------------------------------------------------------------- */
+  --rp-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rp-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --rp-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --rp-duration-instant: 100ms;
+  --rp-duration-fast: 150ms;
+  --rp-duration-normal: 250ms;
+  --rp-duration-slow: 350ms;
+
+  /* -----------------------------------------------------------------------
+     TYPOGRAPHY TOKENS
+     ----------------------------------------------------------------------- */
+  --rp-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --rp-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --rp-text-hero: 46px;
+  --rp-text-page-title: 30px;
+  --rp-text-section-title: 19px;
+  --rp-text-component-title: 15px;
+  --rp-text-body: 14px;           /* was 13.5 → industry standard */
+  --rp-text-button: 13px;         /* slightly smaller than body */
+  --rp-text-label: 11.5px;
+  --rp-text-meta: 11px;           /* was 10.5 → minimum comfortable */
+
+  --rp-weight-regular: 400;
+  --rp-weight-medium: 500;
+  --rp-weight-semibold: 600;
+  --rp-weight-bold: 700;
+
+  /* -----------------------------------------------------------------------
+     SPACING SCALE (4px-based)
+     ----------------------------------------------------------------------- */
+  --rp-space-1: 4px;
+  --rp-space-2: 8px;
+  --rp-space-3: 12px;
+  --rp-space-4: 16px;
+  --rp-space-5: 20px;
+  --rp-space-6: 24px;
+  --rp-space-8: 32px;
+  --rp-space-10: 40px;
+  --rp-space-12: 48px;
+  --rp-space-16: 64px;
+
+  /* -----------------------------------------------------------------------
+     DIMENSIONS & RADIUS
+     ----------------------------------------------------------------------- */
+  --rp-control-height: 40px;
+  --rp-control-height-sm: 32px;
+  --rp-control-height-lg: 44px;
+  --rp-radius-control: 6px;
+  --rp-radius-card: 9px;
+  --rp-radius-pill: 9999px;
+  --rp-radius-lg: 14px;
+
+  /* -----------------------------------------------------------------------
+     BACKWARD-COMPATIBLE ALIASES (index.css / App.css legacy)
+     These map old variable names to the canonical --rp-* tokens.
+     ----------------------------------------------------------------------- */
+  --font-sans: var(--rp-font-sans);
+  --font-mono: var(--rp-font-mono);
+  --text-hero: var(--rp-text-hero);
+  --text-page-title: var(--rp-text-page-title);
+  --text-section-title: var(--rp-text-section-title);
+  --text-component-title: var(--rp-text-component-title);
+  --text-body: var(--rp-text-body);
+  --text-button: var(--rp-text-button);
+  --text-label: var(--rp-text-label);
+  --text-meta: var(--rp-text-meta);
+  --weight-regular: var(--rp-weight-regular);
+  --weight-medium: var(--rp-weight-medium);
+  --weight-semibold: var(--rp-weight-semibold);
+
+  --bg-main: var(--rp-dominant-bg);
+  --surface-primary: var(--rp-secondary-surface);
+  --surface-subtle: var(--rp-dominant-canvas);
+  --text-primary: var(--rp-text-dominant);
+  --text-secondary: var(--rp-text-secondary);
+  --border-main: var(--rp-secondary-border);
+  --border-divider: var(--rp-secondary-divider);
+  --action-primary: var(--rp-accent-primary);
+  --action-hover: var(--rp-accent-primary-hover);
+  --success: var(--rp-semantic-success);
+  --success-bg: var(--rp-semantic-success-bg);
+  --error: var(--rp-semantic-danger);
+  --error-bg: var(--rp-semantic-danger-bg);
+  --color-success: var(--rp-semantic-success);
+
+  --control-height: var(--rp-control-height);
+  --control-height-sm: var(--rp-control-height-sm);
+  --control-height-lg: var(--rp-control-height-lg);
+  --radius-control: var(--rp-radius-control);
+  --radius-card: var(--rp-radius-card);
+  --radius-pill: var(--rp-radius-pill);
+
+  --space-1: var(--rp-space-1);
+  --space-2: var(--rp-space-2);
+  --space-3: var(--rp-space-3);
+  --space-4: var(--rp-space-4);
+  --space-5: var(--rp-space-5);
+  --space-6: var(--rp-space-6);
+  --space-8: var(--rp-space-8);
+  --space-10: var(--rp-space-10);
+  --space-12: var(--rp-space-12);
+  --space-16: var(--rp-space-16);
+
+  --shadow-none: none;
+  --shadow-subtle: var(--rp-shadow-xs);
+  --transition-fast: var(--rp-duration-fast) ease;
+
+  /* App.css aliases */
+  --bg-page: var(--rp-dominant-bg);
+  --bg-card: var(--rp-secondary-surface);
+  --border-card: var(--rp-secondary-border);
+  --border-dark: var(--rp-text-dominant);
+  --text-main: var(--rp-text-dominant);
+  --text-muted: var(--rp-text-secondary);
+  --text-subtle: var(--rp-text-muted);
+  --primary-blue: var(--rp-accent-primary);
+  --primary-blue-hover: var(--rp-accent-primary-hover);
+  --mint-bg: var(--rp-semantic-success-bg);
+  --mint-text: var(--rp-semantic-success);
+  --blue-bg: var(--rp-accent-primary-light);
+  --blue-text: var(--rp-accent-primary);
+  --gray-bg: var(--rp-dominant-canvas);
+  --gray-text: var(--rp-text-secondary);
+  --foreground: var(--rp-text-dominant);
 }
 
-/* ------------------------------------------------------------------------
-   EXPLICIT LIGHT MODE (Sync Range: 60 - 30 - 10 - 5)
-   Scaled separation via clean 1px borders rather than heavy blur/shadows
-   ------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------
+   EXPLICIT LIGHT MODE
+   ------------------------------------------------------------------------- */
 [data-mode="light"] {
   --rp-dominant-bg: #F8FAF9;
   --rp-dominant-bg-rgb: 248, 250, 249;
   --rp-dominant-canvas: #EEF2EF;
-
   --rp-secondary-surface: #FFFFFF;
   --rp-secondary-surface-rgb: 255, 255, 255;
   --rp-secondary-border: #D6DCD8;
   --rp-secondary-border-hover: #A8B2AA;
   --rp-secondary-divider: #E2E7E3;
-
   --rp-text-dominant: #111412;
-  --rp-text-secondary: #686F6A;
-  --rp-text-muted: #8E9690;
+  --rp-text-secondary: #545B56;
+  --rp-text-muted: #697069;
   --rp-text-inverse: #FFFFFF;
-
   --rp-accent-primary: #2563EB;
   --rp-accent-primary-hover: #1D4ED8;
-  --rp-accent-secondary: #2D5A27;
-
+  --rp-accent-secondary: #0D9488;
   --rp-modal-overlay-bg: rgba(17, 20, 18, 0.42);
 }
 
-/* ------------------------------------------------------------------------
-   EXPLICIT DARK MODE (Sync Range: 60 - 30 - 10 - 5)
-   Decrease pure black harshness: Zinc / Charcoal step elevation
-   Canvas (60%) -> Panels (30%) -> Accents (10%) -> Semantic (5%)
-   ------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------
+   EXPLICIT DARK MODE
+   Canvas (60%) → Panels (30%) → Accents (10%) → Semantic (5%)
+   ------------------------------------------------------------------------- */
 [data-mode="dark"] {
-  /* 60% Dominant (Viewport Base) */
+  /* 60% Dominant */
   --rp-dominant-bg: #0F1210;
   --rp-dominant-bg-rgb: 15, 18, 16;
   --rp-dominant-canvas: #090B0A;
 
-  /* 30% Secondary Structures (Elevated Surfaces) */
+  /* 30% Secondary */
   --rp-secondary-surface: #181D1A;
   --rp-secondary-surface-rgb: 24, 29, 26;
   --rp-secondary-border: #28312B;
   --rp-secondary-border-hover: #3E4C43;
   --rp-secondary-divider: #222924;
 
-  /* Text Tier (Anti-Halation Balanced) */
+  /* Interactive Surface States */
+  --rp-surface-hover: #1E2520;
+  --rp-surface-active: #252E28;
+  --rp-surface-selected: #1A2332;
+
+  /* Text */
   --rp-text-dominant: #E6EAE7;
   --rp-text-secondary: #9AA39D;
-  --rp-text-muted: #6C756F;
+  --rp-text-muted: #7A847E;
   --rp-text-inverse: #0F1210;
+  --rp-text-placeholder: #5C665F;
 
-  /* 10% Accent (Luminous in Dark Environments) */
+  /* 10% Accent */
   --rp-accent-primary: #3B82F6;
   --rp-accent-primary-hover: #60A5FA;
-  --rp-accent-secondary: #3D7A35;
-  --rp-accent-secondary-hover: #4D9A42;
+  --rp-accent-primary-light: #1E3A5F;
+  --rp-accent-secondary: #2DD4BF;
+  --rp-accent-secondary-hover: #5EEAD4;
   --rp-accent-focus-ring: rgba(59, 130, 246, 0.35);
 
-  /* 5% Semantic Status */
+  /* 5% Semantic */
   --rp-semantic-success: #34D399;
   --rp-semantic-success-bg: rgba(52, 211, 153, 0.12);
+  --rp-semantic-success-text: #6EE7B7;
   --rp-semantic-warning: #FBBF24;
   --rp-semantic-warning-bg: rgba(251, 191, 36, 0.12);
+  --rp-semantic-warning-text: #FCD34D;
   --rp-semantic-danger: #F87171;
   --rp-semantic-danger-bg: rgba(248, 113, 113, 0.12);
+  --rp-semantic-danger-text: #FCA5A5;
   --rp-semantic-info: #38BDF8;
   --rp-semantic-info-bg: rgba(56, 189, 248, 0.12);
+  --rp-semantic-info-text: #7DD3FC;
 
-  /* Modal Overlay in Dark Mode */
+  /* Modal Overlay */
   --rp-modal-overlay-bg: rgba(0, 0, 0, 0.65);
+
+  /* Elevation (Lighter shadows for dark mode) */
+  --rp-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --rp-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --rp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --rp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --rp-shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
 }

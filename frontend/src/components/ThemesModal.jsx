@@ -114,6 +114,17 @@ export default function ThemesModal({
     setSelectedThemeId(currentTheme || 'default');
   }, [currentTheme]);
 
+  // Handle Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleCardClick = (theme) => {
@@ -129,7 +140,7 @@ export default function ThemesModal({
   };
 
   return (
-    <div className="app-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+    <div className="app-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Theme Selection">
       <div className="app-modal-card themes-modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Header with Palette Icon, Title, and Red Circular (X) Button - Seamless, No Border Line */}
         <div className="themes-modal-header">

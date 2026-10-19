@@ -1,28 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import JobDiscoveryEngine from './components/JobDiscoveryEngine';
 import JobList from './components/JobList';
 import ActivityFeed from './components/ActivityFeed';
 import JobModal from './components/JobModal';
-import ToolsView from './components/ToolsView';
-import GenerationView from './components/GenerationView';
-import ProfileView from './components/ProfileView';
-import AnalyticsView from './components/AnalyticsView';
-import AutomationView from './components/AutomationView';
 import ThemesModal from './components/ThemesModal';
 import SettingsModal from './components/SettingsModal';
 import HelpPrivacyModal from './components/HelpPrivacyModal';
 import AuthModal from './components/AuthModal';
-import { INITIAL_JOBS, INITIAL_ACTIVITIES } from './data/mockData';
+import NotificationCenter from './components/NotificationCenter';
+import ConfirmDialog from './components/ConfirmDialog';
+import ErrorBoundary from './components/ErrorBoundary';
+import MandatoryProfileGate from './components/MandatoryProfileGate';
+import { GenericPageSkeleton } from './components/SkeletonLoader';
+import { ToastProvider, useToast } from './components/ToastContext';
 import { apiService } from './services/api';
-import { Play, CheckCircle2 } from 'lucide-react';
 import './components/UniversalModal.css';
 import './App.css';
 
+// Code Splitting with React.lazy() for non-initial heavy views (Audit Item 7)
+const GenerationView = lazy(() => import('./components/GenerationView'));
+const AutomationView = lazy(() => import('./components/AutomationView'));
+const ProfileView = lazy(() => import('./components/ProfileView'));
+const AnalyticsView = lazy(() => import('./components/AnalyticsView'));
+const ToolsView = lazy(() => import('./components/ToolsView'));
+
 const VALID_TABS = ['explore', 'generation', 'automation', 'profile', 'analytics', 'tools'];
 
-export default function App() {
-  // 1. Persistent Routing on Refresh (Item 11)
+const DEFAULT_MENU_ITEMS = [
+  { id: 'explore', label: 'Explore', description: 'Job Discovery Radar & Live ATS Feed', enabled: true },
+  { id: 'generation', label: 'Generation', description: 'AI Resume & Cover Letter Studio', enabled: true },
+  { id: 'automation', label: 'Automation', description: 'Autonomous Application Pipelines', enabled: true },
+  { id: 'profile', label: 'Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
+  { id: 'analytics', label: 'Analytics', description: 'Application Metrics & Conversion Rates', enabled: true },
+  { id: 'tools', label: 'Tools', description: 'MCP Integrations & ATS Diagnostic Utilities', enabled: true }
+];
+
+function AppContent() {
+  const { showToast } = useToast();
+
+  // Navigation Menu Configuration
+  const [menuItems, setMenuItems] = useState(() => {
+    try {
+      const stored = localStorage.getItem('rp_menu_items');
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // Fallback to default
+    }
+    return DEFAULT_MENU_ITEMS;
+  });
+
+  // 1. Persistent Routing on Refresh
   const getInitialTab = () => {
     const hash = window.location.hash.replace('#', '').toLowerCase();
     if (VALID_TABS.includes(hash)) return hash;
@@ -34,38 +62,93 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(getInitialTab);
 
   // 2. Application Dataset & Pagination
-  const [jobs, setJobs] = useState(() => INITIAL_JOBS.slice(0, 10));
-  const [totalJobsCount, setTotalJobsCount] = useState(15500);
+  const [jobs, setJobs] = useState([]);
+  const [totalJobsCount, setTotalJobsCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1550);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isProfileDriven, setIsProfileDriven] = useState(true);
+  const [activeProfileRoles, setActiveProfileRoles] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [workMode, setWorkMode] = useState('All');
-  const [activities, setActivities] = useState(INITIAL_ACTIVITIES);
-  const [discoveryStats, setDiscoveryStats] = useState({ totalOpportunities: 15500, networkStatus: 'ACTIVE' });
+  const [activeOrigin, setActiveOrigin] = useState('all');
+  const [isMarkedOnly, setIsMarkedOnly] = useState(false);
+  const [harvestStatus, setHarvestStatus] = useState(null);
+  const [isHarvesting, setIsHarvesting] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [discoveryStats, setDiscoveryStats] = useState({ totalOpportunities: 0, networkStatus: 'ACTIVE', topCompanies: [], sources: [] });
   const [selectedJob, setSelectedJob] = useState(null);
-  const [toastMessage, setToastMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedHistoryDay, setSelectedHistoryDay] = useState(null);
+  const [historyOptions, setHistoryOptions] = useState([]);
 
-  // 3. User & Auth State (Item 5 & 13)
+  // 3. User & Auth State (Account identity of the logged-in person)
   const [currentUser, setCurrentUser] = useState(() => {
     const stored = localStorage.getItem('rp_user');
     return stored ? JSON.parse(stored) : {
-      id: 'usr_kushal_101',
-      name: 'Kushal Kumar',
-      email: 'kushalkumar.pulakanti@gmail.com',
+      id: 'usr_guest',
+      name: 'Guest User',
+      email: '',
       avatar: 'avatar_1',
-      authProvider: 'google'
+      authProvider: 'local'
     };
   });
 
-  // 4. Modals & Popups State (Unified Design System - Item 14)
+  // Candidate Profile State (Resume profile data, independent from login account)
+  const [candidateProfile, setCandidateProfile] = useState(() => {
+    const stored = localStorage.getItem('rp_candidate_profile');
+    return stored ? JSON.parse(stored) : {
+      name: '',
+      title: '',
+      email: '',
+      avatar: 'avatar_1'
+    };
+  });
+
+  // Stage 1: Active Candidate Profile Identity & Mandatory Completion Gate
+  const [activeCandidateProfile, setActiveCandidateProfile] = useState(() => {
+    return {
+      id: 'default',
+      name: 'Primary Profile',
+      isComplete: false
+    };
+  });
+  const [profileValidation, setProfileValidation] = useState(null);
+  const [isGateModalOpen, setIsGateModalOpen] = useState(false);
+
+  const checkProfileValidation = useCallback(async () => {
+    try {
+      const val = await apiService.getActiveProfileValidation();
+      if (val) {
+        setProfileValidation(val);
+        setActiveCandidateProfile(prev => {
+          const wasComplete = prev.isComplete;
+          const nowComplete = Boolean(val.isComplete);
+          // If profile just transitioned to 100% complete, show success popup
+          if (!wasComplete && nowComplete) {
+            setIsGateModalOpen(true);
+          }
+          return {
+            id: val.profileId || prev.id || 'default',
+            name: val.profileName || prev.name || 'Primary Profile',
+            isComplete: nowComplete
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('Profile validation check notice:', e);
+    }
+  }, []);
+
+  // 4. Modals & Popups State
   const [isThemesModalOpen, setIsThemesModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isNotifCenterOpen, setIsNotifCenterOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [authModal, setAuthModal] = useState({ isOpen: false, view: 'login' });
 
-  // 5. Theme State (Item 6, 7, 8, 15)
+  // 5. Theme State
   const [currentTheme, setCurrentTheme] = useState(() => {
     return localStorage.getItem('rp_theme') || 'default';
   });
@@ -148,52 +231,180 @@ export default function App() {
     localStorage.setItem('rp_active_tab', tabId);
   };
 
+  const handleUpdateMenuSettings = (newItems) => {
+    setMenuItems(newItems);
+    localStorage.setItem('rp_menu_items', JSON.stringify(newItems));
+    // If the active tab has been disabled, navigate smoothly to the first enabled tab
+    const currentItem = newItems.find(i => i.id === activeTab);
+    if (!currentItem || currentItem.enabled === false) {
+      const firstEnabled = newItems.find(i => i.enabled !== false);
+      if (firstEnabled) {
+        handleTabChange(firstEnabled.id);
+      }
+    }
+  };
+
+  // Expose test helper on window for automated multi-theme/mode screenshot capture
+  useEffect(() => {
+    window.__setTestState = {
+      setTab: handleTabChange,
+      setTheme: (t) => {
+        setCurrentTheme(t);
+        localStorage.setItem('rp_theme', t);
+        document.documentElement.setAttribute('data-theme', t);
+      },
+      setMode: (m) => {
+        setColorMode(m);
+        localStorage.setItem('rp_color_mode', m);
+        document.documentElement.setAttribute('data-mode', m);
+      },
+      openSettings: () => setIsSettingsModalOpen(true),
+      closeSettings: () => setIsSettingsModalOpen(false),
+      openThemes: () => setIsThemesModalOpen(true),
+      closeThemes: () => setIsThemesModalOpen(false),
+      openHelp: () => setIsHelpModalOpen(true),
+      closeHelp: () => setIsHelpModalOpen(false),
+      openNotifications: () => setIsNotifCenterOpen(true),
+      closeNotifications: () => setIsNotifCenterOpen(false),
+      closeAllModals: () => {
+        setIsSettingsModalOpen(false);
+        setIsThemesModalOpen(false);
+        setIsHelpModalOpen(false);
+        setIsNotifCenterOpen(false);
+        setShowLogoutConfirm(false);
+      }
+    };
+  }, []);
+
   // Helper to fetch jobs page from SQLite backend
-  const loadJobsPage = async (page = 1, search = '', comp = null, mode = 'All') => {
+  const loadJobsPage = async (page = 1, search = searchQuery, comp = selectedCompany, mode = workMode, profileDriven = isProfileDriven, orig = activeOrigin, dayOffset = selectedHistoryDay?.dayOffset, marked = isMarkedOnly) => {
+    setIsLoading(true);
     try {
       const res = await apiService.getJobs({
         page,
         limit: 10,
         search,
         company: comp && comp !== 'All' ? comp : undefined,
-        workMode: mode && mode !== 'All' ? mode : undefined
+        workMode: mode && mode !== 'All' ? mode : undefined,
+        profileDriven,
+        origin: orig && orig !== 'all' ? orig : undefined,
+        dayOffset: dayOffset !== undefined && dayOffset !== null ? dayOffset : undefined,
+        marked: marked ? true : undefined
       });
       if (res && res.jobs) {
         setJobs(res.jobs);
-        setTotalJobsCount(res.total || 15500);
+        setTotalJobsCount(res.total !== undefined ? res.total : 0);
         setCurrentPage(res.page || 1);
-        setTotalPages(res.totalPages || 1550);
+        setTotalPages(res.totalPages !== undefined ? res.totalPages : 0);
+        if (res.activeProfileRoles && res.activeProfileRoles.length > 0) {
+          setActiveProfileRoles(res.activeProfileRoles);
+        }
       }
     } catch (err) {
       console.warn('Jobs load notice, fallback:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Live Profile Sync Listener: Whenever Profile is saved, Explore immediately synchronizes
+  useEffect(() => {
+    const handleProfileSync = () => {
+      checkProfileValidation();
+      loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin);
+      apiService.getDiscoveryStats().then(stats => {
+        if (stats) setDiscoveryStats(stats);
+      });
+      apiService.getHarvestStatus().then(status => {
+        if (status) setHarvestStatus(status);
+      });
+    };
+
+    const handleCandidateUpdate = (e) => {
+      if (e.detail) {
+        setCandidateProfile(prev => {
+          const updated = { ...prev, ...e.detail };
+          localStorage.setItem('rp_candidate_profile', JSON.stringify(updated));
+          return updated;
+        });
+        checkProfileValidation();
+      }
+    };
+
+    const handleUserUpdate = (e) => {
+      if (e.detail) {
+        setCurrentUser(prev => {
+          const updated = { ...prev, ...e.detail };
+          localStorage.setItem('rp_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+    };
+    window.addEventListener('rp_profile_updated', handleProfileSync);
+    window.addEventListener('rp_candidate_updated', handleCandidateUpdate);
+    window.addEventListener('rp_user_updated', handleUserUpdate);
+    return () => {
+      window.removeEventListener('rp_profile_updated', handleProfileSync);
+      window.removeEventListener('rp_candidate_updated', handleCandidateUpdate);
+      window.removeEventListener('rp_user_updated', handleUserUpdate);
+    };
+  }, [searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, checkProfileValidation]);
 
   // Load initial backend data & verify current session
   useEffect(() => {
     let isMounted = true;
     async function loadBackendData() {
       try {
-        const [jobsRes, fetchedActivities, fetchedStats, userSession] = await Promise.all([
-          apiService.getJobs({ page: 1, limit: 10 }),
+        const [jobsRes, fetchedActivities, fetchedStats, userSession, hStatus, histRes, profData, menuData] = await Promise.all([
+          apiService.getJobs({ page: 1, limit: 10, profileDriven: true }),
           apiService.getActivities(),
           apiService.getDiscoveryStats(),
-          apiService.getMe()
+          apiService.getMe(),
+          apiService.getHarvestStatus(),
+          apiService.getHistorySummary(),
+          apiService.getProfile().catch(() => null),
+          apiService.getMenuSettings().catch(() => null)
         ]);
         if (isMounted) {
           if (jobsRes && jobsRes.jobs) {
             setJobs(jobsRes.jobs);
-            setTotalJobsCount(jobsRes.total || 15500);
+            setTotalJobsCount(jobsRes.total !== undefined ? jobsRes.total : 0);
             setCurrentPage(jobsRes.page || 1);
-            setTotalPages(jobsRes.totalPages || 1550);
+            setTotalPages(jobsRes.totalPages !== undefined ? jobsRes.totalPages : 0);
+            if (jobsRes.activeProfileRoles && jobsRes.activeProfileRoles.length > 0) {
+              setActiveProfileRoles(jobsRes.activeProfileRoles);
+            }
           }
           if (fetchedActivities && fetchedActivities.length > 0) setActivities(fetchedActivities);
           if (fetchedStats) setDiscoveryStats(fetchedStats);
+          if (hStatus) setHarvestStatus(hStatus);
+          if (histRes && histRes.length > 0) {
+            setHistoryOptions(histRes);
+            setSelectedHistoryDay(histRes[0]);
+          }
           if (userSession && userSession.user) {
             setCurrentUser(userSession.user);
             localStorage.setItem('rp_user', JSON.stringify(userSession.user));
           }
+          if (menuData && Array.isArray(menuData) && menuData.length > 0) {
+            setMenuItems(menuData);
+            localStorage.setItem('rp_menu_items', JSON.stringify(menuData));
+          }
+          if (profData && (profData.general?.fullName || profData.contacts?.fullName || profData.summary)) {
+            const cObj = {
+              name: profData.general?.fullName || profData.contacts?.fullName || '',
+              title: profData.summary || profData.general?.bio || '',
+              email: profData.general?.email || profData.contacts?.email || '',
+              avatar: profData.avatar || 'avatar_1'
+            };
+            setCandidateProfile(cObj);
+            localStorage.setItem('rp_candidate_profile', JSON.stringify(cObj));
+          } else {
+            setCandidateProfile({ name: '', title: '', email: '', avatar: 'avatar_1' });
+            localStorage.removeItem('rp_candidate_profile');
+          }
         }
+        await checkProfileValidation();
       } catch (err) {
         console.warn('Backend load notice, falling back to local dataset:', err);
       } finally {
@@ -202,14 +413,7 @@ export default function App() {
     }
     loadBackendData();
     return () => { isMounted = false; };
-  }, []);
-
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3200);
-  };
+  }, [checkProfileValidation]);
 
   const handleApply = async (id, company, role) => {
     setJobs(prev => prev.map(job => {
@@ -223,7 +427,7 @@ export default function App() {
     const isNowApplied = !targetJob?.applied;
 
     if (isNowApplied) {
-      showToast(`Applied successfully to ${role} at ${company}!`);
+      showToast(`Applied successfully to ${role} at ${company}!`, 'success');
       try {
         await apiService.applyJob(id);
       } catch (e) {
@@ -246,62 +450,181 @@ export default function App() {
         console.warn('Activity logged locally', e);
       }
     } else {
-      showToast(`Application withdrawn for ${role} at ${company}`);
+      showToast(`Application withdrawn for ${role} at ${company}`, 'info');
     }
   };
 
+  const handleToggleMarker = async (id) => {
+    try {
+      const res = await apiService.toggleJobMarker(id);
+      const newMarked = res.marked;
+      setJobs(prev => prev.map(j => j.id === id ? { ...j, marked: newMarked } : j));
+      if (selectedJob && selectedJob.id === id) {
+        setSelectedJob(prev => ({ ...prev, marked: newMarked }));
+      }
+      showToast(newMarked ? 'Job marked / bookmarked!' : 'Marker removed', 'info');
+      if (isMarkedOnly && !newMarked) {
+        loadJobsPage(currentPage, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, selectedHistoryDay?.dayOffset, true);
+      }
+    } catch (e) {
+      console.warn('Failed to toggle job marker:', e);
+    }
+  };
+
+  const handleToggleMarkedOnly = () => {
+    const nextMarked = !isMarkedOnly;
+    setIsMarkedOnly(nextMarked);
+    loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, selectedHistoryDay?.dayOffset, nextMarked);
+  };
+
+  const handleHarvestActivity = useCallback((act) => {
+    if (!act) return;
+    setActivities(prev => {
+      if (prev.some(a => a.id === act.id || a.text === act.text)) return prev;
+      return [act, ...prev.slice(0, 49)];
+    });
+  }, []);
+
+  const handleJobDiscovered = useCallback((job) => {
+    if (!job) return;
+    setJobs(prev => {
+      if (prev.some(j => j.id === job.id)) return prev;
+      return [job, ...prev.slice(0, 9)];
+    });
+    setTotalJobsCount(prev => prev + 1);
+  }, []);
+
   const handleSelectCompanyFromRadar = (companyName) => {
     setSelectedCompany(companyName);
-    loadJobsPage(1, searchQuery, companyName, workMode);
+    loadJobsPage(1, searchQuery, companyName, workMode, isProfileDriven, activeOrigin, selectedHistoryDay?.dayOffset);
+  };
+
+  const handleSelectHistoryDay = (day) => {
+    setSelectedHistoryDay(day);
+    loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, day.dayOffset);
+    if (day.dayOffset > 0) {
+      showToast(`Viewing historical archive: ${day.label} (${day.formattedDate})`, 'info');
+    } else {
+      showToast("Returned to Today's live discovery explorer", 'success');
+    }
+  };
+
+  const handleOriginChange = (orig) => {
+    setActiveOrigin(orig);
+    loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, orig);
+  };
+
+  const handleHarvestSync = async (providers = null) => {
+    setIsHarvesting(true);
+    showToast('Connecting to direct ATS public feeds (Greenhouse, Ashby, Lever, RemoteOK)...', 'info');
+    try {
+      const res = await apiService.syncHarvest(providers, 15);
+      showToast(`Harvest complete! ${res.totalInserted || 0} new opportunities ingested into search (${res.totalHarvested || 0} crawled).`, 'success');
+      const updatedStatus = await apiService.getHarvestStatus();
+      if (updatedStatus) setHarvestStatus(updatedStatus);
+      loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin);
+
+      // Log Harvest event into live Activity Feed
+      const harvestAct = {
+        id: `act_${Date.now()}`,
+        time: 'Just now',
+        platform: 'Harvester',
+        iconType: 'harvester',
+        text: `Live crawl finished: ${res.totalHarvested || 0} jobs scanned, ${res.totalInserted || 0} new opportunities ingested`,
+        countBadge: 'Harvested'
+      };
+      setActivities(prev => [harvestAct, ...prev]);
+      try {
+        await apiService.addActivity(harvestAct);
+      } catch (e) {}
+    } catch (err) {
+      showToast('Harvest failed to reach some boards.', 'error');
+    } finally {
+      setIsHarvesting(false);
+    }
   };
 
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    loadJobsPage(1, query, selectedCompany, workMode);
+    loadJobsPage(1, query, selectedCompany, workMode, isProfileDriven, activeOrigin);
   };
 
   const handleWorkModeChange = (mode) => {
     setWorkMode(mode);
-    loadJobsPage(1, searchQuery, selectedCompany, mode);
+    loadJobsPage(1, searchQuery, selectedCompany, mode, isProfileDriven, activeOrigin);
   };
 
   const handlePageChange = (newPage) => {
-    loadJobsPage(newPage, searchQuery, selectedCompany, workMode);
+    loadJobsPage(newPage, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin);
   };
 
   const handleClearActivities = async () => {
     setActivities([]);
     try {
       await apiService.clearActivities();
+      showToast('Activity log cleared.', 'info');
     } catch (e) {
       console.warn('Activities cleared locally', e);
     }
   };
 
-  const handleResetActivities = () => {
-    setActivities(INITIAL_ACTIVITIES);
+  const handleResetActivities = async () => {
+    try {
+      const actRes = await apiService.getActivities();
+      setActivities(actRes || []);
+      showToast('Activity log refreshed.', 'info');
+    } catch {
+      setActivities([]);
+    }
   };
 
-  const handleExport = () => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + ["Role,Company,Source,WorkMode,ATS Score,Salary,Location,DateTime,Status"].join(",") + "\n"
-      + jobs.map(j => `"${j.role}","${j.company}","${j.source}","${j.workMode}",${j.atsScore},"${j.salary}","${j.location}","${j.dateTime}","${j.applied ? 'Applied' : 'Pending'}"`).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `resume_porter_opportunities_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast(`Exported ${jobs.length} jobs to CSV`);
+  // Full Microsoft Excel & Spreadsheet UTF-8 CSV Export (Stage 1 Requirement 9)
+  const handleExport = async () => {
+    try {
+      showToast('Preparing complete Excel/CSV export for all matching records...', 'info');
+      const exportUrl = apiService.getExportJobsUrl({
+        search: searchQuery,
+        company: selectedCompany && selectedCompany !== 'All' ? selectedCompany : undefined,
+        workMode: workMode && workMode !== 'All' ? workMode : undefined,
+        profileDriven: isProfileDriven,
+        origin: activeOrigin && activeOrigin !== 'all' ? activeOrigin : undefined,
+        dayOffset: selectedHistoryDay?.dayOffset
+      });
+
+      // Stream full server CSV file with formula injection protection
+      const link = document.createElement('a');
+      link.href = exportUrl;
+      link.setAttribute('download', `Skill2Role_Export_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast('Complete dataset export initiated!', 'success');
+
+      // Log export action into Activity Feed
+      const exportAct = {
+        id: `act_${Date.now()}`,
+        time: 'Just now',
+        platform: 'System',
+        iconType: 'check',
+        text: `Exported filtered opportunities to sanitized Excel/CSV spreadsheet`,
+        countBadge: 'Exported'
+      };
+      setActivities(prev => [exportAct, ...prev]);
+      try {
+        await apiService.addActivity(exportAct);
+      } catch (e) {}
+    } catch (e) {
+      showToast('Export failed, please try again.', 'error');
+    }
   };
 
-  // Avatar Selection Handler (5 Static Avatars - Item 13)
+  // Avatar Selection Handler
   const handleUpdateAvatar = async (avatarId) => {
     const updated = { ...currentUser, avatar: avatarId };
     setCurrentUser(updated);
     localStorage.setItem('rp_user', JSON.stringify(updated));
-    showToast(`Profile avatar updated.`);
+    showToast(`Profile avatar updated.`, 'success');
     try {
       await apiService.updateAvatar(avatarId);
     } catch (e) {
@@ -309,107 +632,178 @@ export default function App() {
     }
   };
 
-  // Logout Handler
-  const handleLogout = () => {
+  // Logout Handler with Confirmation
+  const handleExecuteLogout = () => {
     localStorage.removeItem('rp_auth_token');
     localStorage.removeItem('rp_user');
     setCurrentUser(null);
-    showToast('You have been logged out.');
+    setShowLogoutConfirm(false);
+    showToast('You have been logged out.', 'info');
   };
 
   return (
     <div className={`app-shell viewport-locked ${activeTab === 'explore' ? 'explore-view' : ''} ${activeTab === 'generation' ? 'generation-view-screen' : ''}`} style={{ position: 'relative' }}>
-      {/* Universal Top Navigation Bar with Embedded Profile Menu */}
+      {/* Liquid Glass Ambient Blurred Color Bubbles (Active for Glass Theme) */}
+      <div className="glass-ambient-background" aria-hidden="true">
+        <div className="glass-orb glass-orb-1"></div>
+        <div className="glass-orb glass-orb-2"></div>
+        <div className="glass-orb glass-orb-3"></div>
+        <div className="glass-orb glass-orb-4"></div>
+        <div className="glass-orb glass-orb-5"></div>
+      </div>
+
+      {/* Universal Top Navigation Bar with Embedded Profile Menu & Notifications */}
       <Navbar 
         activeTab={activeTab} 
         setActiveTab={handleTabChange}
         currentUser={currentUser}
+        candidateProfile={candidateProfile}
+        activeCandidateProfile={activeCandidateProfile}
+        onProfileSwitched={(id) => {
+          checkProfileValidation();
+          loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, selectedHistoryDay?.dayOffset);
+        }}
+        onOpenCreateProfile={() => handleTabChange('profile')}
+        onOpenProfileGate={() => setIsGateModalOpen(true)}
         onOpenAuthModal={(v = 'login') => setAuthModal({ isOpen: true, view: v })}
         onOpenHelp={() => setIsHelpModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
         onOpenThemes={() => setIsThemesModalOpen(true)}
-        onLogout={handleLogout}
+        onOpenNotifications={() => setIsNotifCenterOpen(true)}
+        unreadNotifsCount={0}
+        onLogout={() => setShowLogoutConfirm(true)}
+        menuItems={menuItems}
       />
 
       {/* 1. Explore Tab */}
       {activeTab === 'explore' && (
-        <main className="content-container explore-content-container">
-          {/* Hardware Accelerated Radar Engine */}
-          <JobDiscoveryEngine 
-            onSelectCompany={handleSelectCompanyFromRadar}
-            selectedSource={selectedCompany}
-            stats={discoveryStats}
-          />
-
-          {/* Lower Two-Column Grid: Job List & Activity Feed */}
-          <div className="main-two-column-layout">
-            <JobList 
-              jobs={jobs}
-              totalCount={totalJobsCount}
-              page={currentPage}
-              pageSize={10}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              companyFilter={selectedCompany}
-              onClearCompanyFilter={() => handleSelectCompanyFromRadar('All')}
+        <ErrorBoundary fallbackTitle="Could not load Job Discovery Radar">
+          <main className="content-container explore-content-container explore-view">
+            {/* Hardware Accelerated Radar Engine */}
+            <JobDiscoveryEngine 
+              totalJobs={totalJobsCount}
+              onSelectCompany={handleSelectCompanyFromRadar}
+              selectedSource={selectedCompany}
+              stats={discoveryStats}
               searchQuery={searchQuery}
-              onSearchChange={handleSearchChange}
-              activeWorkMode={workMode}
-              onWorkModeChange={handleWorkModeChange}
-              onApply={handleApply}
-              onSelectJob={setSelectedJob}
-              onExport={handleExport}
+              activeOrigin={activeOrigin}
+              selectedDay={selectedHistoryDay}
+              onJobDiscovered={handleJobDiscovered}
+              onHarvestActivity={handleHarvestActivity}
+              isProfileComplete={activeCandidateProfile?.isComplete}
+              onOpenProfileGate={() => setIsGateModalOpen(true)}
             />
 
-            <ActivityFeed 
-              activities={activities}
-              onClear={handleClearActivities}
-              onReset={handleResetActivities}
-            />
-          </div>
-        </main>
+            {/* Lower Two-Column Grid: Job List & Activity Feed */}
+            <div className="main-two-column-layout">
+              <JobList 
+                jobs={jobs}
+                totalCount={totalJobsCount}
+                page={currentPage}
+                pageSize={10}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                companyFilter={selectedCompany}
+                onClearCompanyFilter={() => handleSelectCompanyFromRadar('All')}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                activeWorkMode={workMode}
+                onWorkModeChange={handleWorkModeChange}
+                onApply={handleApply}
+                onSelectJob={setSelectedJob}
+                onExport={handleExport}
+                isLoading={isLoading}
+                profileDriven={isProfileDriven}
+                activeProfileRoles={activeProfileRoles}
+                onToggleProfileDriven={() => {
+                  const nextMode = !isProfileDriven;
+                  setIsProfileDriven(nextMode);
+                  loadJobsPage(1, searchQuery, selectedCompany, workMode, nextMode, activeOrigin, selectedHistoryDay?.dayOffset);
+                }}
+                selectedHistoryDay={selectedHistoryDay}
+                historyOptions={historyOptions}
+                onSelectHistoryDay={handleSelectHistoryDay}
+                onHarvestSync={handleHarvestSync}
+                isHarvesting={isHarvesting}
+                isMarkedOnly={isMarkedOnly}
+                onToggleMarkedOnly={handleToggleMarkedOnly}
+                onToggleMarker={handleToggleMarker}
+                onImportSuccess={(res) => {
+                  showToast(`Imported ${res?.inserted || 0} jobs successfully (${res?.skipped || 0} duplicates skipped)`, 'success');
+                  loadJobsPage(1, searchQuery, selectedCompany, workMode, isProfileDriven, activeOrigin, selectedHistoryDay?.dayOffset);
+                }}
+              />
+
+              <ActivityFeed 
+                activities={activities}
+                onClear={handleClearActivities}
+                onReset={handleResetActivities}
+              />
+            </div>
+          </main>
+        </ErrorBoundary>
       )}
 
-      {/* 2. Generation View */}
+      {/* 2. Generation View (Lazy Loaded) */}
       {activeTab === 'generation' && (
-        <main className="content-container generation-content-container">
-          <GenerationView />
-        </main>
+        <ErrorBoundary fallbackTitle="Could not load Resume Generation Studio">
+          <main className="content-container generation-content-container">
+            <Suspense fallback={<GenericPageSkeleton />}>
+              <GenerationView />
+            </Suspense>
+          </main>
+        </ErrorBoundary>
       )}
 
-      {/* 3. Automated Application Pipelines View */}
+      {/* 3. Automated Application Pipelines View (Lazy Loaded) */}
       {activeTab === 'automation' && (
-        <main className="content-container automation-content-container">
-          <AutomationView onNavigateTab={handleTabChange} />
-        </main>
+        <ErrorBoundary fallbackTitle="Could not load Automation Pipeline">
+          <main className="content-container automation-content-container">
+            <Suspense fallback={<GenericPageSkeleton />}>
+              <AutomationView onNavigateTab={handleTabChange} />
+            </Suspense>
+          </main>
+        </ErrorBoundary>
       )}
 
-      {/* 4. Profile & Preferences View */}
+      {/* 4. Profile & Preferences View (Lazy Loaded) */}
       {activeTab === 'profile' && (
-        <main className="content-container profile-content-container">
-          <ProfileView />
-        </main>
+        <ErrorBoundary fallbackTitle="Could not load Candidate Profile">
+          <main className="content-container profile-content-container">
+            <Suspense fallback={<GenericPageSkeleton />}>
+              <ProfileView />
+            </Suspense>
+          </main>
+        </ErrorBoundary>
       )}
 
-      {/* 5. Application Analytics View */}
+      {/* 5. Application Analytics View (Lazy Loaded) */}
       {activeTab === 'analytics' && (
-        <main className="content-container analytics-content-container">
-          <AnalyticsView />
-        </main>
+        <ErrorBoundary fallbackTitle="Could not load Analytics Dashboard">
+          <main className="content-container analytics-content-container">
+            <Suspense fallback={<GenericPageSkeleton />}>
+              <AnalyticsView />
+            </Suspense>
+          </main>
+        </ErrorBoundary>
       )}
 
-      {/* 6. Tools Menu Tab */}
+      {/* 6. Tools Menu Tab (Lazy Loaded) */}
       {activeTab === 'tools' && (
-        <main className="content-container tools-content-container">
-          <ToolsView onBackToExplore={() => handleTabChange('explore')} />
-        </main>
+        <ErrorBoundary fallbackTitle="Could not load AI Tools">
+          <main className="content-container tools-content-container">
+            <Suspense fallback={<GenericPageSkeleton />}>
+              <ToolsView onBackToExplore={() => handleTabChange('explore')} />
+            </Suspense>
+          </main>
+        </ErrorBoundary>
       )}
 
       {/* ======================================================================
-          UNIVERSAL POPUP & MODAL SYSTEM (Item 14)
+          UNIVERSAL POPUP & MODAL SYSTEM
           ====================================================================== */}
 
-      {/* 1. Themes Modal (Exact Replica of User Sketch) */}
+      {/* 1. Themes Modal */}
       <ThemesModal 
         isOpen={isThemesModalOpen}
         onClose={() => setIsThemesModalOpen(false)}
@@ -423,29 +817,31 @@ export default function App() {
         setDataFlowAnimation={setDataFlowAnimation}
       />
 
-      {/* 2. Settings Modal with MCP & AI API Integrations (Item 9 & 13) */}
+      {/* 2. Settings Modal with MCP & AI API Integrations */}
       <SettingsModal 
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         currentUser={currentUser}
         onUpdateAvatar={handleUpdateAvatar}
+        menuItems={menuItems}
+        onUpdateMenu={handleUpdateMenuSettings}
       />
 
-      {/* 3. Help, Privacy Guidelines & Issue Resolution Tickets (Item 12) */}
+      {/* 3. Help, Privacy Guidelines & Issue Resolution Tickets */}
       <HelpPrivacyModal 
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}
         currentUser={currentUser}
       />
 
-      {/* 4. Authentication Suite Modal (Login, Register, Forgot Password, Google Auth - Item 5) */}
+      {/* 4. Authentication Suite Modal */}
       <AuthModal 
         isOpen={authModal.isOpen}
         initialView={authModal.view}
         onClose={() => setAuthModal({ isOpen: false, view: 'login' })}
         onAuthSuccess={(user) => {
           setCurrentUser(user);
-          showToast(`Welcome, ${user.name}!`);
+          showToast(`Welcome back, ${user.name}!`, 'success');
         }}
       />
 
@@ -455,16 +851,51 @@ export default function App() {
           job={selectedJob} 
           onClose={() => setSelectedJob(null)}
           onApply={handleApply}
+          onToggleMarker={handleToggleMarker}
         />
       )}
 
-      {/* Floating Action Feedback Toast */}
-      {toastMessage && (
-        <div className="toast-floating-container" role="status">
-          <CheckCircle2 size={18} className="toast-icon" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+      {/* 6. Global Notification Center Drawer */}
+      <NotificationCenter
+        isOpen={isNotifCenterOpen}
+        onClose={() => setIsNotifCenterOpen(false)}
+        onNavigateTab={handleTabChange}
+      />
+
+      {/* 7. Destructive Action Confirmation for Logout */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="Sign Out of Resume Porter?"
+        message="You will need to sign in again to access saved tailored CVs and active automation pipelines."
+        confirmLabel="Sign Out"
+        cancelLabel="Stay Logged In"
+        variant="danger"
+        onConfirm={handleExecuteLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
+
+      {/* 8. Stage 1 Mandatory Profile Completion Gate Modal */}
+      <MandatoryProfileGate
+        isOpen={isGateModalOpen}
+        onClose={() => setIsGateModalOpen(false)}
+        validationData={profileValidation}
+        onNavigateToProfile={() => {
+          setIsGateModalOpen(false);
+          handleTabChange('profile');
+        }}
+        onStartExplorer={() => {
+          setIsGateModalOpen(false);
+          handleTabChange('explore');
+        }}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }

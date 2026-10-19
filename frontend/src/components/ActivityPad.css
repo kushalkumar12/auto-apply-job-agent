@@ -1,0 +1,620 @@
+/* ==========================================================================
+   ACTIVITY PAD — COMPONENT STYLES
+   Supports all 4 Themes (Default, Difference, Glass, Minimal)
+   and both 2 Modes (Light / Dark) via canonical CSS variables & theme hooks.
+   ========================================================================== */
+
+/* 1. Main Card Container */
+.activity-pad-container {
+  background: var(--rp-secondary-surface, #ffffff);
+  border: 1px solid var(--rp-secondary-border, #e2e8f0);
+  border-radius: var(--rp-radius-lg, 14px);
+  padding: 22px 24px;
+  color: var(--rp-text-dominant, #0f172a);
+  font-family: var(--rp-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  box-shadow: var(--rp-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.04));
+  margin-bottom: 24px;
+  position: relative;
+  overflow: visible;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* -------------------------------------------------------------------------
+   THEME HOOKS (4 Themes x 2 Modes)
+   ------------------------------------------------------------------------- */
+
+/* Dark Mode (Default Theme Dark) */
+[data-mode="dark"] .activity-pad-container {
+  background: var(--rp-secondary-surface, #181d1a);
+  border-color: var(--rp-secondary-border, #28312b);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  color: var(--rp-text-dominant, #e6eae7);
+}
+
+/* Theme: Glass */
+[data-theme="glass"] .activity-pad-container {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
+}
+
+[data-theme="glass"][data-mode="dark"] .activity-pad-container {
+  background: rgba(24, 29, 26, 0.65);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Theme: Minimal */
+[data-theme="minimal"] .activity-pad-container {
+  background: #ffffff;
+  border: 1.5px solid #111412;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-pad-container {
+  background: #000000;
+  border: 1.5px solid #ffffff;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+/* Theme: Difference */
+[data-theme="difference"] .activity-pad-container {
+  background: var(--rp-secondary-surface, #ffffff);
+  border: 1px solid var(--rp-accent-secondary, #0d9488);
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
+}
+
+[data-theme="difference"][data-mode="dark"] .activity-pad-container {
+  background: #141b17;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  box-shadow: 0 4px 24px rgba(45, 212, 191, 0.1);
+}
+
+/* -------------------------------------------------------------------------
+   HEADER & METRICS ROW
+   ------------------------------------------------------------------------- */
+.activity-pad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.activity-pad-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.activity-pad-count {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--rp-text-dominant, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.activity-pad-label {
+  font-size: 13.5px;
+  color: var(--rp-text-secondary, #64748b);
+  font-weight: 400;
+}
+
+.activity-pad-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--rp-secondary-border, #cbd5e1);
+  color: var(--rp-text-muted, #94a3b8);
+  font-size: 11px;
+  font-style: normal;
+  font-family: serif;
+  cursor: help;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.activity-pad-info-icon:hover {
+  border-color: var(--rp-semantic-success, #10b981);
+  color: var(--rp-semantic-success, #10b981);
+}
+
+.activity-pad-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.activity-stat-highlight {
+  color: var(--rp-text-dominant, #0f172a);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.activity-year-dropdown-wrapper {
+  position: relative;
+}
+
+.activity-year-btn {
+  background: var(--rp-dominant-canvas, #f1f5f9);
+  border: 1px solid var(--rp-secondary-border, #cbd5e1);
+  color: var(--rp-text-dominant, #1e293b);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+[data-mode="dark"] .activity-year-btn {
+  background: #232a25;
+  border-color: #38423b;
+  color: #e2e8f0;
+}
+
+.activity-year-btn:hover {
+  border-color: var(--rp-semantic-success, #10b981);
+}
+
+.activity-year-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: var(--rp-secondary-surface, #ffffff);
+  border: 1px solid var(--rp-secondary-border, #cbd5e1);
+  border-radius: 6px;
+  box-shadow: var(--rp-shadow-md, 0 10px 25px rgba(0, 0, 0, 0.15));
+  z-index: 50;
+  min-width: 100px;
+  overflow: hidden;
+}
+
+[data-mode="dark"] .activity-year-menu {
+  background: #1c221e;
+  border-color: #38423b;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.activity-year-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--rp-text-dominant, #1e293b);
+  padding: 7px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.activity-year-item:hover,
+.activity-year-item.is-active {
+  background: var(--rp-surface-hover, #f1f5f9);
+  color: var(--rp-semantic-success, #059669);
+}
+
+/* -------------------------------------------------------------------------
+   FILTER PILLS ROW
+   ------------------------------------------------------------------------- */
+.activity-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rp-secondary-divider, #e2e8f0);
+  overflow-x: auto;
+}
+
+[data-mode="dark"] .activity-filter-row {
+  border-bottom-color: #262e28;
+}
+
+.activity-filter-pill {
+  background: var(--rp-dominant-canvas, #f1f5f9);
+  border: 1px solid var(--rp-secondary-border, #cbd5e1);
+  color: var(--rp-text-secondary, #64748b);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-mode="dark"] .activity-filter-pill {
+  background: #202722;
+  border-color: #313c34;
+  color: #94a3b8;
+}
+
+.activity-filter-pill:hover {
+  background: var(--rp-surface-hover, #e2e8f0);
+  color: var(--rp-text-dominant, #0f172a);
+}
+
+[data-mode="dark"] .activity-filter-pill:hover {
+  background: #2a332d;
+  color: #ffffff;
+}
+
+.activity-filter-pill.is-active {
+  background: var(--rp-semantic-success-bg, #ecfdf5);
+  border-color: var(--rp-semantic-success, #059669);
+  color: var(--rp-semantic-success, #059669);
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(5, 150, 105, 0.12);
+}
+
+[data-mode="dark"] .activity-filter-pill.is-active {
+  background: #064e3b;
+  border-color: #059669;
+  color: #34d399;
+}
+
+.activity-filter-badge {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  color: inherit;
+}
+
+[data-mode="dark"] .activity-filter-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* -------------------------------------------------------------------------
+   TWO-PANEL FLEX LAYOUT: HEATMAP (LEFT) + MINI TRADE GRAPH (RIGHT)
+   ------------------------------------------------------------------------- */
+.activity-pad-body-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.activity-heatmap-col {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rp-secondary-border, #cbd5e1) transparent;
+}
+
+.activity-heatmap-col::-webkit-scrollbar {
+  height: 5px;
+}
+
+.activity-heatmap-col::-webkit-scrollbar-thumb {
+  background: var(--rp-secondary-border, #cbd5e1);
+  border-radius: 3px;
+}
+
+/* Heatmap Month Groups */
+.activity-months-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+.activity-month-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.activity-month-weeks {
+  display: flex;
+  gap: 3px;
+}
+
+.activity-week-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Day Square Cells */
+.activity-day-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2.5px;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  position: relative;
+}
+
+.activity-day-cell:hover {
+  transform: scale(1.35);
+  z-index: 25;
+  filter: brightness(1.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+/* Density Palettes: Light Mode */
+.activity-day-cell.lvl-0 {
+  background-color: var(--rp-dominant-canvas, #e2e8f0);
+}
+
+.activity-day-cell.lvl-1 {
+  background-color: #86efac;
+}
+
+.activity-day-cell.lvl-2 {
+  background-color: #34d399;
+}
+
+.activity-day-cell.lvl-3 {
+  background-color: #10b981;
+}
+
+.activity-day-cell.lvl-4 {
+  background-color: #047857;
+}
+
+/* Density Palettes: Dark Mode */
+[data-mode="dark"] .activity-day-cell.lvl-0 {
+  background-color: #242c26;
+}
+
+[data-mode="dark"] .activity-day-cell.lvl-1 {
+  background-color: #14532d;
+}
+
+[data-mode="dark"] .activity-day-cell.lvl-2 {
+  background-color: #16a34a;
+}
+
+[data-mode="dark"] .activity-day-cell.lvl-3 {
+  background-color: #22c55e;
+}
+
+[data-mode="dark"] .activity-day-cell.lvl-4 {
+  background-color: #86efac;
+}
+
+/* Theme: Minimal Monochromatic High-Contrast override */
+[data-theme="minimal"] .activity-day-cell.lvl-0 {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+}
+
+[data-theme="minimal"] .activity-day-cell.lvl-1 {
+  background-color: #cbd5e1;
+}
+
+[data-theme="minimal"] .activity-day-cell.lvl-2 {
+  background-color: #94a3b8;
+}
+
+[data-theme="minimal"] .activity-day-cell.lvl-3 {
+  background-color: #475569;
+}
+
+[data-theme="minimal"] .activity-day-cell.lvl-4 {
+  background-color: #0f172a;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-day-cell.lvl-0 {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-day-cell.lvl-1 {
+  background-color: #3f3f46;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-day-cell.lvl-2 {
+  background-color: #71717a;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-day-cell.lvl-3 {
+  background-color: #a1a1aa;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-day-cell.lvl-4 {
+  background-color: #ffffff;
+}
+
+/* Month Name Label */
+.activity-month-label {
+  font-size: 11px;
+  color: var(--rp-text-muted, #94a3b8);
+  margin-top: 10px;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* -------------------------------------------------------------------------
+   MINI TRADE GRAPH PANEL (RIGHT SIDE OF ACTIVITY PAD)
+   ------------------------------------------------------------------------- */
+.activity-trade-col {
+  width: 250px;
+  flex: 0 0 250px;
+  background: var(--rp-dominant-canvas, #f8faf9);
+  border: 1px solid var(--rp-secondary-border, #e2e8f0);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+[data-mode="dark"] .activity-trade-col {
+  background: #131714;
+  border-color: #242c26;
+}
+
+[data-theme="glass"] .activity-trade-col {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="glass"][data-mode="dark"] .activity-trade-col {
+  background: rgba(18, 23, 20, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="minimal"] .activity-trade-col {
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 0;
+}
+
+[data-theme="minimal"][data-mode="dark"] .activity-trade-col {
+  background: #000000;
+  border: 1px solid #ffffff;
+  border-radius: 0;
+}
+
+/* Trade Header */
+.trade-graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trade-header-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--rp-text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.trade-trend-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.trade-trend-badge.trend-up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.trade-trend-badge.trend-down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* High / Low Meta Stats */
+.trade-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--rp-text-muted, #94a3b8);
+  padding-bottom: 2px;
+}
+
+.trade-meta-val {
+  font-weight: 600;
+  color: var(--rp-text-dominant, #0f172a);
+}
+
+/* SVG Sparkline Canvas */
+.trade-sparkline-canvas {
+  width: 100%;
+  height: 64px;
+  overflow: visible;
+}
+
+/* Volume Histogram Bars */
+.trade-volume-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+  padding-top: 4px;
+  border-top: 1px solid var(--rp-secondary-divider, #e2e8f0);
+}
+
+[data-mode="dark"] .trade-volume-row {
+  border-top-color: #262e28;
+}
+
+.trade-vol-bar {
+  flex: 1;
+  background: var(--rp-secondary-border, #cbd5e1);
+  border-radius: 1.5px;
+  transition: height 0.2s ease, background 0.15s ease;
+}
+
+[data-mode="dark"] .trade-vol-bar {
+  background: #2a332d;
+}
+
+.trade-vol-bar:hover {
+  background: var(--rp-semantic-success, #10b981);
+}
+
+/* Floating Tooltip */
+.activity-floating-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.activity-floating-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -4px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .activity-pad-body-flex {
+    flex-direction: column;
+  }
+  .activity-trade-col {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}

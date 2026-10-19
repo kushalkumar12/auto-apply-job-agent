@@ -41,7 +41,7 @@ button.rp-btn {
 /* 1. Primary Accent Button (10% Tier) */
 .rp-btn-primary {
   background-color: var(--rp-accent-primary, #2563EB);
-  color: #FFFFFF !important;
+  color: #FFFFFF;
   border-color: var(--rp-accent-primary, #2563EB);
   font-weight: 600;
 }
@@ -51,19 +51,19 @@ button.rp-btn {
   border-color: var(--rp-accent-primary-hover, #1D4ED8);
 }
 
-/* 2. Primary Olive Button (Editorial / Profile Action Tier) */
+/* 2. Primary Olive / Secondary Accent Button (Editorial / Profile Action Tier) */
 .rp-btn-olive,
 .btn-primary-olive {
-  background-color: #2D5A27 !important;
-  color: #FFFFFF !important;
-  border-color: #2D5A27 !important;
+  background-color: var(--rp-accent-secondary, #2D5A27);
+  color: #FFFFFF;
+  border-color: var(--rp-accent-secondary, #2D5A27);
   font-weight: 600;
 }
 
 .rp-btn-olive:hover,
 .btn-primary-olive:hover {
-  background-color: #22431D !important;
-  border-color: #22431D !important;
+  background-color: var(--rp-accent-secondary-hover, #22431D);
+  border-color: var(--rp-accent-secondary-hover, #22431D);
 }
 
 /* 3. Secondary Neutral Button (30% Surface Tier) */
@@ -98,25 +98,25 @@ button.rp-btn {
 .rp-btn-icon,
 .app-modal-close-btn,
 .themes-modal-close-btn {
-  width: 32px !important;
-  height: 32px !important;
-  padding: 0 !important;
-  border-radius: 6px !important;
-  border: 1px solid var(--rp-secondary-border, #DDE2DE) !important;
-  background-color: var(--rp-secondary-surface, #FFFFFF) !important;
-  color: var(--rp-text-secondary, #777D79) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  transition: all 140ms ease !important;
-  box-sizing: border-box !important;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--rp-radius-control, 6px);
+  border: 1px solid var(--rp-secondary-border, #DDE2DE);
+  background-color: var(--rp-secondary-surface, #FFFFFF);
+  color: var(--rp-text-secondary, #777D79);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--rp-duration-fast, 140ms) ease;
+  box-sizing: border-box;
 }
 
 .rp-btn-icon:hover,
 .app-modal-close-btn:hover,
 .themes-modal-close-btn:hover {
-  background-color: var(--rp-dominant-bg, #F7F9F8) !important;
-  border-color: var(--rp-secondary-border-hover, #B0B8B2) !important;
-  color: var(--rp-text-dominant, #171A18) !important;
+  background-color: var(--rp-surface-hover, var(--rp-dominant-bg, #F7F9F8));
+  border-color: var(--rp-secondary-border-hover, #B0B8B2);
+  color: var(--rp-text-dominant, #171A18);
 }

@@ -27,6 +27,17 @@ export default function HelpPrivacyModal({
     }
   }, [isOpen]);
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmitFeedback = async (e) => {
@@ -39,7 +50,7 @@ export default function HelpPrivacyModal({
         category: feedbackCategory,
         rating: feedbackRating,
         message: feedbackMsg,
-        email: currentUser?.email || 'kushalkumar.pulakanti@gmail.com'
+        email: currentUser?.email || ''
       });
       if (res && res.ticketId) {
         setTickets(prev => [

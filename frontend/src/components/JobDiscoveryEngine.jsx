@@ -7,80 +7,17 @@ import {
   AudioLines, 
   ArrowDownLeft
 } from 'lucide-react';
+import { CompanyLogo } from './BrandIcons';
 import { apiService } from '../services/api';
 import './JobDiscoveryEngine.css';
 
-const DEFAULT_STREAM_SOURCES = [
-  { name: 'Google', role: 'Staff Software Engineer', ats: 92, count: 480, detail: 'Google Careers' },
-  { name: 'Microsoft', role: 'Cloud Systems Architect', ats: 89, count: 420, detail: 'Azure Cloud' },
-  { name: 'Amazon', role: 'Java Core Developer', ats: 86, count: 510, detail: 'AWS Fulfillment' },
-  { name: 'Apple', role: 'iOS Platform Engineer', ats: 91, count: 320, detail: 'Apple Careers' },
-  { name: 'Nvidia', role: 'CUDA Deep Learning Engineer', ats: 95, count: 340, detail: 'AI Computing' }
-];
+const DEFAULT_STREAM_SOURCES = [];
 
 function SourceMark({ source }) {
-  const comp = (source.name || source.company || '').toLowerCase();
-  if (comp.includes('apple')) {
-    return (
-      <span className="source-mark apple">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M17.6 12.8c0-2 1.7-3 1.8-3.1-1-1.4-2.5-1.6-3-1.6-1.3-.2-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.6 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1 1.6 2.1 2.7 2 1.1 0 1.5-.7 2.9-.7s1.8.7 3 .7c1.2 0 1.9-1 2.6-2 .9-1.2 1.2-2.4 1.2-2.5-.1 0-2.5-1-2.5-3.9ZM15.4 6.7c.6-.8 1.1-1.9 1-3-.9.1-2 .6-2.7 1.4-.6.7-1.2 1.8-1.1 2.8 1 .1 2.1-.5 2.8-1.2Z" />
-        </svg>
-      </span>
-    );
-  }
-  if (comp.includes('google')) {
-    return <span className="source-mark google">G</span>;
-  }
-  if (comp.includes('linkedin')) {
-    return <span className="source-mark linkedin">in</span>;
-  }
-  if (comp.includes('microsoft')) {
-    return (
-      <span className="source-mark" style={{ display: 'inline-flex' }}>
-        <svg width="12" height="12" viewBox="0 0 24 24">
-          <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
-          <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
-          <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
-          <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
-        </svg>
-      </span>
-    );
-  }
-  if (comp.includes('amazon')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#FF9900' }}>a</span>;
-  }
-  if (comp.includes('netflix')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#E50914' }}>N</span>;
-  }
-  if (comp.includes('meta')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#0668E1' }}>M</span>;
-  }
-  if (comp.includes('nvidia')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#76B900' }}>NV</span>;
-  }
-  if (comp.includes('stripe')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#635BFF' }}>S</span>;
-  }
-  if (comp.includes('openai')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#000000' }}>AI</span>;
-  }
-  if (comp.includes('uber')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#000000' }}>U</span>;
-  }
-  if (comp.includes('spotify')) {
-    return <span className="source-mark" style={{ fontWeight: 800, color: '#1DB954' }}>●</span>;
-  }
-  if (comp.includes('naukri')) {
-    return <span className="source-mark naukri">n</span>;
-  }
-  if (comp.includes('indeed')) {
-    return <span className="source-mark indeed">i</span>;
-  }
-
+  const compName = source.name || source.company || '';
   return (
-    <span className="source-mark generic" style={{ fontWeight: 700, color: '#1F2937' }}>
-      {source.name?.slice(0, 2).toUpperCase() || 'CO'}
+    <span className="source-mark-icon-wrap" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CompanyLogo name={compName} />
     </span>
   );
 }
@@ -136,31 +73,16 @@ const AttractionCanvas = memo(function AttractionCanvas({ running, speed, onCapt
       outerRadius = Math.max(width * 0.52, height * 0.85);
       waveAmplitude = width < 600 ? 6 : 8.5;
 
-      // Exact wavefrontend Boundary-to-Center Ray Projection
+      // Initialize floating source elements with guaranteed visibility and cached origin coordinates
       const elements = Array.from(canvas.parentElement?.querySelectorAll('.floating-source') ?? []);
       cachedSources = elements.map((el) => {
-        const originX = el.offsetLeft + el.offsetWidth / 2;
-        const originY = el.offsetTop + el.offsetHeight / 2;
-        const offsetX = originX - centerX;
-        const offsetY = originY - centerY;
-        const buttonRadius = Math.max(el.offsetWidth, el.offsetHeight) / 2 + waveAmplitude + 24;
-
-        // Exact wavefrontend ray boundary intersection factors
-        const factorX = Math.abs(offsetX) > 0.001 ? (width / 2 + buttonRadius) / Math.abs(offsetX) : Infinity;
-        const factorY = Math.abs(offsetY) > 0.001 ? ((offsetY < 0 ? centerY : height - centerY) + buttonRadius) / Math.abs(offsetY) : Infinity;
-        const minFactor = Math.min(factorX, factorY);
-
-        const edgeX = centerX + offsetX * minFactor;
-        const edgeY = centerY + offsetY * minFactor;
-
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
         return {
           el,
-          originX,
-          originY,
-          edgeX,
-          edgeY,
-          deltaX: centerX - edgeX,
-          deltaY: centerY - edgeY
+          originX: el.offsetLeft + el.offsetWidth / 2,
+          originY: el.offsetTop + el.offsetHeight / 2,
+          lastCycle: -1
         };
       });
 
@@ -191,10 +113,11 @@ const AttractionCanvas = memo(function AttractionCanvas({ running, speed, onCapt
     const waveDisplacement = (x, y) => prefersReducedMotion ? 0 : Math.sin(wavePhase(x, y)) * waveAmplitude;
 
     const render = (currentTime) => {
-      const delta = Math.min((currentTime - lastTime) / 1000, 0.05);
+      const isHidden = typeof document !== 'undefined' && document.hidden;
+      const delta = isHidden ? 0 : Math.min((currentTime - lastTime) / 1000, 0.05);
       lastTime = currentTime;
 
-      if (stateRef.current.running && !prefersReducedMotion) {
+      if (!isHidden && stateRef.current.running && !prefersReducedMotion) {
         animTime += delta * stateRef.current.speed;
       }
 
@@ -269,30 +192,64 @@ const AttractionCanvas = memo(function AttractionCanvas({ running, speed, onCapt
         ctx.stroke();
       }
 
-      // --- 4. Authentic Wave-Riding Floating Badges (Seamless Entrance from Outside Boundaries) ---
+      // --- 4. Authentic Inward Gravitational Attraction towards Center Orbit ---
+      const CYCLE_DURATION = 6.5; // Smooth 6.5s inward attraction journey
+      const STAGGER = CYCLE_DURATION / Math.max(cachedSources.length, 1);
+
       for (let index = 0; index < cachedSources.length; index++) {
         const src = cachedSources[index];
-        const localTime = Math.max(0, animTime - index * 1.8);
-        const curveProgress = (prefersReducedMotion ? 0 : (localTime % 14) / 14) ** 1.35;
+        if (!src.el) continue;
 
-        const transX = prefersReducedMotion ? 0 : src.edgeX + src.deltaX * curveProgress - src.originX;
-        const transY = prefersReducedMotion ? 0 : src.edgeY + src.deltaY * curveProgress - src.originY;
+        // Hover pause: if user hovers over a badge, pause attraction so they can easily click it
+        if (src.el.matches(':hover')) {
+          continue;
+        }
 
-        const phase = wavePhase(src.originX + transX, src.originY + transY);
-        const waveY = waveDisplacement(src.originX + transX, src.originY + transY) * (1 - curveProgress);
-        const waveX = prefersReducedMotion ? 0 : Math.cos(phase) * 2;
-        const rotation = prefersReducedMotion ? 0 : Math.cos(phase) * 1.4 * (src.originX < centerX ? -1 : 1);
-        const scale = 1 - curveProgress * 0.8;
+        const localTime = (animTime + index * STAGGER) % CYCLE_DURATION;
+        const progress = localTime / CYCLE_DURATION; // 0.0 at launch anchor, 1.0 at center orbit
+        const currentCycle = Math.floor((animTime + index * STAGGER) / CYCLE_DURATION);
 
-        const posX = Math.round(transX + waveX);
-        const posY = Math.round(transY + waveY);
+        // Accelerating gravitational pull towards center orbit
+        const attraction = prefersReducedMotion ? 0 : Math.pow(progress, 1.32);
 
-        // Exact wavefrontend behavior: z-index 1 (goes BEHIND collector z-index 2), scale down to 0.2 as it enters orbit
-        src.el.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${rotation.toFixed(1)}deg) scale(${scale.toFixed(2)})`;
-        src.el.style.opacity = '1';
-        src.el.style.visibility = 'visible';
-        src.el.style.zIndex = '1';
-        src.el.style.pointerEvents = (!prefersReducedMotion && Math.hypot(src.originX + transX - centerX, src.originY + transY - centerY) < centerRadius) ? 'none' : 'auto';
+        // Vector translation from launch origin towards center orbit
+        const transX = (centerX - src.originX) * attraction;
+        const transY = (centerY - src.originY) * attraction;
+
+        // Fluid sinusoidal ripple from wavefield
+        const currX = src.originX + transX;
+        const currY = src.originY + transY;
+        const wave = prefersReducedMotion ? 0 : Math.sin(wavePhase(currX, currY)) * waveAmplitude * (1 - attraction * 0.65);
+        const waveTilt = prefersReducedMotion ? 0 : Math.sin(wavePhase(currX, currY)) * 2.2 * (1 - attraction);
+
+        // Graceful scaling down as it compresses into the 120px collector
+        const scale = 1.0 - attraction * 0.45; // 1.0 at perimeter down to 0.55 at center
+
+        // Smooth Opacity:
+        // - Launch (0 to 0.12): fade in smoothly
+        // - Mid-flight (0.12 to 0.82): 100% visible
+        // - Entering orbit core (0.82 to 1.0): dissolve seamlessly into the center core
+        let opacity = 1;
+        if (progress < 0.12) {
+          opacity = progress / 0.12;
+        } else if (progress > 0.82) {
+          opacity = Math.max(0, (1 - progress) / 0.18);
+        }
+
+        // Z-Index: slips behind collector (collector is z-index 2) when nearing center
+        const zIndex = progress > 0.72 ? 1 : 4;
+
+        src.el.style.transform = `translate3d(${transX.toFixed(1)}px, ${(transY + wave).toFixed(1)}px, 0) scale(${scale.toFixed(2)}) rotate(${waveTilt.toFixed(1)}deg)`;
+        src.el.style.opacity = opacity.toFixed(2);
+        src.el.style.visibility = opacity > 0.02 ? 'visible' : 'hidden';
+        src.el.style.zIndex = String(zIndex);
+        src.el.style.pointerEvents = (progress > 0.85 || !stateRef.current.running) ? 'none' : 'auto';
+
+        // Trigger onCapture callback when badge arrives at orbit center
+        if (currentCycle !== src.lastCycle && progress > 0.85) {
+          src.lastCycle = currentCycle;
+          stateRef.current.onCapture();
+        }
       }
 
       ctx.globalAlpha = 1;
@@ -316,24 +273,97 @@ const AttractionCanvas = memo(function AttractionCanvas({ running, speed, onCapt
 });
 
 export default function JobDiscoveryEngine({
-  totalJobs = 15500,
+  totalJobs = 0,
   status = 'scanning',
-  onSelectCompany
+  onSelectCompany,
+  selectedSource: externalSelectedSource,
+  stats,
+  searchQuery = '',
+  activeOrigin = 'all',
+  selectedDay = null,
+  onJobDiscovered,
+  onHarvestActivity,
+  isProfileComplete = false,
+  onOpenProfileGate
 }) {
-  const [running, setRunning] = useState(status !== 'paused');
-  const [count, setCount] = useState(totalJobs);
+  const isArchived = selectedDay && selectedDay.dayOffset > 0;
+  // Strictly manual discovery stream: starts paused, only runs when user clicks Resume Stream
+  const [running, setRunning] = useState(false);
+  const [count, setCount] = useState(totalJobs !== undefined ? totalJobs : 0);
   const [speed, setSpeed] = useState(1);
-  const [selectedSource, setSelectedSource] = useState(null);
-  const [streamSources, setStreamSources] = useState(DEFAULT_STREAM_SOURCES);
+  const [selectedSource, setSelectedSource] = useState(externalSelectedSource || null);
+
+  const handleToggleStream = async () => {
+    if (!running) {
+      // Validate mandatory profile before starting Explorer
+      if (!isProfileComplete) {
+        if (onOpenProfileGate) onOpenProfileGate();
+        return;
+      }
+      try {
+        await apiService.startDiscovery();
+        setRunning(true);
+      } catch (err) {
+        if (err.message && (err.message.includes('Mandatory profile') || err.message.includes('403'))) {
+          if (onOpenProfileGate) onOpenProfileGate();
+        } else {
+          setRunning(true);
+        }
+      }
+    } else {
+      try {
+        await apiService.stopDiscovery();
+      } catch (e) {}
+      setRunning(false);
+    }
+  };
+  const [streamSources, setStreamSources] = useState(() => {
+    if (stats?.sources && stats.sources.length > 0) {
+      return stats.sources.map(s => ({
+        name: s.name,
+        role: 'Live Search',
+        ats: null,
+        count: s.count || 0,
+        detail: `${s.name} Portal`
+      }));
+    }
+    return DEFAULT_STREAM_SOURCES;
+  });
   const [latestJob, setLatestJob] = useState(null);
   const slotIndexRef = useRef(0);
   const bufferTimeoutRef = useRef(null);
   const pendingUpdatesRef = useRef([]);
 
-  // Synchronize count with backend total
+  const onJobDiscoveredRef = useRef(onJobDiscovered);
   useEffect(() => {
-    if (totalJobs) setCount(totalJobs);
+    onJobDiscoveredRef.current = onJobDiscovered;
+  }, [onJobDiscovered]);
+
+  // Synchronize count directly with backend search/filter total
+  useEffect(() => {
+    if (totalJobs !== undefined) {
+      setCount(totalJobs);
+    }
   }, [totalJobs]);
+
+  useEffect(() => {
+    if (externalSelectedSource !== undefined) {
+      setSelectedSource(externalSelectedSource === 'All' ? null : externalSelectedSource);
+    }
+  }, [externalSelectedSource]);
+
+  // Synchronize sources if stats update
+  useEffect(() => {
+    if (stats?.sources && stats.sources.length > 0) {
+      setStreamSources(stats.sources.map(s => ({
+        name: s.name,
+        role: 'Live Search',
+        ats: null,
+        count: s.count || 0,
+        detail: `${s.name} Portal`
+      })));
+    }
+  }, [stats]);
 
   // Connect to Real-time SSE Discovery Stream with Smooth Throttled Batching
   useEffect(() => {
@@ -352,7 +382,11 @@ export default function JobDiscoveryEngine({
           pendingUpdatesRef.current = [];
 
           setLatestJob(mostRecent);
-          setCount(prev => prev + newJobsCount);
+
+          // Real-time dispatch into Activity Feed
+          if (onJobDiscoveredRef.current && mostRecent) {
+            onJobDiscoveredRef.current(mostRecent);
+          }
 
           setStreamSources(prev => {
             const next = [...prev];
@@ -363,12 +397,16 @@ export default function JobDiscoveryEngine({
               role: mostRecent.role,
               ats: mostRecent.atsScore,
               detail: `${mostRecent.company} · ${mostRecent.source}`,
-              count: (next[idx]?.count || 320) + newJobsCount,
+              count: (next[idx]?.count || 0) + newJobsCount,
               isLive: true
             };
             return next;
           });
         }, 1200);
+      }
+    }, (act) => {
+      if (onHarvestActivity) {
+        onHarvestActivity(act);
       }
     });
 
@@ -407,8 +445,8 @@ export default function JobDiscoveryEngine({
         onCapture={handleCapture} 
       />
 
-      {/* Inward Floating Platform Nodes (Seamless Influx from Outer Edges into Center Orbit) */}
-      {streamSources.map((source, index) => (
+      {/* Inward Floating Platform Nodes (Seamless Influx from 360-degree perimeter into Center Orbit) */}
+      {streamSources.slice(0, 8).map((source, index) => (
         <button
           key={`slot-${index}`}
           className={`floating-source source-${index} ${selectedSource === source.name ? 'source-selected' : ''}`}
@@ -427,13 +465,19 @@ export default function JobDiscoveryEngine({
         <div className="orbit-gradient-shadow" aria-hidden="true"></div>
         <div className="collector-outer">
           <div className="collector-inner">
-            <span className="collector-caption">ORBIT</span>
-            <span className="found-count">{count.toLocaleString()}</span>
-            <span className={`collector-status ${running ? 'is-running' : 'is-paused'}`}>
-              {running ? (
+            <span className="collector-caption">
+              {searchQuery ? 'SEARCH' : (selectedDay && selectedDay.dayOffset > 0) ? `ARCHIVE: ${selectedDay.label.toUpperCase()}` : selectedSource ? selectedSource.toUpperCase() : 'ORBIT'}
+            </span>
+            <span className="found-count">{(totalJobs !== undefined ? totalJobs : count).toLocaleString()}</span>
+            <span className={`collector-status ${(selectedDay && selectedDay.dayOffset > 0) ? 'is-paused' : (running ? 'is-running' : 'is-paused')}`}>
+              {(selectedDay && selectedDay.dayOffset > 0) ? (
+                'Archived Snapshot'
+              ) : running ? (
                 <>
                   Collecting<span className="loading-dots"><span className="dot dot-1">.</span><span className="dot dot-2">.</span><span className="dot dot-3">.</span></span>
                 </>
+              ) : !isProfileComplete ? (
+                'Profile Incomplete'
               ) : (
                 'Paused'
               )}
@@ -446,7 +490,7 @@ export default function JobDiscoveryEngine({
       <div className="collector-command">
         <button 
           className="scan-button" 
-          onClick={() => setRunning(r => !r)}
+          onClick={handleToggleStream}
         >
           {running ? <Pause size={10} /> : <Play size={10} />}
           <span>{running ? 'Pause stream' : 'Resume stream'}</span>

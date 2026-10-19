@@ -17,15 +17,30 @@ export default function AuthModal({
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null); // { type: 'success' | 'error', message: '' }
 
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setAlert(null);
+    if (!email) {
+      setAlert({ type: 'error', message: 'Please enter your email address to continue.' });
+      setLoading(false);
+      return;
+    }
     try {
       const res = await apiService.googleAuth(
-        email || 'kushalkumar.pulakanti@gmail.com',
-        name || 'Kushal Kumar',
+        email,
+        name || email.split('@')[0],
         selectedAvatar
       );
       if (res && res.user) {
@@ -134,7 +149,7 @@ export default function AuthModal({
                   <input 
                     type="text"
                     className="auth-form-input"
-                    placeholder="Kushal Kumar"
+                    placeholder="e.g. John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required

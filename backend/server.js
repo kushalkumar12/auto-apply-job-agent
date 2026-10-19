@@ -1,10 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import crypto from 'node:crypto';
-import { db, seedDatabaseIfEmpty } from './db.js';
-
-// Ensure 15,500+ records are in the SQLite database
-seedDatabaseIfEmpty();
+import { db } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -555,6 +552,96 @@ app.put('/api/settings/ai', (req, res) => {
   );
 
   res.json({ success: true, message: 'AI and MCP settings saved.' });
+});
+
+const DEFAULT_MENU_ITEMS = [
+  { id: 'explore', label: 'Explore', description: 'Job Discovery Radar & Live ATS Feed', enabled: true },
+  { id: 'generation', label: 'Generation', description: 'AI Resume & Cover Letter Studio', enabled: true },
+  { id: 'automation', label: 'Automation', description: 'Autonomous Application Pipelines', enabled: true },
+  { id: 'profile', label: 'Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
+  { id: 'analytics', label: 'Analytics', description: 'Application Metrics & Conversion Rates', enabled: true },
+  { id: 'tools', label: 'Tools', description: 'MCP Integrations & ATS Diagnostic Utilities', enabled: true }
+];
+
+app.get('/api/settings/menu', (req, res) => {
+  try {
+    const row = db.prepare('SELECT * FROM settings_menu WHERE id = ?').get('default');
+    if (!row || !row.items) {
+      return res.json({ items: DEFAULT_MENU_ITEMS });
+    }
+    const rawItems = JSON.parse(row.items || '[]');
+    const standardMap = new Map(DEFAULT_MENU_ITEMS.map(i => [i.id, i]));
+    const merged = [];
+    const seen = new Set();
+    for (const item of rawItems) {
+      if (standardMap.has(item.id) && !seen.has(item.id)) {
+        const std = standardMap.get(item.id);
+        merged.push({
+          id: item.id,
+          label: item.label || std.label,
+          description: item.description || std.description,
+          enabled: Boolean(item.enabled)
+        });
+        seen.add(item.id);
+      }
+    }
+    for (const std of DEFAULT_MENU_ITEMS) {
+      if (!seen.has(std.id)) merged.push(std);
+    }
+    res.json({ items: merged });
+  } catch {
+    res.json({ items: DEFAULT_MENU_ITEMS });
+  }
+});
+
+app.put('/api/settings/menu', (req, res) => {
+  const { items } = req.body;
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Menu items list cannot be empty.' });
+  }
+  const hasEnabled = items.some(i => i.enabled);
+  if (!hasEnabled) {
+    return res.status(400).json({ error: 'At least one menu item must remain enabled to ensure application accessibility.' });
+  }
+  const standardMap = new Map(DEFAULT_MENU_ITEMS.map(i => [i.id, i]));
+  const cleaned = [];
+  const seen = new Set();
+  for (const item of items) {
+    if (standardMap.has(item.id) && !seen.has(item.id)) {
+      const std = standardMap.get(item.id);
+      cleaned.push({
+        id: item.id,
+        label: item.label || std.label,
+        description: item.description || std.description,
+        enabled: Boolean(item.enabled)
+      });
+      seen.add(item.id);
+    }
+  }
+  for (const std of DEFAULT_MENU_ITEMS) {
+    if (!seen.has(std.id)) cleaned.push({ ...std, enabled: false });
+  }
+  db.prepare(`
+    INSERT INTO settings_menu (id, items, updated_at)
+    VALUES ('default', ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      items = excluded.items,
+      updated_at = excluded.updated_at
+  `).run(JSON.stringify(cleaned), Date.now());
+
+  res.json({ success: true, message: 'Application menu configuration saved successfully.', items: cleaned });
+});
+
+app.post('/api/settings/menu/reset', (req, res) => {
+  db.prepare(`
+    INSERT INTO settings_menu (id, items, updated_at)
+    VALUES ('default', ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      items = excluded.items,
+      updated_at = excluded.updated_at
+  `).run(JSON.stringify(DEFAULT_MENU_ITEMS), Date.now());
+
+  res.json({ success: true, message: 'Navigation menu reset to factory default layout.', items: DEFAULT_MENU_ITEMS });
 });
 
 // ---------------------------------------------------------------------------

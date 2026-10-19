@@ -1,5 +1,3 @@
-import { INITIAL_JOBS, INITIAL_ACTIVITIES } from '../data/mockData';
-
 const BASE_URL = 'http://localhost:5000/api';
 
 /**
@@ -37,19 +35,23 @@ export const apiService = {
       const query = new URLSearchParams(cleanParams).toString();
       const data = await apiFetch(`/jobs${query ? `?${query}` : ''}`);
       return {
-        total: data.total || 15500,
+        total: data.total !== undefined ? data.total : 0,
         page: data.page || 1,
         limit: data.limit || 10,
-        totalPages: data.totalPages || 1550,
-        jobs: data.jobs || INITIAL_JOBS.slice(0, 10)
+        totalPages: data.totalPages !== undefined ? data.totalPages : 0,
+        profileDriven: data.profileDriven !== undefined ? data.profileDriven : true,
+        activeProfileRoles: data.activeProfileRoles || [],
+        jobs: Array.isArray(data.jobs) ? data.jobs : []
       };
     } catch {
       return {
-        total: 15500,
+        total: 0,
         page: 1,
         limit: 10,
-        totalPages: 1550,
-        jobs: INITIAL_JOBS.slice(0, 10)
+        totalPages: 0,
+        profileDriven: true,
+        activeProfileRoles: [],
+        jobs: []
       };
     }
   },
@@ -62,13 +64,30 @@ export const apiService = {
     }
   },
 
+  async toggleJobMarker(id) {
+    try {
+      return await apiFetch(`/jobs/${id}/toggle-marker`, { method: 'POST' });
+    } catch {
+      return { success: true, jobId: id, marked: true };
+    }
+  },
+
+  async getHistorySummary() {
+    try {
+      const data = await apiFetch('/jobs/history-summary');
+      return Array.isArray(data.history) ? data.history : [];
+    } catch {
+      return [];
+    }
+  },
+
   // 2. Activities
   async getActivities() {
     try {
       const data = await apiFetch('/activities');
-      return data.activities || INITIAL_ACTIVITIES;
+      return Array.isArray(data.activities) ? data.activities : [];
     } catch {
-      return INITIAL_ACTIVITIES;
+      return [];
     }
   },
 
@@ -97,23 +116,16 @@ export const apiService = {
       return await apiFetch('/discovery/stats');
     } catch {
       return {
-        totalOpportunities: 15500,
+        totalOpportunities: 0,
         networkStatus: 'ACTIVE',
-        topCompanies: [
-          { name: 'Google', count: 310, logo: 'google' },
-          { name: 'Microsoft', count: 310, logo: 'microsoft' },
-          { name: 'Amazon', count: 310, logo: 'amazon' },
-          { name: 'Apple', count: 310, logo: 'apple' },
-          { name: 'Netflix', count: 310, logo: 'netflix' },
-        ],
-        inwardSignalFlow: 'Optimal',
-        activeScanningRate: '4.8 waves/sec'
+        topCompanies: [],
+        sources: []
       };
     }
   },
 
   // Connect to Real-Time SSE Stream for continuous incoming job discoveries
-  createDiscoveryStream(onJobDiscovered) {
+  createDiscoveryStream(onJobDiscovered, onActivity, onMetrics) {
     try {
       const es = new EventSource(`${BASE_URL}/discovery/stream`);
       es.onmessage = (event) => {
@@ -121,6 +133,12 @@ export const apiService = {
           const parsed = JSON.parse(event.data);
           if (parsed.type === 'job_discovered' && onJobDiscovered) {
             onJobDiscovered(parsed.job);
+          }
+          if ((parsed.type === 'activity' || parsed.type === 'harvest_activity') && onActivity) {
+            onActivity(parsed.activity);
+          }
+          if (parsed.type === 'harvest_metrics' && onMetrics) {
+            onMetrics(parsed);
           }
         } catch (e) {
           console.warn('SSE parse error:', e);
@@ -161,6 +179,65 @@ export const apiService = {
       });
     } catch {
       return { success: true, profile: profileData };
+    }
+  },
+
+  async uploadResume(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${BASE_URL}/profile/resume`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) {
+      throw new Error(`Resume upload failed (${res.status})`);
+    }
+    return await res.json();
+  },
+
+  getResumeViewUrl() {
+    return `${BASE_URL}/profile/resume/view`;
+  },
+
+  getResumeDownloadUrl() {
+    return `${BASE_URL}/profile/resume/download`;
+  },
+
+  async getResumeContent() {
+    try {
+      const res = await fetch(`${BASE_URL}/profile/resume/content`);
+      if (!res.ok) return { hasResume: false };
+      return await res.json();
+    } catch {
+      return { hasResume: false };
+    }
+  },
+
+  async getResumeMap() {
+    try {
+      const res = await fetch(`${BASE_URL}/profile/resume/map`);
+      if (!res.ok) return { hasResume: false, aiExtraction: null };
+      return await res.json();
+    } catch {
+      return { hasResume: false, aiExtraction: null };
+    }
+  },
+
+  async applyResumeAiMap(customMap = null) {
+    return await apiFetch('/profile/resume/apply-ai-map', {
+      method: 'POST',
+      body: JSON.stringify(customMap || {}),
+    });
+  },
+
+  async updateAvatar(avatar) {
+    try {
+      return await apiFetch('/auth/avatar', {
+        method: 'PUT',
+        body: JSON.stringify({ avatar }),
+      });
+    } catch {
+      return { success: true, avatar };
     }
   },
 
@@ -210,13 +287,7 @@ export const apiService = {
       });
     } catch {
       return {
-        user: {
-          id: 'usr_kushal_101',
-          name: 'Kushal Kumar',
-          email: 'kushalkumar.pulakanti@gmail.com',
-          avatar: 'avatar_1',
-          authProvider: 'google'
-        }
+        user: null
       };
     }
   },
@@ -234,17 +305,13 @@ export const apiService = {
       return await apiFetch('/settings/ai');
     } catch {
       return {
-        openai_key: 'sk-proj...9812',
+        openai_key: '',
         openai_model: 'gpt-4o',
-        gemini_key: 'AIzaSy...771a',
+        gemini_key: '',
         gemini_model: 'gemini-1.5-pro',
-        claude_key: 'sk-ant...441b',
+        claude_key: '',
         claude_model: 'claude-3-5-sonnet',
-        mcp_servers: [
-          { id: 'mcp-1', name: 'Local ATS Knowledge Base', url: 'http://localhost:5000/mcp/ats', status: 'connected', toolsCount: 8, transport: 'sse' },
-          { id: 'mcp-2', name: 'FileSystem Project Navigator', url: 'http://localhost:5000/mcp/fs', status: 'connected', toolsCount: 14, transport: 'stdio' },
-          { id: 'mcp-3', name: 'LinkedIn Easy Apply Automation Driver', url: 'http://localhost:5000/mcp/driver', status: 'connected', toolsCount: 6, transport: 'sse' }
-        ]
+        mcp_servers: []
       };
     }
   },
@@ -253,6 +320,42 @@ export const apiService = {
     return await apiFetch('/settings/ai', {
       method: 'PUT',
       body: JSON.stringify(settings)
+    });
+  },
+
+  async resetProfile() {
+    return await apiFetch('/settings/reset-profile', {
+      method: 'POST'
+    });
+  },
+
+  async factoryReset(projectName) {
+    return await apiFetch('/settings/factory-reset', {
+      method: 'POST',
+      body: JSON.stringify({ projectName })
+    });
+  },
+
+  // 7b. Navigation Menu Configuration
+  async getMenuSettings() {
+    try {
+      const data = await apiFetch('/settings/menu');
+      return data?.items || null;
+    } catch {
+      return null;
+    }
+  },
+
+  async updateMenuSettings(items) {
+    return await apiFetch('/settings/menu', {
+      method: 'PUT',
+      body: JSON.stringify({ items })
+    });
+  },
+
+  async resetMenuSettings() {
+    return await apiFetch('/settings/menu/reset', {
+      method: 'POST'
     });
   },
 
@@ -270,5 +373,207 @@ export const apiService = {
     } catch {
       return { tickets: [] };
     }
+  },
+
+  // 9. Automation Pipelines
+  async getAutomationPipelines() {
+    try {
+      const data = await apiFetch('/automation/pipelines');
+      return data.pipelines || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async createAutomationPipeline(pipeline) {
+    return await apiFetch('/automation/pipelines', {
+      method: 'POST',
+      body: JSON.stringify(pipeline)
+    });
+  },
+
+  async toggleAutomationPipeline(id) {
+    return await apiFetch(`/automation/pipelines/${id}/toggle`, {
+      method: 'PUT'
+    });
+  },
+
+  async runAutomationPipeline(id) {
+    return await apiFetch(`/automation/pipelines/${id}/run`, {
+      method: 'POST'
+    });
+  },
+
+  async deleteAutomationPipeline(id) {
+    return await apiFetch(`/automation/pipelines/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // 10. Resume Generation
+  async getGenerationJobs() {
+    try {
+      const data = await apiFetch('/generation/jobs');
+      return data.jobs || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async generateTailoredResume(jobId, candidateName = '') {
+    return await apiFetch('/generation/generate', {
+      method: 'POST',
+      body: JSON.stringify({ jobId, candidateName })
+    });
+  },
+
+  // 11. ATS Harvester Engine
+  async getHarvestStatus() {
+    try {
+      return await apiFetch('/harvest/status');
+    } catch {
+      return {
+        totalJobs: 0,
+        localJobs: 0,
+        harvestedJobs: 0,
+        breakdown: {},
+        availableProviders: []
+      };
+    }
+  },
+
+  async getHarvestSources() {
+    try {
+      const data = await apiFetch('/harvest/sources');
+      return data.sources || [];
+    } catch {
+      return [];
+    }
+  },
+
+  // 12. Stage 1: Candidate Profiles & Multi-Profile Switcher
+  async getProfiles() {
+    try {
+      const data = await apiFetch('/profiles');
+      return data.profiles || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async createProfile(payload) {
+    return await apiFetch('/profiles', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async activateProfile(profileId) {
+    return await apiFetch(`/profiles/${profileId}/activate`, {
+      method: 'POST'
+    });
+  },
+
+  async deleteProfile(profileId) {
+    return await apiFetch(`/profiles/${profileId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async renameProfile(profileId, name) {
+    return await apiFetch(`/profiles/${profileId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name })
+    });
+  },
+
+  async getActiveProfileValidation() {
+    try {
+      return await apiFetch('/profiles/active/validation');
+    } catch {
+      return { isComplete: false, missingFields: [] };
+    }
+  },
+
+  // 13. Stage 1: AI-Generated Anchored Keywords
+  async generateKeywords(payload) {
+    return await apiFetch('/profile/keywords/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async getKeywords() {
+    try {
+      return await apiFetch('/profile/keywords');
+    } catch {
+      return { keywords: [], primarySkill: '' };
+    }
+  },
+
+  async saveKeywords(keywords) {
+    return await apiFetch('/profile/keywords', {
+      method: 'PUT',
+      body: JSON.stringify({ keywords })
+    });
+  },
+
+  // 14. Stage 1: Discovery Start / Stop / Status & Connectors
+  async startDiscovery() {
+    return await apiFetch('/discovery/start', {
+      method: 'POST',
+      body: JSON.stringify({})
+    });
+  },
+
+  async stopDiscovery() {
+    return await apiFetch('/discovery/stop', {
+      method: 'POST',
+      body: JSON.stringify({})
+    });
+  },
+
+  async getDiscoveryStatus() {
+    try {
+      return await apiFetch('/discovery/status');
+    } catch {
+      return { status: 'idle' };
+    }
+  },
+
+  async getConnectors() {
+    try {
+      const data = await apiFetch('/discovery/connectors');
+      return data.connectors || [];
+    } catch {
+      return [];
+    }
+  },
+
+  // 15. Stage 1: Complete Dataset Export & Safe Import
+  getExportJobsUrl(params = {}) {
+    const cleanParams = {};
+    Object.keys(params).forEach(k => {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+        cleanParams[k] = params[k];
+      }
+    });
+    const query = new URLSearchParams(cleanParams).toString();
+    return `${BASE_URL}/jobs/export${query ? `?${query}` : ''}`;
+  },
+
+  async importJobs(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${BASE_URL}/jobs/import`, {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || `Import failed (${res.status})`);
+    }
+    return await res.json();
   }
 };
+

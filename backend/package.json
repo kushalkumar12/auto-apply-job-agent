@@ -1,15 +1,11 @@
 {
-  "name": "resume-porter-mock-backend",
-  "version": "1.0.0",
-  "description": "Mock Backend API for Resume Porter",
-  "main": "server.js",
-  "type": "module",
+  "name": "resume-porter-python-backend",
+  "version": "2.0.0",
+  "description": "Python FastAPI Backend for Resume Porter",
+  "main": "main.py",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "start": "python main.py",
+    "dev": "python main.py",
+    "node-legacy": "node server.js"
   }
 }

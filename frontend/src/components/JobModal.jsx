@@ -3,19 +3,33 @@ import {
   X, 
   Building2, 
   MapPin, 
-  Calendar, 
   ExternalLink, 
   CheckCircle2, 
   Sparkles, 
   FileText,
-  BadgePercent
+  Bookmark
 } from 'lucide-react';
 
-export default function JobModal({ job, onClose, onApply }) {
+export default function JobModal({ job, onClose, onApply, onToggleMarker }) {
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && job) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [job, onClose]);
+
   if (!job) return null;
 
+  const handleDirectApply = () => {
+    const targetUrl = job.url || `https://www.google.com/search?q=${encodeURIComponent(job.company + ' ' + job.role + ' careers')}`;
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Job details for ${job.role}`}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="modal-header">
@@ -30,9 +44,35 @@ export default function JobModal({ job, onClose, onApply }) {
             <h2 className="modal-title">{job.role}</h2>
           </div>
 
-          <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
-            <X size={20} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button 
+              type="button"
+              onClick={() => onToggleMarker && onToggleMarker(job.id)}
+              className={`modal-mark-btn ${job.marked ? 'is-marked' : ''}`}
+              title={job.marked ? "Remove marker" : "Mark this job"}
+              aria-label={job.marked ? "Remove marker" : "Mark this job"}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: job.marked ? '1px solid #d97706' : '1px solid rgba(148, 163, 184, 0.3)',
+                background: job.marked ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                color: job.marked ? '#d97706' : 'var(--text-primary)',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '12px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Bookmark size={15} fill={job.marked ? "#d97706" : "none"} />
+              <span>{job.marked ? 'Marked' : 'Mark'}</span>
+            </button>
+            <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}
@@ -46,7 +86,7 @@ export default function JobModal({ job, onClose, onApply }) {
               <div>
                 <h4 className="match-heading">ATS Compatibility Score</h4>
                 <p className="match-subtext">
-                  Your primary resume matches <strong>{Math.round(job.atsScore * 0.9)}%</strong> of required core competencies.
+                  Your primary profile matches <strong>{Math.round(job.atsScore * 0.9)}%</strong> of required core competencies.
                 </p>
               </div>
             </div>
@@ -95,28 +135,64 @@ export default function JobModal({ job, onClose, onApply }) {
           </div>
 
           {/* Skills Required */}
-          <div className="skills-section">
-            <h3 className="section-subheading">Key Tech Stack & Competencies</h3>
-            <div className="skills-pills-list">
-              {job.skills?.map((skill, index) => (
-                <span key={index} className="skill-pill">
-                  <CheckCircle2 size={13} className="skill-icon" />
-                  {skill}
-                </span>
-              ))}
+          {job.skills && job.skills.length > 0 && (
+            <div className="skills-section">
+              <h3 className="section-subheading">Key Tech Stack & Competencies</h3>
+              <div className="skills-pills-list">
+                {job.skills.map((skill, index) => (
+                  <span key={index} className="skill-pill">
+                    <CheckCircle2 size={13} className="skill-icon" />
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Description */}
+          {/* Entire Job Description Section */}
           <div className="description-section">
-            <h3 className="section-subheading">Role Overview</h3>
-            <p className="description-text">{job.description}</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <h3 className="section-subheading" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FileText size={16} />
+                <span>Entire Job Description</span>
+              </h3>
+              {job.url && (
+                <a 
+                  href={job.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ fontSize: '12px', color: '#3b82f6', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <span>View Original Post</span>
+                  <ExternalLink size={12} />
+                </a>
+              )}
+            </div>
+            <div 
+              className="entire-jd-scroll-container"
+              style={{
+                background: 'rgba(15, 23, 42, 0.45)',
+                border: '1px solid rgba(148, 163, 184, 0.15)',
+                borderRadius: '8px',
+                padding: '16px',
+                maxHeight: '380px',
+                overflowY: 'auto',
+                fontSize: '13.5px',
+                lineHeight: 1.65,
+                color: 'var(--text-primary)',
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'inherit'
+              }}
+            >
+              {job.description || 'No detailed description available for this posting.'}
+            </div>
           </div>
         </div>
 
         {/* Modal Footer Actions */}
         <div className="modal-footer">
           <button 
+            type="button"
             className="tailor-resume-btn"
             onClick={() => alert(`Tailoring Resume for ${job.role} at ${job.company} via AI Engine!`)}
           >
@@ -125,20 +201,13 @@ export default function JobModal({ job, onClose, onApply }) {
           </button>
 
           <button 
-            className={`modal-apply-btn ${job.applied ? 'btn-applied' : ''}`}
-            onClick={() => onApply(job.id, job.company, job.role)}
+            type="button"
+            className="modal-apply-btn"
+            onClick={handleDirectApply}
+            title={`Redirect directly to ${job.company} job posting to apply manually`}
           >
-            {job.applied ? (
-              <>
-                <CheckCircle2 size={16} />
-                <span>Applied Successfully</span>
-              </>
-            ) : (
-              <>
-                <ExternalLink size={16} />
-                <span>Apply on {job.source}</span>
-              </>
-            )}
+            <ExternalLink size={16} />
+            <span>Apply on {job.source || 'Company Board'}</span>
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@
 @import './foundations/buttons.css';
 @import './foundations/popups.css';
 @import './foundations/panels.css';
+@import './foundations/enterprise-components.css';
 
 /* 3. Multi-Theme Engines */
 @import './themes/theme-default.css';

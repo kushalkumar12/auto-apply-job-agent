@@ -1,0 +1,26 @@
+Kushal Kumar Pulakanti
+Email: kushalkumar.pulakanti@gmail.com
+Phone: +91 9949632198
+Location: Hyderabad, India
+LinkedIn: https://www.linkedin.com/in/kushalkumarpulakanti/
+GitHub: https://github.com/kushalkumar12
+
+Professional Summary:
+Experienced Senior Java Backend Engineer with 4+ years architecting microservices, high-throughput distributed systems, event-driven pipelines with Apache Kafka, Spring Boot 3, Redis caching, and AWS cloud deployments.
+
+Skills:
+Java, Spring Boot, Spring, Microservices, REST APIs, PostgreSQL, SQL, Redis, Kafka, AWS, Docker, Kubernetes, Git
+
+Experience:
+Senior Software Engineer
+Enterprise Technologies Corp · Hyderabad, India
+2023 – Present
+• Designed and developed resilient microservices handling 20,000+ RPS using Java, Spring Boot, and Kafka.
+• Optimized PostgreSQL query performance and integrated distributed caching with Redis.
+• Containerized core applications with Docker and deployed to AWS EKS.
+
+Education:
+Bachelor of Technology in Computer Science
+JNTU College of Engineering
+2017 – 2021
+First Class with Distinction

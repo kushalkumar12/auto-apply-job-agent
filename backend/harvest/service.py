@@ -78,7 +78,8 @@ def upsert_harvested_job(conn, job: Dict[str, Any], user_skills: List[str], prof
     skills_json = json.dumps(job_skills)
     now_ts = int(time.time() * 1000)
     current_date_str = datetime.now().strftime("%d-%b-%y %I:%M %p")
-    date_val = job.get("dateTime") or current_date_str
+    raw_date = job.get("dateTime")
+    date_val = current_date_str if (not raw_date or raw_date == "Direct ATS") else raw_date
 
     url = job.get("url", "")
 

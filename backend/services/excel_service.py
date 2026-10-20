@@ -80,6 +80,109 @@ def generate_jobs_csv(jobs: List[Dict[str, Any]]) -> str:
 
     return "\ufeff" + output.getvalue()
 
+def generate_jobs_xlsx(jobs: List[Dict[str, Any]]) -> bytes:
+    """
+    Generates a native Microsoft Excel (.xlsx) workbook of all filtered jobs
+    with styled headers, auto-adjusted columns, and formula injection protection.
+    """
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Skill2Role Opportunities"
+
+    headers = [
+        "S.No",
+        "Role Title",
+        "Company",
+        "Location",
+        "Work Mode",
+        "ATS Match Score (%)",
+        "Source Platform",
+        "Job / Portal URL",
+        "Discovered Date & Time",
+        "Salary Estimate",
+        "Required Skills",
+        "Description"
+    ]
+    ws.append(headers)
+
+    # Style header row with teal brand color
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="0F766E", end_color="0F766E", fill_type="solid")
+    thin_border = Border(
+        left=Side(style='thin', color='CBD5E1'),
+        right=Side(style='thin', color='CBD5E1'),
+        top=Side(style='thin', color='CBD5E1'),
+        bottom=Side(style='thin', color='CBD5E1')
+    )
+
+    for col_num in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=False)
+        cell.border = thin_border
+    ws.row_dimensions[1].height = 26
+
+    # Insert data rows
+    for idx, job in enumerate(jobs, 1):
+        skills_raw = job.get("skills")
+        if isinstance(skills_raw, list):
+            skills_str = ", ".join(str(s) for s in skills_raw)
+        elif isinstance(skills_raw, str):
+            try:
+                import json
+                parsed = json.loads(skills_raw)
+                skills_str = ", ".join(str(s) for s in parsed) if isinstance(parsed, list) else skills_raw
+            except Exception:
+                skills_str = skills_raw
+        else:
+            skills_str = ""
+
+        row = [
+            idx,
+            sanitize_csv_cell(job.get("role", "")),
+            sanitize_csv_cell(job.get("company", "")),
+            sanitize_csv_cell(job.get("location", "")),
+            sanitize_csv_cell(job.get("workMode", "")),
+            int(job.get("atsScore", 0) or 0),
+            sanitize_csv_cell(job.get("source", "")),
+            sanitize_csv_cell(job.get("url", "")),
+            sanitize_csv_cell(job.get("dateTime", "")),
+            sanitize_csv_cell(job.get("salary", "")),
+            sanitize_csv_cell(skills_str),
+            sanitize_csv_cell(job.get("description", "")[:500])
+        ]
+        ws.append(row)
+        current_row = ws.max_row
+        ws.row_dimensions[current_row].height = 20
+
+        for col_num in range(1, len(headers) + 1):
+            cell = ws.cell(row=current_row, column=col_num)
+            cell.border = thin_border
+            cell.font = Font(name="Calibri", size=10)
+            if col_num in (1, 5, 6): # S.No, Work Mode, ATS Score
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            else:
+                cell.alignment = Alignment(vertical="center")
+
+    # Auto-adjust column dimensions
+    for col in ws.columns:
+        col_letter = get_column_letter(col[0].column)
+        max_len = 0
+        for cell in col:
+            val_str = str(cell.value or '')
+            if len(val_str) > max_len:
+                max_len = min(len(val_str), 55)
+        ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+
+    output = io.BytesIO()
+    wb.save(output)
+    return output.getvalue()
+
 def parse_and_validate_import_file(
     file_bytes: bytes,
     filename: str

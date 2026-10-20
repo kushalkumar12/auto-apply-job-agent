@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 
 try:
     from ..database import get_db
-    from ..services.excel_service import generate_jobs_csv, parse_and_validate_import_file
+    from ..services.excel_service import generate_jobs_csv, generate_jobs_xlsx, parse_and_validate_import_file
 except (ImportError, ValueError):
     from database import get_db
-    from services.excel_service import generate_jobs_csv, parse_and_validate_import_file
+    from services.excel_service import generate_jobs_csv, generate_jobs_xlsx, parse_and_validate_import_file
 
 router = APIRouter(tags=["Jobs"])
 
@@ -324,11 +324,12 @@ def export_jobs(
     dayOffset: Optional[int] = Query(None),
     date: Optional[str] = Query(None),
     primarySkill: Optional[str] = Query(None),
-    marked: Optional[bool] = Query(None)
+    marked: Optional[bool] = Query(None),
+    format: Optional[str] = Query("xlsx")
 ):
     """
     Exports the ENTIRE filtered dataset (bypassing the 10-row page limit)
-    with CSV spreadsheet formula injection protection.
+    in native Microsoft Excel (.xlsx) or CSV format with formula injection protection.
     """
     total, all_jobs, _, _ = fetch_filtered_jobs(
         search=search,
@@ -346,18 +347,31 @@ def export_jobs(
         offset=0
     )
 
-    csv_data = generate_jobs_csv(all_jobs)
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"skill2role_jobs_{timestamp_str}.csv"
+    fmt = (format or "xlsx").lower().strip()
 
-    return Response(
-        content=csv_data,
-        media_type="text/csv",
-        headers={
-            "Content-Disposition": f"attachment; filename={filename}",
-            "X-Exported-Count": str(len(all_jobs))
-        }
-    )
+    if fmt == "csv":
+        csv_data = generate_jobs_csv(all_jobs)
+        filename = f"skill2role_jobs_{timestamp_str}.csv"
+        return Response(
+            content=csv_data,
+            media_type="text/csv; charset=utf-8",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "X-Exported-Count": str(len(all_jobs))
+            }
+        )
+    else:
+        xlsx_bytes = generate_jobs_xlsx(all_jobs)
+        filename = f"skill2role_jobs_{timestamp_str}.xlsx"
+        return Response(
+            content=xlsx_bytes,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "X-Exported-Count": str(len(all_jobs))
+            }
+        )
 
 @router.post("/jobs/import")
 async def import_jobs(file: UploadFile = File(...)):

@@ -578,28 +578,31 @@ function AppContent() {
     }
   };
 
-  // Full Microsoft Excel & Spreadsheet UTF-8 CSV Export (Stage 1 Requirement 9)
-  const handleExport = async () => {
+  // Full Microsoft Excel (.xlsx) & Spreadsheet Export (Stage 1 Requirement 9)
+  const handleExport = async (format = 'xlsx') => {
     try {
-      showToast('Preparing complete Excel/CSV export for all matching records...', 'info');
-      const exportUrl = apiService.getExportJobsUrl({
+      const ext = format === 'csv' ? 'csv' : 'xlsx';
+      showToast(`Preparing complete ${ext.toUpperCase()} export for all records...`, 'info');
+      const blob = await apiService.downloadExportJobs({
         search: searchQuery,
         company: selectedCompany && selectedCompany !== 'All' ? selectedCompany : undefined,
         workMode: workMode && workMode !== 'All' ? workMode : undefined,
         profileDriven: isProfileDriven,
         origin: activeOrigin && activeOrigin !== 'all' ? activeOrigin : undefined,
-        dayOffset: selectedHistoryDay?.dayOffset
+        dayOffset: selectedHistoryDay?.dayOffset,
+        format: ext
       });
 
-      // Stream full server CSV file with formula injection protection
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = exportUrl;
-      link.setAttribute('download', `Skill2Role_Export_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.href = url;
+      link.setAttribute('download', `Skill2Role_Export_${new Date().toISOString().slice(0, 10)}.${ext}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
 
-      showToast('Complete dataset export initiated!', 'success');
+      showToast(`Excel spreadsheet (.${ext}) downloaded successfully!`, 'success');
 
       // Log export action into Activity Feed
       const exportAct = {
@@ -607,7 +610,7 @@ function AppContent() {
         time: 'Just now',
         platform: 'System',
         iconType: 'check',
-        text: `Exported filtered opportunities to sanitized Excel/CSV spreadsheet`,
+        text: `Exported filtered opportunities to Microsoft Excel (.${ext}) spreadsheet`,
         countBadge: 'Exported'
       };
       setActivities(prev => [exportAct, ...prev]);
@@ -615,6 +618,7 @@ function AppContent() {
         await apiService.addActivity(exportAct);
       } catch (e) {}
     } catch (e) {
+      console.error('Export failed:', e);
       showToast('Export failed, please try again.', 'error');
     }
   };

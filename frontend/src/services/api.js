@@ -56,6 +56,29 @@ export const apiService = {
     }
   },
 
+  getExportJobsUrl(params = {}) {
+    const cleanParams = {};
+    Object.keys(params).forEach(k => {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+        cleanParams[k] = params[k];
+      }
+    });
+    if (!cleanParams.format) {
+      cleanParams.format = 'xlsx';
+    }
+    const query = new URLSearchParams(cleanParams).toString();
+    return `${BASE_URL}/jobs/export${query ? `?${query}` : ''}`;
+  },
+
+  async downloadExportJobs(params = {}) {
+    const url = this.getExportJobsUrl(params);
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Export download error (${res.status}): ${res.statusText}`);
+    }
+    return await res.blob();
+  },
+
   async applyJob(id) {
     try {
       return await apiFetch(`/jobs/${id}/apply`, { method: 'POST' });

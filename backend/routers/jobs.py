@@ -357,8 +357,9 @@ def export_jobs(
             content=csv_data,
             media_type="text/csv; charset=utf-8",
             headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "X-Exported-Count": str(len(all_jobs))
+                "Content-Disposition": f'attachment; filename="{filename}"; filename*=UTF-8\'\'{filename}',
+                "X-Exported-Count": str(len(all_jobs)),
+                "Access-Control-Expose-Headers": "Content-Disposition"
             }
         )
     else:
@@ -368,8 +369,9 @@ def export_jobs(
             content=xlsx_bytes,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "X-Exported-Count": str(len(all_jobs))
+                "Content-Disposition": f'attachment; filename="{filename}"; filename*=UTF-8\'\'{filename}',
+                "X-Exported-Count": str(len(all_jobs)),
+                "Access-Control-Expose-Headers": "Content-Disposition"
             }
         )
 

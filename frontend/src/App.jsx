@@ -582,8 +582,9 @@ function AppContent() {
   const handleExport = async (format = 'xlsx') => {
     try {
       const ext = format === 'csv' ? 'csv' : 'xlsx';
-      showToast(`Preparing complete ${ext.toUpperCase()} export for all records...`, 'info');
-      const blob = await apiService.downloadExportJobs({
+      showToast(`Downloading Microsoft Excel (.${ext}) spreadsheet...`, 'info');
+
+      const exportUrl = apiService.getExportJobsUrl({
         search: searchQuery,
         company: selectedCompany && selectedCompany !== 'All' ? selectedCompany : undefined,
         workMode: workMode && workMode !== 'All' ? workMode : undefined,
@@ -593,16 +594,23 @@ function AppContent() {
         format: ext
       });
 
-      const url = window.URL.createObjectURL(blob);
+      const filename = `Skill2Role_Jobs_${new Date().toISOString().slice(0, 10)}.${ext}`;
+
+      // Native browser direct download (bypasses blob GUID issues, preserves true .xlsx extension & Excel icon)
       const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Skill2Role_Export_${new Date().toISOString().slice(0, 10)}.${ext}`);
+      link.style.display = 'none';
+      link.href = exportUrl;
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
 
-      showToast(`Excel spreadsheet (.${ext}) downloaded successfully!`, 'success');
+      setTimeout(() => {
+        try {
+          if (link.parentNode) link.parentNode.removeChild(link);
+        } catch (e) {}
+      }, 2000);
+
+      showToast(`Exported ${filename} successfully!`, 'success');
 
       // Log export action into Activity Feed
       const exportAct = {

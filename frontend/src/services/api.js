@@ -67,7 +67,7 @@ export const apiService = {
       cleanParams.format = 'xlsx';
     }
     const query = new URLSearchParams(cleanParams).toString();
-    return `/api/jobs/export${query ? `?${query}` : ''}`;
+    return `${BASE_URL}/jobs/export${query ? `?${query}` : ''}`;
   },
 
   async downloadExportJobs(params = {}) {

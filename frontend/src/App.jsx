@@ -122,12 +122,7 @@ function AppContent() {
       if (val) {
         setProfileValidation(val);
         setActiveCandidateProfile(prev => {
-          const wasComplete = prev.isComplete;
           const nowComplete = Boolean(val.isComplete);
-          // If profile just transitioned to 100% complete, show success popup
-          if (!wasComplete && nowComplete) {
-            setIsGateModalOpen(true);
-          }
           return {
             id: val.profileId || prev.id || 'default',
             name: val.profileName || prev.name || 'Primary Profile',
@@ -581,10 +576,11 @@ function AppContent() {
   // Full Microsoft Excel (.xlsx) & Spreadsheet Export (Stage 1 Requirement 9)
   const handleExport = async (format = 'xlsx') => {
     try {
-      const ext = format === 'csv' ? 'csv' : 'xlsx';
-      showToast(`Downloading Microsoft Excel (.${ext}) spreadsheet...`, 'info');
+      const ext = (typeof format === 'string' && format.toLowerCase() === 'csv') ? 'csv' : 'xlsx';
+      showToast(`Preparing Microsoft Excel (.${ext}) spreadsheet...`, 'info');
 
-      const exportUrl = apiService.getExportJobsUrl({
+      // Fetch true binary blob from backend (bypasses Vite HTML fallback and cross-origin download limits)
+      const blob = await apiService.downloadExportJobs({
         search: searchQuery,
         company: selectedCompany && selectedCompany !== 'All' ? selectedCompany : undefined,
         workMode: workMode && workMode !== 'All' ? workMode : undefined,
@@ -595,20 +591,26 @@ function AppContent() {
       });
 
       const filename = `Skill2Role_Jobs_${new Date().toISOString().slice(0, 10)}.${ext}`;
+      const mimeType = ext === 'csv'
+        ? 'text/csv;charset=utf-8;'
+        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-      // Native browser direct download (bypasses blob GUID issues, preserves true .xlsx extension & Excel icon)
+      const fileBlob = new Blob([blob], { type: mimeType });
+      const blobUrl = window.URL.createObjectURL(fileBlob);
+
       const link = document.createElement('a');
       link.style.display = 'none';
-      link.href = exportUrl;
+      link.href = blobUrl;
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
 
       setTimeout(() => {
         try {
+          window.URL.revokeObjectURL(blobUrl);
           if (link.parentNode) link.parentNode.removeChild(link);
         } catch (e) {}
-      }, 2000);
+      }, 5000);
 
       showToast(`Exported ${filename} successfully!`, 'success');
 

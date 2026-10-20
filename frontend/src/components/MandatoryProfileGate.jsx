@@ -8,9 +8,8 @@ export default function MandatoryProfileGate({
   onNavigateToProfile,
   onStartExplorer
 }) {
-  if (!isOpen) return null;
-
   const isComplete = validationData?.isComplete || false;
+  if (!isOpen || isComplete) return null;
   const missing = validationData?.missingFields || [];
   const fieldStatus = validationData?.fieldStatus || {};
   const definitions = validationData?.mandatoryDefinitions || [

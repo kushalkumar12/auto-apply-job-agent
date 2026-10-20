@@ -1643,3 +1643,4 @@
 [2026-10-13T12:14:31] tweak active tab indicator transition speed and easing
 [2026-10-17T18:40:04] tweak active tab indicator transition speed and easing
 [2026-10-20T16:12:07] fix bug where cached response was returning stale date
+[2026-10-20T20:30:16] add missing null checks before accessing object properties

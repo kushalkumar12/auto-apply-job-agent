@@ -96,7 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_jobs_marked ON jobs(marked);
 ### 3.2 Enforcement Boundary
 - **Backend Guard:** Calling `POST /api/discovery/start` or `GET /api/discovery/stream` without a complete profile returns **HTTP 403 Forbidden** with a list of missing fields.
 - **Frontend Guard:** Clicking "Resume Stream" or navigating directly opens the `MandatoryProfileGate` modal.
-- **Theme Adaptability:** The gate modal uses CSS custom tokens (`--bg-card`, `--accent-primary`, `--border-color`) to adapt seamlessly across `default`, `glass`, `minimal`, and `difference` themes in both Light and Dark modes.
+- **Theme Adaptability:** The gate modal uses CSS custom tokens (`--bg-card`, `--accent-primary`, `--border-color`) to adapt seamlessly across `default` and `minimal` themes in both Light and Dark modes.
 
 ---
 

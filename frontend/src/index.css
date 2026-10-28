@@ -46,19 +46,37 @@ button {
   transition: all var(--transition-fast);
 }
 
-/* Base Inputs & Controls */
-input, select, textarea {
+/* Base Inputs & Controls - Robust Contrast Guarantees */
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+select, 
+textarea {
   font-family: var(--font-sans);
   outline: none;
-  font-size: var(--text-body);
-  color: var(--text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-size: var(--text-body, 14px);
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #FFFFFF));
+  color: var(--text-primary, var(--rp-text-dominant, #171A18));
+  border: 1px solid var(--border-main, var(--rp-secondary-border, #DDE2DE));
+  border-radius: var(--radius-control, 6px);
+  padding: 8px 12px;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-subtle, var(--rp-text-muted, #7A847E));
+  opacity: 0.4 !important;
+}
+
+select option {
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #FFFFFF));
+  color: var(--text-primary, var(--rp-text-dominant, #171A18));
 }
 
 /* Accessible focus ring */
 input:focus, select:focus, textarea:focus {
-  border-color: var(--action-primary) !important;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+  border-color: var(--action-primary, var(--rp-accent-primary, #2563EB)) !important;
+  box-shadow: 0 0 0 2px var(--rp-accent-focus-ring, rgba(37, 99, 235, 0.25)) !important;
 }
 
 /* Custom Minimal Scrollbar */

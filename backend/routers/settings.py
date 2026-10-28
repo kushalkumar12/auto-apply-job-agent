@@ -1,14 +1,17 @@
 import json
 import time
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Depends
 
 try:
     from ..database import get_db
-    from ..models import AiSettingsUpdate, FactoryResetRequest, MenuItem, MenuSettingsUpdate
+    from ..models import AiSettingsUpdate, FactoryResetRequest, MenuItem, MenuSettingsUpdate, ResetUserDataRequest
+    from ..services.auth_service import get_current_user, reset_user_data_cascade
 except (ImportError, ValueError):
     from database import get_db
-    from models import AiSettingsUpdate, FactoryResetRequest, MenuItem, MenuSettingsUpdate
+    from models import AiSettingsUpdate, FactoryResetRequest, MenuItem, MenuSettingsUpdate, ResetUserDataRequest
+    from services.auth_service import get_current_user, reset_user_data_cascade
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
 
@@ -98,7 +101,7 @@ DEFAULT_MENU_ITEMS = [
     {"id": "explore", "label": "Explore", "description": "Job Discovery Radar & Live ATS Feed", "enabled": True},
     {"id": "generation", "label": "Generation", "description": "AI Resume & Cover Letter Studio", "enabled": True},
     {"id": "automation", "label": "Automation", "description": "Autonomous Application Pipelines", "enabled": True},
-    {"id": "profile", "label": "Profile", "description": "Candidate Identity & ATS Resume Data", "enabled": True},
+    {"id": "profile", "label": "Job Profile", "description": "Candidate Identity & ATS Resume Data", "enabled": True},
     {"id": "analytics", "label": "Analytics", "description": "Application Metrics & Conversion Rates", "enabled": True},
     {"id": "tools", "label": "Tools", "description": "MCP Integrations & ATS Diagnostic Utilities", "enabled": True}
 ]
@@ -125,9 +128,12 @@ def get_menu_settings():
         for item in raw_items:
             item_id = item.get("id")
             if item_id in standard_map and item_id not in seen_ids:
+                label = item.get("label") or standard_map[item_id]["label"]
+                if item_id == "profile" and label == "Profile":
+                    label = "Job Profile"
                 merged_items.append({
                     "id": item_id,
-                    "label": item.get("label") or standard_map[item_id]["label"],
+                    "label": label,
                     "description": item.get("description") or standard_map[item_id]["description"],
                     "enabled": bool(item.get("enabled", True))
                 })
@@ -163,9 +169,12 @@ def update_menu_settings(body: MenuSettingsUpdate):
 
     for item in body.items:
         if item.id in standard_map and item.id not in seen_ids:
+            label = item.label or standard_map[item.id]["label"]
+            if item.id == "profile" and label == "Profile":
+                label = "Job Profile"
             cleaned_items.append({
                 "id": item.id,
-                "label": item.label or standard_map[item.id]["label"],
+                "label": label,
                 "description": item.description or standard_map[item.id]["description"],
                 "enabled": bool(item.enabled)
             })
@@ -281,6 +290,30 @@ def reset_profile_data():
         "message": "Candidate Profile data has been completely deleted.",
         "profile": BLANK_PROFILE
     }
+
+@router.post("/reset-user-data")
+def reset_user_data_endpoint(
+    body: Optional[ResetUserDataRequest] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Safely resets candidate profile, resumes, documents, tailored CVs,
+    pipelines, bookmarks, explorer runs, and activity feed for the authenticated user.
+    CRITICAL: The user account, password, credentials, and active sessions
+    are PRESERVED. The user remains logged in.
+    """
+    token_val = (body.confirmToken if body and body.confirmToken else "reset").strip().lower()
+    allowed = ["reset", "skill2role", "resumeporter", "jobsonly", "confirm", "clear"]
+    if not any(t in token_val for t in allowed):
+        raise HTTPException(
+            status_code=400,
+            detail="Verification failed. Please type 'reset' or 'skill2role' to confirm."
+        )
+
+    with get_db() as conn:
+        cur = conn.cursor()
+        res = reset_user_data_cascade(cur, current_user["id"])
+        return res
 
 @router.post("/factory-reset")
 def factory_reset_entire_data(body: FactoryResetRequest):

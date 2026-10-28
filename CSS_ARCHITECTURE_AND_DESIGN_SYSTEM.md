@@ -5,7 +5,7 @@
 
 ## 1. Executive Summary & Architectural Purpose
 
-This document establishes the authoritative CSS architecture, color theory, modular file organization, theme mechanics, and Apple-inspired glassmorphism standards for the **Resume Porter** application. 
+This document establishes the authoritative CSS architecture, color theory, modular file organization, 2-theme mechanics (Default & Minimal), and universal contrast standards for the **Resume Porter** application. 
 
 The goal of this system is to maintain **pixel-perfect visual coherence, zero-scroll 100vh viewport locking, modular maintainability, and seamless multi-theme switching** across all present and future workstations.
 
@@ -98,19 +98,17 @@ frontend/src/
 │   │   ├── popups.css           # High-clarity modal overlays (zero-blur Image 1 standard), dialog cards
 │   │   └── inputs.css           # Text fields, selects, toggle switches, search inputs
 │   └── themes/
-│       ├── theme-default.css    # Swiss Minimalist standard
-│       ├── theme-difference.css # Contextual per-page tints & motion overrides
-│       ├── theme-glass.css      # Apple-inspired translucent glassmorphism
-│       └── theme-minimal.css    # Monochrome achromatic high-contrast
+│       ├── theme-default.css    # Swiss Minimalist standard (Modern SaaS)
+│       └── theme-minimal.css    # Monochrome editorial high-contrast (Zero-Color)
 │
 └── components/
     ├── JobDiscoveryEngine.css   # 1. Explorer Screen (Radar & hardware accelerated stream)
     ├── GenerationView.css       # 2. Generation Screen (15-row table & split document preview)
     ├── AutomationView.css       # 3. Automation Screen (Pipeline manager & live console terminal)
-    ├── ProfileView.css          # 4. Profile Screen (2-column sidebar & internal form scroll)
+    ├── ProfileView.css          # 4. Job Profile Screen (2-column sidebar & internal form scroll)
     ├── AnalyticsView.css        # 5. Analytics Screen (30-day timeline chart & KPI grid)
     ├── ToolsView.css            # 6. Tools Screen (4x2 desktop matrix & quick action cards)
-    └── SettingsModal.css        # 7. Settings Screen (MCP protocol, AI keys & modal sub-views)
+    └── UniversalModal.css       # 7. Settings & Unified Modal system (MCP protocol, AI keys, Profile)
 ```
 
 ### 3.2 Master CSS Architecture & Linking Rules
@@ -121,9 +119,9 @@ frontend/src/
 
 ---
 
-## 4. Dual Mode & Four-Theme Specification
+## 4. Dual Mode & Streamlined Two-Theme Specification
 
-The application supports **2 Color Modes** (Light and Dark) and **4 Personality Themes**:
+The application strictly supports **2 Curated Themes** across **2 Color Modes** (Light and Dark):
 
 ```
                         ┌───────────────────┐
@@ -134,65 +132,39 @@ The application supports **2 Color Modes** (Light and Dark) and **4 Personality 
                  ▼                                 ▼
            [ Light Mode ]                    [ Dark Mode ]
                  │                                 │
-     ┌───────────┼───────────┬──────────┐          │
-     ▼           ▼           ▼          ▼          │
- [Default] [Difference]   [Glass]   [Minimal] ◄────┘
+                 ├── [ Default Theme ] ────────────┤
+                 │                                 │
+                 └── [ Minimal Theme ] ────────────┘
 ```
 
 ### 4.1 Theme Breakdown
 
 | Theme | Visual Personality | Canvas (60%) | Containers (30%) | Accent (10%) | Motion / Animations |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Default** | Swiss Minimalist / Modern SaaS | `#F7F9F8` Off-white | `#FFFFFF` with `#DDE2DE` | `#2563EB` Blue / `#171A18` Dark | Standard subtle hover (120–150ms) |
-| **2. Difference** | Dynamic Visual Identity | Page-Contextual Canvas (Explorer: `#F4F7F5`, Generation: `#F8F6F4`, Automation: `#121614`) | High-contrast elevated panels with subtle border glow | `#22C55E` / `#6366F1` | Interactive Cursor Particles & Active Canvas Data Flows |
-| **3. Glass** | Apple macOS / VisionOS Frosted Glass | Deep Ambient Gradient or Atmospheric Base | Translucent acrylic surfaces with `backdrop-filter: blur(16px–24px)` | Metallic Slate Blue (`#34536F` / `#38BDF8`) | Refined specular highlight transitions |
-| **4. Minimal** | Achromatic Editorial High-Contrast | Pure `#000000` or `#F5F5F5` | `#09090B` or `#FFFFFF` (1px `#D4D4D8`) | `#18181B` Monochrome (Color blocked except company logos & green checks) | Zero decorative animations |
+| **1. Default** | Swiss Minimalist / Modern SaaS | `#F7F9F8` Off-white / `#121614` Dark | `#FFFFFF` with `#DDE2DE` / `#181E1B` with `#28312B` | `#2563EB` Cobalt Blue / `#2D5A27` Deep Forest Olive | Standard subtle hover (120–150ms) |
+| **2. Minimal** | Achromatic Editorial High-Contrast | Pure `#FFFFFF` Light / Pure `#09090B` Dark | `#FAFAFA` Light / `#121214` Dark (1px `#E4E4E7` / `#27272A`) | Pure High-Contrast Inverted Solid (`#09090B` in Light, `#FAFAFA` in Dark) | Zero decorative animations |
 
 ---
 
-## 5. Apple-Inspired Glassmorphism Design Requirements (The 24 Standards)
+## 5. Decommissioning of Glass & Difference Themes & Universal Contrast Guarantees
 
-When the **Glass** theme is activated, all styled surfaces must adhere to the 24 Apple-grade glassmorphism engineering requirements:
+### 5.1 Rationale for Eliminating Glass & Difference Themes
+To guarantee enterprise reliability and uncompromising legibility across all workstation modules, **Glass** and **Difference** themes have been permanently removed from the system:
+1. **Glass Theme**: Frosted backdrop-filters, ambient animated blur orbs, and translucent acrylic surfaces caused unacceptable cross-browser contrast degradation, GPU compositing overhead, and text illegibility over complex data tables.
+2. **Difference Theme**: Per-page color tints and inverted difference blends fought with universal component tokens, creating inconsistent states and maintenance friction.
+3. **Streamlined 2-Theme System**: Standardizing on **Default** and **Minimal** ensures 100% predictable, high-contrast, WCAG AAA-compliant readability across every view.
 
-1. **Frosted-Glass Translucency**: Use translucent surfaces with background blur (`backdrop-filter`) to create a refined frosted-glass effect.
-2. **Selective Application**: Apply glass styling strictly to floating layers: navigation bars, workstation sidebars, floating toolbars, popovers, dropdowns, and modal dialogs.
-3. **Visual Hierarchy**: Maintain depth layering: `Canvas Base (Z:0)` → `Primary Content (Z:10)` → `Floating Navigation (Z:50)` → `Modal Overlays (Z:1000)`.
-4. **Restrained Glass Palette**: Use black, white, gray, charcoal, and dark metallic blue for all glass materials.
-5. **60–30–10 Compliance**: Balance glass surfaces without compromising legibility or visual weight.
-6. **Ambient Lighting**: Use subtle background linear gradients (`linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))`) and soft specular edge reflections.
-7. **Specular Borders**: Apply thin, semi-transparent 1px borders (`border: 1px solid rgba(255, 255, 255, 0.18)`) and inset top highlights (`box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25)`).
-8. **Diffuse Shadows**: Use multi-layered soft shadows (`box-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.08), 0 2px 6px 0 rgba(0, 0, 0, 0.04)`).
-9. **Consistent Metrics**: Retain standard radii (`9px` for cards, `6px` for buttons), padding, and component heights (`40px` controls).
-10. **Blur Range Calibration**: Use `backdrop-filter: blur(12px)` for compact bars and up to `blur(24px)` for prominent floating sheets.
-11. **Adaptive Opacity**: Adjust background alpha between `0.55` and `0.85` depending on underlying background complexity.
-12. **High Text Contrast**: Text must never sit directly over unmitigated transparent noise; maintain high WCAG AAA contrast (`#FFFFFF` on dark glass, `#111827` on light glass).
-13. **Solid Data Containers**: Keep tables, form inputs, code editors, and analytics charts predominantly solid (`rgba(255, 255, 255, 0.95)` or solid `#FFFFFF`) to preserve absolute data clarity.
-14. **No Neon / Excessive Glow**: Avoid neon outlines, saturated rainbow gradients, and heavy fuzzy drop shadows.
-15. **Preserved Workstation Layout**: Preserve the desktop layout, pinned 44px navbar, 100vh viewport locks, and two-column grids.
-16. **Consistent Typography**: Inter font family, weights (400, 500, 600, 700), and letter-spacing across all glass states.
-17. **Subtle Interactive Micro-Transitions**: 150ms ease transitions on hover, focus, and active glass states.
-18. **Visual Feedback on Interaction**: Increase glass specular brightness by +5% alpha on hover (`rgba(255,255,255,0.1) → rgba(255,255,255,0.15)`).
-19. **Responsive Glass Styling**: Ensure glass elements render consistently across mobile, tablet, and ultra-wide viewports.
-20. **Solid-Color Fallbacks**: Always provide solid background fallbacks via `@supports not (backdrop-filter: blur(10px))`:
-    ```css
-    @supports not (backdrop-filter: blur(10px)) {
-      .glass-surface {
-        background-color: #FFFFFF !important;
-      }
-    }
-    ```
-21. **Accessibility & Reduced Transparency**: Honor user system settings via media queries:
-    ```css
-    @media (prefers-reduced-transparency: reduce) {
-      .glass-surface {
-        backdrop-filter: none !important;
-        background-color: var(--surface-primary) !important;
-      }
-    }
-    ```
-22. **Design Tokens for Glass**: Define tokens for glass materials (`--glass-bg`, `--glass-border`, `--glass-blur`, `--glass-shadow`).
-23. **Task-First Clarity**: Glass effects must elevate aesthetic elegance without distracting from rapid job application workflows.
-24. **Apple Desktop Elegance**: Maintain the polished, premium feel of macOS Sequoia and visionOS.
+### 5.2 Universal Form Input & Button Contrast Standards
+All form elements and action controls implement tokenized contrast rules:
+1. **Inputs, Textareas, and Selects**:
+   - Universal rule in `index.css`: `background-color: var(--rp-secondary-surface)` and `color: var(--rp-text-dominant)`.
+   - Explicit placeholder styling: `color: var(--rp-text-muted)` at `0.75` opacity.
+   - Dropdown options (`select option`): Explicitly inherit dark surface and dominant text colors, preventing white-on-white browser defaults in dark mode.
+2. **Action Buttons**:
+   - Primary action buttons (`.btn-primary-olive`, `.btn-apply-action`, `.btn-apply-blue`, `.modal-apply-btn`, `.auth-submit-btn`, `.btn-save-changes`, `.table-btn-primary`) utilize `--rp-accent-contrast` and inverted solid backgrounds (`#FAFAFA` on `#09090B` in Minimal Dark Mode).
+   - Outline buttons (`.btn-clear-outline`, `.table-btn-outline`, `.btn-modal-cancel`) adapt their borders and hover fills to ensure crisp visibility against both light and dark container surfaces.
+3. **Zero Dead Footprints**:
+   - All `theme-glass.css`, `theme-difference.css`, and ambient background orb DOM nodes have been purged from the build.
 
 ---
 
@@ -264,5 +236,4 @@ Before committing any CSS changes to the codebase, verify:
 - [ ] **No Page Scrolling**: Does `document.documentElement.scrollHeight === window.innerHeight`? Are dense views using internal flex-scroll?
 - [ ] **Modal Backdrop Standard**: Do all popups use `rgba(23, 26, 24, 0.45)` with `backdrop-filter: none`?
 - [ ] **Component Isolation**: Are page-specific styles placed in their respective page CSS file (`ProfileView.css`, `AutomationView.css`, etc.)?
-- [ ] **Design Tokens Utilized**: Are variables (`var(--bg-main)`, `var(--border-main)`, `var(--action-primary)`) used instead of arbitrary hardcoded values?
-- [ ] **Glass Theme Standards**: When in Glass theme, are primary text and data tables protected from transparency degradation?
+- [ ] **Dual-Theme Contrast Standards**: When in Default or Minimal theme (Light or Dark), do form inputs, selects, and action buttons pass WCAG AAA contrast?

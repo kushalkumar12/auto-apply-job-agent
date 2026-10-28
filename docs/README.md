@@ -17,7 +17,7 @@
 - **Multi-Persona Profiles:** Create, switch, and maintain isolated career personas (e.g., Staff Backend Engineer vs. AI Platform Lead) with distinct target keywords and tailored resumes.
 - **5-Day Historical Analytics:** Track job ingestion velocity, average ATS match trends, and daily opportunity volume across 5-day historical snapshots.
 - **Universal Import & Formula-Safe Export:** Bidirectional data migration supporting JSON, CSV, and XLSX formats with built-in CSV formula injection protection.
-- **Adaptable Theming Engine:** 4 distinct visual themes (`default`, `glass`, `minimal`, `difference`) across `dark` and `light` modes based on the 60–30–10–5 visual hierarchy.
+- **Adaptable Theming Engine:** 2 curated visual themes (`default` and `minimal`) across `dark` and `light` modes based on the 60–30–10–5 visual hierarchy with guaranteed high-contrast readability.
 
 ---
 
@@ -107,6 +107,7 @@ The Skill2Role repository includes comprehensive, cross-referenced documentation
 13. [**Integrations Inventory (integrations.md)**](file:///d:/JavaProjects/JobsOnly/docs/integrations.md) — Greenhouse, Ashby, Lever, RemoteOK, Remotive scrapers, and future connectors.
 14. [**Testing & Quality Assurance (testing-and-qa.md)**](file:///d:/JavaProjects/JobsOnly/docs/testing-and-qa.md) — Test suites, CI/CD procedures, regression checklists, and performance benchmarks.
 15. [**Debugging & Troubleshooting (debugging.md)**](file:///d:/JavaProjects/JobsOnly/docs/debugging.md) — Known issues, error codes, database recovery, and troubleshooting runbooks.
+16. [**Job Profile Onboarding Fixes (job-profile-onboarding-fixes.md)**](file:///d:/JavaProjects/JobsOnly/docs/job-profile-onboarding-fixes.md) — Specification and architecture of the 4 onboarding and master profile synchronization fixes.
 
 ---
 

@@ -18,12 +18,27 @@ class AuthRegister(BaseModel):
     avatar: Optional[str] = "avatar_1"
 
 class AuthGoogle(BaseModel):
-    email: str
+    credential: Optional[str] = None
+    id_token: Optional[str] = None
+    email: Optional[str] = None
     name: Optional[str] = "User"
     avatar: Optional[str] = "avatar_1"
 
 class AuthForgotPassword(BaseModel):
     email: str
+
+class AuthResetPassword(BaseModel):
+    token: str
+    new_password: str
+
+class AuthRefreshToken(BaseModel):
+    refresh_token: str
+
+class AuthLogout(BaseModel):
+    refresh_token: Optional[str] = None
+
+class AuthTerminateSession(BaseModel):
+    session_id: Optional[str] = None
 
 class AuthAvatarUpdate(BaseModel):
     avatar: str
@@ -46,6 +61,9 @@ class FeedbackCreate(BaseModel):
 class FactoryResetRequest(BaseModel):
     projectName: str
 
+class ResetUserDataRequest(BaseModel):
+    confirmToken: Optional[str] = "reset"
+
 class MenuItem(BaseModel):
     id: str
     label: str
@@ -55,13 +73,6 @@ class MenuItem(BaseModel):
 class MenuSettingsUpdate(BaseModel):
     items: List[MenuItem]
 
-class CandidateProfileCreate(BaseModel):
-    name: str
-    data: Optional[Dict[str, Any]] = None
-
-class CandidateProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
 
 class KeywordsGenerateRequest(BaseModel):
     primarySkill: Optional[str] = None

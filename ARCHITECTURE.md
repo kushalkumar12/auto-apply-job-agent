@@ -29,7 +29,7 @@ graph TD
 1. **Single Source of Truth with URL Hash & Storage Hydration**:
    - Navigation state utilizes the URL `#hash` with fallback to `localStorage` (`rp_active_tab`). Refreshing the browser or navigating via bookmarks retains the active tab without state loss.
 2. **Atomic Modal System**:
-   - All modal dialogs (`ThemesModal`, `SettingsModal`, `HelpPrivacyModal`, `AuthModal`, `JobModal`) inherit identical visual tokens: backdrop blur, rounded corners (`border-radius: 16px`), glassmorphism header, and high-contrast red close button `(X)`.
+   - All modal dialogs (`ThemesModal`, `SettingsModal`, `HelpPrivacyModal`, `AuthModal`, `JobModal`) inherit identical visual tokens: dark translucent overlay, rounded corners (`border-radius: 16px`), high-contrast header, and accessible close button `(X)`.
 3. **Event Isolation & Click Boundaries**:
    - The user profile menu in `Navbar.jsx` uses isolated event propagation and outside-click listeners registered on the next execution frame to prevent race conditions.
 
@@ -40,8 +40,8 @@ graph TD
 | Usability Metric | Implementation Pattern | Psychological Impact |
 | :--- | :--- | :--- |
 | **Cognitive Load Reduction** | Profile Dropdown Card with identity banner (*Connected by Google*) | Eliminates doubt regarding active authentication state and identity ownership. |
-| **Affordance & Constraints** | *Difference* theme marked with a "Blocked / Pending Spec" badge and click-disabled state | Visual affordance prevents user frustration while signaling upcoming capabilities. |
-| **Aesthetic Usability Effect** | Curated high-contrast *No Colors* theme alongside default vibrant theme | Caters to users sensitive to chromatic fatigue and ensures WCAG AAA accessibility. |
+| **Affordance & Constraints** | Streamlined Dual-Theme System (**Default** & **Minimal**) | Eliminates visual clutter, prevents maintenance overhead, and ensures 100% predictable contrast across both Light and Dark modes. |
+| **Aesthetic Usability Effect** | Curated high-contrast *Minimal* (Monochrome) theme alongside Default theme | Caters to users sensitive to chromatic fatigue and ensures WCAG AAA accessibility. |
 | **Feedback Loop Closure** | Ephemeral, non-blocking floating toasts (3200ms auto-dismiss) | Delivers instant dopamine reinforcement for actions (applying to jobs, submitting tickets, changing avatar) without layout shift. |
 | **Zero Data Loss Guarantee** | Session recovery & immediate local sync | Minimizes input friction and user anxiety during page reloads. |
 
@@ -161,30 +161,33 @@ html[data-theme="no-color"] body {
 3. **Clean Vector Icons & Zero Black Box Buttons**:
    - Replaced raw text glyphs with Lucide `<Star />` SVG outlines with crisp fill toggling.
    - Removed blanket `button` CSS rules in favor of explicit primary action classes, preserving transparent tab buttons and star rating controls.
-4. **Profile Dropdown Menu Reordering & Palette Icon**:
-   - Reordered items strictly to: `1. Themes` → `2. Help and Privacy` → `3. Settings` → `4. Logout`.
+4. **Profile Dropdown Menu Reordering & Job Profile Integration**:
+   - Reordered items strictly to: `1. Job Profile` → `2. Themes` → `3. Help and Privacy` → `4. Settings` → `5. Logout`.
    - Updated Themes icon to `Palette` across dropdown menu and modal header.
-5. **Preserved Original Company Logo Colors in No-Color Theme**:
-   - Company logos (Google, Microsoft, Amazon, Meta, Netflix, Adobe, Oracle, Apple, etc.) across the Job List, radar nodes, and modals explicitly preserve their original vibrant brand colors via `filter: none !important;` while the rest of the application remains in the No-Color theme.
-6. **Symbol & Icon Contrast in No-Color Theme**:
+   - Replaced custom avatar images with pure first-letter monogram avatars across the navbar and profile views.
+5. **Preserved Original Company Logo Colors in Minimal Theme**:
+   - Company logos (Google, Microsoft, Amazon, Meta, Netflix, Adobe, Oracle, Apple, etc.) across the Job List, radar nodes, and modals explicitly preserve their original vibrant brand colors via `filter: none !important;` while the rest of the application remains in the Minimal theme.
+6. **Symbol & Icon Contrast in Minimal Theme**:
    - Fixed contrast issue where active nav tab icons were hardcoded to `#0f172a`, causing black-on-black invisibility against `#18181B` pill backgrounds.
    - Updated `.nav-tab-btn.nav-tab-active .nav-tab-icon` to `color: currentColor; stroke: currentColor;`.
-   - Added explicit rules under `[data-theme="no-color"]` guaranteeing that active nav tab icons (`.nav-tab-active .nav-tab-icon`) and primary dark action buttons render with pure white `#FFFFFF !important` strokes and high contrast.
-7. **Themes Screen (2x2 Grid with Mini Dashboard Mockups & Color Mode)**:
-   - Replaced previous layout with exact 2x2 grid: **Default** (selected with green border and checkmark), **Difference** (with soft pink `BLOCKED` pill), **Glass** (translucent frosted style), and **Minimal** (dark navy aesthetic).
-   - Designed authentic mini dashboard previews inside each card featuring a left sidebar, top search bar, metric chips (purple/cyan), and vertical bar charts.
-   - Added **Color Mode** selector (`Default`, `Light`, `Dark`) with center-aligned, evenly distributed spacing across the row and custom green radio buttons alongside bottom animation toggles (`Mouse Cursor Animation`, `Data Flow Animation`).
+   - Added explicit rules under `[data-theme="minimal"]` guaranteeing that active nav tab icons (`.nav-tab-active .nav-tab-icon`) and primary dark action buttons render with pure white `#FFFFFF !important` strokes and high contrast.
+7. **Themes Screen (Clean 2-Card Layout with Mini Dashboard Previews & Color Mode)**:
+   - Permanently decommissioned **Glass** and **Difference** themes to avoid contrast collisions and high maintenance overhead.
+   - Streamlined into a 2-card layout: **Default** (selected with green border and checkmark) and **Minimal** (monochrome high-contrast).
+   - Designed authentic mini dashboard previews inside each card featuring a left sidebar, top search bar, metric chips, and vertical bar charts.
+   - Added **Color Mode** selector (`Default`, `Light`, `Dark`) with center-aligned, evenly distributed spacing across the row and custom green radio buttons alongside bottom animation toggles.
 
 ---
 
 ## 6. Verification & Test Evidence
 
 All interaction flows were executed and validated in a live browser session:
-1. **Profile Dropdown**: Displays avatar, "Kushal Kumar", "Connected by Google", and 4 reordered action buttons (`Themes`, `Help and Privacy`, `Settings`, `Logout`) with `Palette` logo.
-2. **Company Logo Preservation**: Verified that under `No Colors` theme, all enterprise company logos (Google, Microsoft, Amazon, Netflix, Meta, etc.) retain their full original colors.
-3. **Themes Modal Screen**: Validated 2x2 grid layout, Default green selection badge, blocked Difference badge, Glass and Minimal mockups, Color Mode radio row, and animation toggles.
-4. **Popup Stability & Left-Sidebar Layout**: Verified `Help & Privacy` maintains fixed 600px height with left sidebar menu and zero sinking/shifting across all tabs.
-5. **Settings Modal**: Verified AI API Key inputs, MCP Servers list, and instant avatar DP updates with left-sidebar layout.
-6. **Help & Privacy**: Successfully tested feedback ticket creation and verified DB entry.
-7. **Auth Suite**: Tested Logout, Sign-In modal display, and Google Auth session recreation.
-8. **State Persistence**: Verified `#profile` URL hash and view persistence across full browser reloads.
+1. **Profile Dropdown**: Displays first-letter monogram avatar ("K"), "Kushal Kumar", "Connected by Google", and action buttons (`Job Profile`, `Themes`, `Help and Privacy`, `Settings`, `Logout`) with `Palette` logo.
+2. **Company Logo Preservation**: Verified that under `Minimal` theme, all enterprise company logos (Google, Microsoft, Amazon, Netflix, Meta, etc.) retain their full original colors.
+3. **Themes Modal Screen**: Validated 2-card layout (Default & Minimal), Default green selection badge, Minimal mockup, Color Mode radio row, and animation toggles.
+4. **Universal Form & Action Contrast**: Verified that all inputs, textareas, dropdowns, and buttons remain sharply legible in both Light and Dark modes of Default and Minimal themes.
+5. **Popup Stability & Left-Sidebar Layout**: Verified `Help & Privacy` maintains fixed 600px height with left sidebar menu and zero sinking/shifting across all tabs.
+6. **Settings Modal**: Verified AI API Key inputs and MCP Servers list with clean left-sidebar layout (Platform Login and Avatars removed from Settings and consolidated in Job Profile).
+7. **Help & Privacy**: Successfully tested feedback ticket creation and verified DB entry.
+8. **Auth Suite**: Tested Logout, Sign-In modal display, and Google Auth session recreation.
+9. **State Persistence**: Verified `#profile` URL hash and view persistence across full browser reloads.

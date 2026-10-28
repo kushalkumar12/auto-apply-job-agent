@@ -26,19 +26,33 @@
   --rp-accent-secondary: #18181B;
 }
 
-/* Force All Non-Exempt Buttons to Crisp Monochrome */
-[data-theme="minimal"] .rp-btn-primary,
-[data-theme="minimal"] .btn-primary-olive,
-[data-theme="minimal"] button.primary-btn {
+/* Force All Non-Exempt Buttons to Crisp Monochrome in Light Mode */
+[data-theme="minimal"]:not([data-mode="dark"]) .rp-btn-primary,
+[data-theme="minimal"]:not([data-mode="dark"]) .btn-primary-olive,
+[data-theme="minimal"]:not([data-mode="dark"]) button.primary-btn,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-btn-primary {
   background-color: #18181B !important;
   color: #FFFFFF !important;
   border-color: #18181B !important;
 }
 
-[data-theme="minimal"] .rp-btn-primary:hover,
-[data-theme="minimal"] .btn-primary-olive:hover,
-[data-theme="minimal"] button.primary-btn:hover {
+[data-theme="minimal"]:not([data-mode="dark"]) .rp-btn-primary:hover,
+[data-theme="minimal"]:not([data-mode="dark"]) .btn-primary-olive:hover,
+[data-theme="minimal"]:not([data-mode="dark"]) button.primary-btn:hover,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-btn-primary:hover {
   background-color: #27272A !important;
+  border-color: #27272A !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-btn-secondary {
+  background-color: #FFFFFF !important;
+  color: #18181B !important;
+  border-color: #E4E4E7 !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-btn-secondary:hover {
+  background-color: #F4F4F5 !important;
+  border-color: #71717A !important;
 }
 
 /* Zero Decorative Backgrounds / Zero Gradients */
@@ -74,27 +88,188 @@
   color: #FFFFFF !important;
 }
 
-/* Dark Mode Minimal & No-Color Variant */
+/* Dark Mode Minimal & No-Color Variant — Smooth Graphite Gray with 90% opacity */
 [data-theme="minimal"][data-mode="dark"],
 [data-theme="no-color"][data-mode="dark"] {
-  --rp-dominant-bg: #09090B;
-  --rp-dominant-canvas: #000000;
-  --rp-secondary-surface: #121215;
-  --rp-secondary-border: #27272A;
-  --rp-secondary-border-hover: #52525B;
-  --rp-secondary-divider: #1E1E22;
+  --rp-dominant-bg: rgba(51, 51, 51, 0.90);
+  --rp-dominant-bg-rgb: 51, 51, 51;
+  --rp-dominant-canvas: rgba(43, 43, 43, 0.90);
+  --rp-secondary-surface: rgba(61, 61, 61, 0.90);
+  --rp-secondary-surface-rgb: 61, 61, 61;
+  --rp-secondary-border: rgba(255, 255, 255, 0.12);
+  --rp-secondary-border-hover: rgba(255, 255, 255, 0.22);
+  --rp-secondary-divider: rgba(255, 255, 255, 0.08);
+
+  /* Surface states with 90% opacity */
+  --rp-surface-hover: rgba(72, 72, 72, 0.90);
+  --rp-surface-active: rgba(80, 80, 80, 0.90);
+  --rp-surface-selected: rgba(72, 72, 72, 0.90);
+
+  /* Typography — Soft White and Neutral Muted Grays */
   --rp-text-dominant: #FAFAFA;
-  --rp-text-secondary: #A1A1AA;
-  --rp-text-muted: #71717A;
+  --rp-text-secondary: #D4D2CF;
+  --rp-text-muted: #9E9C99;
+  --rp-text-placeholder: #8C8987;
+
+  /* Monochromatic Actions */
   --rp-accent-primary: #FAFAFA;
   --rp-accent-primary-hover: #E4E4E7;
+  --rp-accent-primary-light: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="minimal"][data-mode="dark"] .rp-btn-primary,
 [data-theme="minimal"][data-mode="dark"] .btn-primary-olive,
 [data-theme="no-color"][data-mode="dark"] .rp-btn-primary,
-[data-theme="no-color"][data-mode="dark"] .btn-primary-olive {
+[data-theme="no-color"][data-mode="dark"] .btn-primary-olive,
+[data-theme="minimal"][data-mode="dark"] .jp-btn-primary {
   background-color: #FAFAFA !important;
-  color: #09090B !important;
+  color: #2B2B2B !important;
   border-color: #FAFAFA !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .rp-btn-secondary,
+[data-theme="no-color"][data-mode="dark"] .rp-btn-secondary,
+[data-theme="minimal"][data-mode="dark"] .jp-btn-secondary {
+  background-color: #3D3D3D !important;
+  color: #FAFAFA !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="minimal"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="minimal"] select,
+[data-theme="minimal"] textarea {
+  background-color: var(--rp-secondary-surface) !important;
+  color: var(--rp-text-dominant) !important;
+  border-color: var(--rp-secondary-border) !important;
+}
+
+/* --------------------------------------------------------------------------
+   MINIMAL MONOCHROME CHIPS & TAGS
+   Strictly Achromatic (Black, White, Grays, and Translucent Opacities)
+   -------------------------------------------------------------------------- */
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-chip.is-primary,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-chip-primary,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-selectable-chip.is-selected {
+  background-color: #18181B !important;
+  color: #FFFFFF !important;
+  border-color: #18181B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-chip.is-primary,
+[data-theme="minimal"][data-mode="dark"] .jp-chip-primary,
+[data-theme="minimal"][data-mode="dark"] .jp-selectable-chip.is-selected {
+  background-color: #FAFAFA !important;
+  color: #2B2B2B !important;
+  border-color: #FAFAFA !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-selectable-chip:not(.is-selected) {
+  background-color: #FFFFFF !important;
+  color: #18181B !important;
+  border-color: #E4E4E7 !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-selectable-chip:not(.is-selected) {
+  background-color: #3D3D3D !important;
+  color: #D4D2CF !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* --------------------------------------------------------------------------
+   MINIMAL MONOCHROME COMPLETION & PROGRESS INDICATORS
+   -------------------------------------------------------------------------- */
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-completion-bar-fill,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-incomplete-bar-fill,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-step-indicator-fill {
+  background: #18181B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-completion-bar-fill,
+[data-theme="minimal"][data-mode="dark"] .jp-incomplete-bar-fill,
+[data-theme="minimal"][data-mode="dark"] .jp-step-indicator-fill {
+  background: #FAFAFA !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-completion-percent,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-incomplete-progress-val,
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-step-pill {
+  color: #18181B !important;
+  background-color: #F4F4F5 !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-completion-percent,
+[data-theme="minimal"][data-mode="dark"] .jp-incomplete-progress-val,
+[data-theme="minimal"][data-mode="dark"] .jp-step-pill {
+  color: #FAFAFA !important;
+  background-color: #484848 !important;
+}
+
+/* Active navigation indicators */
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-nav-btn.is-active {
+  background-color: #F4F4F5 !important;
+  color: #09090B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-nav-btn.is-active {
+  background-color: #484848 !important;
+  color: #FAFAFA !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-nav-btn.is-active::before {
+  background-color: #18181B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-nav-btn.is-active::before {
+  background-color: #FAFAFA !important;
+}
+
+/* Incomplete modal actions */
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-incomplete-fill-btn {
+  background-color: #18181B !important;
+  color: #FFFFFF !important;
+  border-color: #18181B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-incomplete-fill-btn {
+  background-color: #FAFAFA !important;
+  color: #2B2B2B !important;
+  border-color: #FAFAFA !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .jp-incomplete-item.is-pending .jp-incomplete-item-icon {
+  background-color: #F4F4F5 !important;
+  color: #18181B !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .jp-incomplete-item.is-pending .jp-incomplete-item-icon {
+  background-color: #484848 !important;
+  color: #FAFAFA !important;
+}
+
+/* --------------------------------------------------------------------------
+   MINIMAL RADAR ENGINE & EXPLORER ACHROMATIC OVERRIDES
+   Keeps green ONLY for actual success signals, red for error/validation.
+   All decorative radar waves and backgrounds strictly monochrome.
+   -------------------------------------------------------------------------- */
+[data-theme="minimal"] .radar-wave-circle {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .radar-wave-circle {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+
+
+/* Generation Studio stat icons in minimal theme */
+[data-theme="minimal"] .stat-icon-blue {
+  background-color: #F4F4F5 !important;
+  color: #18181B !important;
+  border-color: #E4E4E7 !important;
+}
+
+[data-theme="minimal"][data-mode="dark"] .stat-icon-blue {
+  background-color: #484848 !important;
+  color: #FAFAFA !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }

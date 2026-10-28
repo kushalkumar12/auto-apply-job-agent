@@ -43,7 +43,7 @@
 - **Reference Standard**: The established **Wavefrontend** implementation (`wavefrontend/`) is the visual and behavioral baseline.
 - **Top Navigation Bar (`frontend/src/components/Navbar.jsx`)**: Layout, brand logo ("skill2role" / "Resume Porter"), tab navigation pills, notifications trigger, and dual profile dropdown.
 - **Orbit Radar Scene (`frontend/src/components/JobDiscoveryEngine.jsx` & `JobDiscoveryEngine.css`)**: 210px height, 120px circular central collector core, canvas wave attractor, floating source badges, rotating luminous glow.
-- **Theme & Palette Tokens**: Dark mode background (`#0f172a`, `#1e293b`), accent colors (`#3b82f6`, `#10b981`), borders, shadows, and glassmorphic layers.
+- **Theme & Palette Tokens**: Dark mode background (`#0f172a`, `#1e293b`), accent colors (`#3b82f6`, `#10b981`), borders, shadows, and dual-theme tokens (Default & Minimal).
 - **Candidate Profile Layout (`frontend/src/components/ProfileView.jsx`)**: Tabbed structure, resume upload area, skills pills, primary skill selector.
 
 ### B. Functional & Data Rules (LOCKED)
@@ -56,9 +56,8 @@
 
 ## 3. Dedicated Changes & Permissions Log
 
-| Date | Requester | Status | Description of Authorized Change |
-|---|---|---|---|
 | 2026-10-19 | User | **AUTHORIZED & IMPLEMENTED** | 1. **Removed Action column** from Explorer `JobList.jsx`.<br>2. On clicking any row in `JobList.jsx`, open popup modal displaying the **Entire JD**.<br>3. Inside Job Modal, `Apply` button redirects directly to the company/platform job post URL (`job.url`) for manual application.<br>4. Added **marker toggle** (`Bookmark`) to mark jobs, persist to backend, and added **Marked Only** filter in Explorer.<br>5. Converted Orbit discovery stream into an **authentic real-time harvesting engine** that performs live ATS crawling, deduplication, validation, and tracking.<br>6. Removed description truncation (`clean_desc[:2500]`) across Greenhouse, Ashby, Lever, RemoteOK, and Remotive harvesters.<br>7. Replaced application status with Marked status in Excel/CSV export. |
+| 2026-10-22 | User | **AUTHORIZED & IMPLEMENTED** | User explicitly requested and authorized removing unnecessary labels: 1. Removed redundant `[LOCKED]` badges from tabs in `Navbar.jsx`. 2. Removed `Candidate Profile` over-label from the active profile pill in `CandidateProfileSwitcher.jsx`. |
 
 ---
 

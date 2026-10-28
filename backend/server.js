@@ -558,7 +558,7 @@ const DEFAULT_MENU_ITEMS = [
   { id: 'explore', label: 'Explore', description: 'Job Discovery Radar & Live ATS Feed', enabled: true },
   { id: 'generation', label: 'Generation', description: 'AI Resume & Cover Letter Studio', enabled: true },
   { id: 'automation', label: 'Automation', description: 'Autonomous Application Pipelines', enabled: true },
-  { id: 'profile', label: 'Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
+  { id: 'profile', label: 'Job Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
   { id: 'analytics', label: 'Analytics', description: 'Application Metrics & Conversion Rates', enabled: true },
   { id: 'tools', label: 'Tools', description: 'MCP Integrations & ATS Diagnostic Utilities', enabled: true }
 ];

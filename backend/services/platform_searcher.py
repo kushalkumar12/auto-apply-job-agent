@@ -13,11 +13,15 @@ try:
     from ..harvest.ashby import fetch_ashby_board, DEFAULT_ASHBY_BOARDS
     from ..harvest.lever import fetch_lever_board, DEFAULT_LEVER_BOARDS
     from ..harvest.remote_boards import fetch_remoteok, fetch_remotive
+    from ..harvest.workday import fetch_workday_board, DEFAULT_WORKDAY_BOARDS
+    from ..harvest.smartrecruiters import fetch_smartrecruiters_board, DEFAULT_SMARTRECRUITERS_BOARDS
 except (ImportError, ValueError):
     from harvest.greenhouse import fetch_greenhouse_board, DEFAULT_GREENHOUSE_BOARDS
     from harvest.ashby import fetch_ashby_board, DEFAULT_ASHBY_BOARDS
     from harvest.lever import fetch_lever_board, DEFAULT_LEVER_BOARDS
     from harvest.remote_boards import fetch_remoteok, fetch_remotive
+    from harvest.workday import fetch_workday_board, DEFAULT_WORKDAY_BOARDS
+    from harvest.smartrecruiters import fetch_smartrecruiters_board, DEFAULT_SMARTRECRUITERS_BOARDS
 
 logger = logging.getLogger("skill2role.searcher")
 
@@ -74,13 +78,20 @@ async def search_board_source(
     source_type: str,
     board_id: Optional[str],
     company: str,
-    timeout: float = 6.0
+    timeout: float = 6.0,
+    cxs_url: Optional[str] = None,
+    base_url: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
     Fetches real jobs from a specific enterprise board source with bounded concurrency and error isolation.
+    Supports Workday CXS, SmartRecruiters, Ashby, Greenhouse, Lever, and Remote boards.
     """
     try:
-        if source_type == "ashby":
+        if source_type == "workday" and cxs_url and base_url:
+            return await asyncio.to_thread(fetch_workday_board, company, cxs_url, base_url, "India", 10, timeout)
+        elif source_type == "smartrecruiters" and board_id:
+            return await asyncio.to_thread(fetch_smartrecruiters_board, company, board_id, "in", 10, timeout)
+        elif source_type == "ashby":
             return await asyncio.to_thread(fetch_ashby_board, board_id, company, timeout)
         elif source_type == "greenhouse":
             return await asyncio.to_thread(fetch_greenhouse_board, board_id, company, timeout)

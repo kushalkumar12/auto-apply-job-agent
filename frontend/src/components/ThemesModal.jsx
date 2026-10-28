@@ -68,30 +68,14 @@ const THEMES_LIST = [
   {
     id: 'default',
     title: 'Default',
-    subtitle: 'Clean and modern look.',
+    subtitle: 'Clean, modern Swiss design.',
     variant: 'default',
-    isBlocked: false,
-  },
-  {
-    id: 'difference',
-    title: 'Difference',
-    subtitle: 'Vibrant per-page tints.',
-    variant: 'difference',
-    isBlocked: false,
-  },
-  {
-    id: 'glass',
-    title: 'Glass',
-    subtitle: 'Translucent and elegant.',
-    variant: 'glass',
-    isBlocked: false,
   },
   {
     id: 'minimal',
     title: 'Minimal',
-    subtitle: 'Simple and distraction free.',
+    subtitle: 'Simple, distraction-free monochrome.',
     variant: 'minimal',
-    isBlocked: false,
   },
 ];
 
@@ -107,11 +91,12 @@ export default function ThemesModal({
   dataFlowAnimation,
   setDataFlowAnimation
 }) {
-  const [selectedThemeId, setSelectedThemeId] = useState(currentTheme || 'default');
+  const normalizedTheme = currentTheme === 'no-color' ? 'minimal' : (currentTheme || 'default');
+  const [selectedThemeId, setSelectedThemeId] = useState(normalizedTheme);
 
   // Keep local selection in sync with currentTheme prop
   React.useEffect(() => {
-    setSelectedThemeId(currentTheme || 'default');
+    setSelectedThemeId(currentTheme === 'no-color' ? 'minimal' : (currentTheme || 'default'));
   }, [currentTheme]);
 
   // Handle Escape key
@@ -128,14 +113,9 @@ export default function ThemesModal({
   if (!isOpen) return null;
 
   const handleCardClick = (theme) => {
-    if (theme.isBlocked) return;
     setSelectedThemeId(theme.id);
     if (onSelectTheme) {
-      if (theme.id === 'minimal') {
-        onSelectTheme('no-color');
-      } else {
-        onSelectTheme(theme.id);
-      }
+      onSelectTheme(theme.id);
     }
   };
 
@@ -162,17 +142,15 @@ export default function ThemesModal({
               return (
                 <div
                   key={theme.id}
-                  className={`theme-screen-card ${isSelected ? 'is-selected' : ''} ${theme.isBlocked ? 'is-blocked' : ''}`}
+                  className={`theme-screen-card ${isSelected ? 'is-selected' : ''}`}
                   onClick={() => handleCardClick(theme)}
-                  title={theme.isBlocked ? 'Difference theme is blocked' : theme.title}
+                  title={theme.title}
                 >
-                  {/* Top-Right Indicator: Green Checkmark Badge, Blocked Pill, or Radio Ring */}
+                  {/* Top-Right Indicator: Checkmark Badge or Radio Ring */}
                   {isSelected ? (
                     <div className="theme-card-indicator indicator-check">
                       <Check size={12} strokeWidth={3} />
                     </div>
-                  ) : theme.isBlocked ? (
-                    <span className="theme-blocked-pill">BLOCKED</span>
                   ) : (
                     <div className="theme-card-indicator indicator-radio" />
                   )}
@@ -215,29 +193,6 @@ export default function ThemesModal({
                 );
               })}
             </div>
-          </div>
-
-          {/* Animation Checkboxes Row matching User Mock */}
-          <div className="themes-animation-toggles">
-            <label className="theme-toggle-label">
-              <input
-                type="checkbox"
-                className="theme-checkbox-custom"
-                checked={mouseCursorAnimation}
-                onChange={(e) => setMouseCursorAnimation(e.target.checked)}
-              />
-              <span>Mouse Cursor Animation</span>
-            </label>
-
-            <label className="theme-toggle-label">
-              <input
-                type="checkbox"
-                className="theme-checkbox-custom"
-                checked={dataFlowAnimation}
-                onChange={(e) => setDataFlowAnimation(e.target.checked)}
-              />
-              <span>Data Flow Animation</span>
-            </label>
           </div>
         </div>
       </div>

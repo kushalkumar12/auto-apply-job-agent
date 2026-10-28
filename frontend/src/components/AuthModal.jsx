@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, Lock, Mail, User, CheckCircle2, AlertCircle } from 'lucide-react';
-import StaticAvatar, { AVATAR_OPTIONS } from './StaticAvatar';
 import { apiService } from '../services/api';
 
 export default function AuthModal({
@@ -13,7 +12,6 @@ export default function AuthModal({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('avatar_1');
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null); // { type: 'success' | 'error', message: '' }
 
@@ -29,31 +27,11 @@ export default function AuthModal({
 
   if (!isOpen) return null;
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setAlert(null);
-    if (!email) {
-      setAlert({ type: 'error', message: 'Please enter your email address to continue.' });
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await apiService.googleAuth(
-        email,
-        name || email.split('@')[0],
-        selectedAvatar
-      );
-      if (res && res.user) {
-        localStorage.setItem('rp_auth_token', res.token);
-        localStorage.setItem('rp_user', JSON.stringify(res.user));
-        onAuthSuccess(res.user);
-        onClose();
-      }
-    } catch (err) {
-      setAlert({ type: 'error', message: err.message || 'Google Auth simulation encountered an issue.' });
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogleSignIn = () => {
+    setAlert({
+      type: 'error',
+      message: 'Google Sign-In requires a configured Google Client ID and cryptographic identity verification. Please register or sign in with your Email and Password.'
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +49,7 @@ export default function AuthModal({
           onClose();
         }
       } else if (view === 'register') {
-        const res = await apiService.register(name, email, password, selectedAvatar);
+        const res = await apiService.register(name, email, password);
         if (res && res.user) {
           localStorage.setItem('rp_auth_token', res.token);
           localStorage.setItem('rp_user', JSON.stringify(res.user));
@@ -143,35 +121,17 @@ export default function AuthModal({
           {/* Form */}
           <form onSubmit={handleSubmit}>
             {view === 'register' && (
-              <>
-                <div className="auth-form-group">
-                  <label className="auth-form-label">Full Name</label>
-                  <input 
-                    type="text"
-                    className="auth-form-input"
-                    placeholder="e.g. John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="auth-form-group">
-                  <label className="auth-form-label">Select Profile DP</label>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                    {AVATAR_OPTIONS.map(opt => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        className={`avatar-choice-btn ${selectedAvatar === opt.id ? 'is-active' : ''}`}
-                        onClick={() => setSelectedAvatar(opt.id)}
-                      >
-                        <StaticAvatar avatarId={opt.id} size={36} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
+              <div className="auth-form-group">
+                <label className="auth-form-label">Full Name</label>
+                <input 
+                  type="text"
+                  className="auth-form-input"
+                  placeholder="Enter full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
             )}
 
             <div className="auth-form-group">

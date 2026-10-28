@@ -94,7 +94,7 @@ Every AI agent operating in this repository must uphold these 12 non-negotiable 
   - Text: `var(--rp-text-primary)`, `var(--rp-text-secondary)`, `var(--rp-text-muted)`
   - Accent: `var(--rp-accent-teal)`, `var(--rp-accent-cyan)`
   - Borders: `var(--rp-border)`
-- **Themes & Modes:** Ensure components look pixel-perfect in all 4 themes (`default`, `glass`, `minimal`, `difference`) and both modes (`dark`, `light`).
+- **Themes & Modes:** Ensure components look pixel-perfect in both supported themes (`default` and `minimal`) and both modes (`dark` and `light`) with high-contrast input, textarea, and action button readability. Glass and Difference themes are decommissioned.
 - **Modals:** All dialogs and popups must use the universal modal container (`.rp-modal-overlay` and `.rp-modal-card`) with backdrop blur and escape key handling.
 
 ---

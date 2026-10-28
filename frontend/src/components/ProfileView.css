@@ -106,7 +106,8 @@
   overflow-y: auto;
   padding: 24px 36px 36px;
   box-sizing: border-box;
-  background-color: #ffffff;
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #ffffff));
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
   display: flex;
   flex-direction: column;
 }
@@ -120,7 +121,7 @@
 .profile-title {
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
   letter-spacing: -0.02em;
   margin: 0 0 4px 0;
   line-height: 1.25;
@@ -128,7 +129,7 @@
 
 .profile-tagline {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary, var(--rp-text-secondary, #6b7280));
   margin: 0;
   font-weight: 400;
   line-height: 1.5;
@@ -137,12 +138,12 @@
 /* 4. Onboarding Setup Card */
 .setup-banner-card {
   flex-shrink: 0;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-card, var(--rp-secondary-border, #e5e7eb));
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: var(--surface-subtle, var(--rp-dominant-canvas, #ffffff));
   padding: 18px 22px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--rp-shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.02));
 }
 
 .setup-banner-header {
@@ -155,7 +156,7 @@
 .setup-banner-title {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
 }
 
 .setup-banner-progress {
@@ -250,13 +251,13 @@
 .block-title {
   font-size: 13.5px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
   margin: 0 0 8px 0;
 }
 
 .block-help-text {
   font-size: 11.5px;
-  color: #6b7280;
+  color: var(--text-secondary, var(--rp-text-secondary, #6b7280));
   margin: 6px 0 0 0;
   line-height: 1.45;
 }
@@ -279,11 +280,11 @@
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  background-color: #e5e7eb;
+  background-color: var(--surface-subtle, var(--rp-dominant-canvas, #e5e7eb));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: var(--text-secondary, var(--rp-text-muted, #9ca3af));
 }
 
 .avatar-camera-badge {
@@ -293,20 +294,20 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: #3f5a18;
+  background-color: var(--action-primary, var(--rp-accent-primary, #3f5a18));
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--surface-primary, var(--rp-secondary-surface, #ffffff));
   cursor: pointer;
 }
 
 /* CV Upload Box */
 .cv-upload-box {
-  border: 1px dashed #d1d5db;
+  border: 1px dashed var(--border-card, var(--rp-secondary-border, #d1d5db));
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--surface-subtle, var(--rp-dominant-canvas, #ffffff));
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
@@ -325,7 +326,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #3f5a18;
+  background-color: var(--action-primary, var(--rp-accent-primary, #3f5a18));
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -335,7 +336,7 @@
 .cv-upload-text {
   font-size: 13px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
 }
 
 .cv-actions-row {
@@ -345,25 +346,25 @@
 }
 
 .btn-cv-replace {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  background: var(--surface-primary, var(--rp-secondary-surface, #ffffff));
+  border: 1px solid var(--border-card, var(--rp-secondary-border, #d1d5db));
   border-radius: 6px;
   padding: 4px 14px;
   font-size: 12px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
   cursor: pointer;
   transition: background-color 120ms ease;
 }
 
 .btn-cv-replace:hover {
-  background: #f9fafb;
+  background: var(--rp-surface-hover, #f9fafb);
 }
 
 .btn-cv-delete {
   background: none;
   border: none;
-  color: #4b5563;
+  color: var(--text-secondary, var(--rp-text-secondary, #4b5563));
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -373,14 +374,14 @@
 }
 
 .btn-cv-delete:hover {
-  color: #dc2626;
+  color: var(--rp-semantic-danger, #dc2626);
 }
 
 /* Summary */
 .btn-text-action {
   background: none;
   border: none;
-  color: #374151;
+  color: var(--text-secondary, var(--rp-text-secondary, #374151));
   font-size: 12px;
   font-weight: 500;
   display: inline-flex;
@@ -391,12 +392,12 @@
 }
 
 .btn-text-action:hover {
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
 }
 
 .summary-empty-text {
   font-size: 12.5px;
-  color: #6b7280;
+  color: var(--text-secondary, var(--rp-text-secondary, #6b7280));
   margin: 0;
   line-height: 1.5;
 }
@@ -407,25 +408,26 @@
 
 .summary-textarea {
   width: 100%;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-card, var(--rp-secondary-border, #d1d5db));
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #ffffff));
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 12.5px;
   font-family: inherit;
-  color: #111827;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
   box-sizing: border-box;
   resize: vertical;
 }
 
 .summary-textarea:focus {
   outline: none;
-  border-color: #3f5a18;
+  border-color: var(--action-primary, var(--rp-accent-primary, #3f5a18));
 }
 
 /* Roles & Chips */
 .role-counter {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, var(--rp-text-secondary, #6b7280));
   font-weight: 500;
 }
 
@@ -435,19 +437,19 @@
 
 .field-input-box {
   width: 100%;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-card, var(--rp-secondary-border, #e5e7eb));
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 12.5px;
-  color: #111827;
-  background-color: #ffffff;
+  color: var(--text-primary, var(--rp-text-dominant, #111827));
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #ffffff));
   box-sizing: border-box;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .field-input-box:focus {
   outline: none;
-  border-color: #3f5a18;
+  border-color: var(--action-primary, var(--rp-accent-primary, #3f5a18));
 }
 
 .chips-flex-wrap {

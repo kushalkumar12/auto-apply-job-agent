@@ -17,13 +17,14 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { CompanyLogo } from './BrandIcons';
 import { apiService } from '../services/api';
 import './GenerationView.css';
 
-export default function GenerationView() {
+export default function GenerationView({ activeCandidateProfile }) {
   const [jobs, setJobs] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [previewTab, setPreviewTab] = useState('resume'); // 'resume' | 'cover-letter'
@@ -35,21 +36,29 @@ export default function GenerationView() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [profileCandidate, setProfileCandidate] = useState(null);
+  const [masterResumeStatus, setMasterResumeStatus] = useState(null);
+  const [tailoredResumeDetail, setTailoredResumeDetail] = useState(null);
   const fileInputRef = useRef(null);
+  const masterResumeInputRef = useRef(null);
 
-  // Load live jobs and user profile from backend
+  // Load live jobs, user profile, and master resume status from backend scoped to active profile
   useEffect(() => {
     let mounted = true;
     async function loadData() {
       try {
-        const [liveJobs, profileData] = await Promise.all([
-          apiService.getGenerationJobs(),
-          apiService.getProfile()
+        const [liveJobs, profileData, resumeStatus] = await Promise.all([
+          apiService.getGenerationJobs(activeCandidateProfile?.id),
+          apiService.getProfile(activeCandidateProfile?.id),
+          apiService.getMasterResumeStatus(activeCandidateProfile?.id)
         ]);
         if (mounted) {
+          if (resumeStatus) setMasterResumeStatus(resumeStatus);
           if (liveJobs && liveJobs.length > 0) {
             setJobs(liveJobs);
             setSelectedJobId(liveJobs[0].id);
+          } else {
+            setJobs([]);
+            setSelectedJobId(null);
           }
           if (profileData && (profileData.general?.fullName || profileData.contacts?.fullName || profileData.summary)) {
             const general = profileData.general || profileData.contacts || {};
@@ -83,7 +92,27 @@ export default function GenerationView() {
     }
     loadData();
     return () => { mounted = false; };
-  }, []);
+  }, [activeCandidateProfile?.id]);
+
+  // When selectedJobId changes, load detailed tailored resume if available
+  useEffect(() => {
+    let mounted = true;
+    async function loadDetail() {
+      const active = jobs.find(j => j.id === selectedJobId);
+      if (active?.tailored_resume_id) {
+        try {
+          const detail = await apiService.getTailoredResume(active.tailored_resume_id);
+          if (mounted) setTailoredResumeDetail(detail);
+        } catch (err) {
+          console.warn('[GenerationView] Detail notice:', err);
+        }
+      } else {
+        if (mounted) setTailoredResumeDetail(null);
+      }
+    }
+    loadDetail();
+    return () => { mounted = false; };
+  }, [selectedJobId, jobs]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -114,12 +143,8 @@ export default function GenerationView() {
     
     try {
       await Promise.all(targets.map(j => apiService.generateTailoredResume(j.id)));
-      setJobs(prev => prev.map(j => {
-        if (targets.some(tp => tp.id === j.id)) {
-          return { ...j, status: 'completed' };
-        }
-        return j;
-      }));
+      const updatedJobs = await apiService.getGenerationJobs(activeCandidateProfile?.id);
+      setJobs(updatedJobs);
       showToast(`Successfully generated tailored resumes for ${targets.length} roles!`);
     } catch (err) {
       console.warn('Batch generation notice:', err);
@@ -132,35 +157,60 @@ export default function GenerationView() {
   const handleRegenerateCurrent = async (job) => {
     if (!job) return;
     setIsGenerating(true);
-    showToast(`Regenerating tailored content for ${job.company}...`);
+    showToast(`RAG synthesizing tailored resume for ${job.company}...`);
     try {
-      await apiService.generateTailoredResume(job.id);
-      showToast(`AI tailored resume regenerated for ${job.role} at ${job.company}!`);
+      const genRes = await apiService.generateTailoredResume(job.id);
+      setTailoredResumeDetail(genRes);
+      setJobs(prev => prev.map(j => j.id === job.id ? { 
+        ...j, 
+        status: 'completed', 
+        atsScore: genRes.ats_score, 
+        tailored_resume_id: genRes.resume_id,
+        validation_status: genRes.validation_status 
+      } : j));
+      showToast(`AI tailored resume generated for ${job.role} at ${job.company} (${genRes.ats_score}% ATS)!`);
     } catch (err) {
-      showToast(`Regenerated tailored content for ${job.company}`);
+      showToast(`Generation error: ${err.message}`);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleFileImport = (e) => {
+  const handleMasterResumeUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const newJob = {
-        id: Date.now(),
-        role: "Imported Lead Role",
-        company: file.name.replace(/\.[^/.]+$/, ""),
-        source: "CSV Upload",
-        workMode: "Hybrid",
-        atsScore: 88,
-        date: "Today",
-        status: "pending",
-        selected: true,
-        candidate: profileCandidate
-      };
-      setJobs(prev => [newJob, ...prev]);
-      setSelectedJobId(newJob.id);
-      showToast(`Imported "${file.name}"! Added to generation queue.`);
+    if (!file) return;
+    setIsGenerating(true);
+    showToast(`Parsing & indexing master resume (${file.name})...`);
+    try {
+      const res = await apiService.uploadMasterResume(file, activeCandidateProfile?.id);
+      const st = await apiService.getMasterResumeStatus(activeCandidateProfile?.id);
+      setMasterResumeStatus(st);
+      showToast(`Master resume indexed! ${res.facts_extracted} facts, ${res.chunks_indexed} chunks.`);
+    } catch (err) {
+      showToast(`Resume upload error: ${err.message}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleFileImport = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsGenerating(true);
+    showToast(`Parsing and importing "${file.name}"...`);
+    try {
+      const res = await apiService.importExcelOrCsv(file);
+      showToast(`Imported ${res?.inserted || 0} jobs successfully (${res?.skipped || 0} duplicates skipped)!`);
+      const updatedJobs = await apiService.getGenerationJobs(activeCandidateProfile?.id);
+      setJobs(updatedJobs);
+      if (updatedJobs.length > 0) {
+        setSelectedJobId(updatedJobs[0].id);
+      }
+    } catch (err) {
+      showToast(`Import error: ${err.message}`);
+    } finally {
+      setIsGenerating(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -209,43 +259,73 @@ export default function GenerationView() {
   const activeJob = jobs.find(j => j.id === selectedJobId) || jobs[0];
   const candidate = activeJob?.candidate || profileCandidate || {
     name: 'Candidate Profile',
-    title: 'No Profile Configured',
+    title: '',
     location: '',
     email: '',
     phone: '',
     linkedin: '',
-    summary: 'Add your candidate details in the Profile & Resume section to preview and generate tailored resumes.',
+    summary: '',
     skills: [],
-    experience: {
-      company: '',
-      role: '',
-      period: '',
-      location: '',
-      bullets: []
+    experience: null
+  };
+
+  const handleDownloadDocx = async () => {
+    if (!activeJob) return;
+    try {
+      let resumeId = activeJob.tailored_resume_id;
+      if (!resumeId) {
+        showToast(`Synthesizing tailored resume for ${activeJob.company}...`);
+        const genRes = await apiService.generateTailoredResume(activeJob.id);
+        resumeId = genRes.resume_id;
+        setTailoredResumeDetail(genRes);
+      }
+      showToast(`Downloading ATS DOCX for ${activeJob.company}...`);
+      const blob = await apiService.downloadResumeExport(resumeId, 'docx');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Resume_${activeJob.company}_${activeJob.role}.docx`.replace(/\s+/g, '_');
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('DOCX downloaded successfully!');
+    } catch (err) {
+      showToast(`Download error: ${err.message}`);
     }
   };
 
-  const handleDownloadResume = () => {
+  const handleDownloadPdf = async () => {
     if (!activeJob) return;
-    const expText = candidate.experience ? `${candidate.experience.company} - ${candidate.experience.role} (${candidate.experience.period})\n${(candidate.experience.bullets || []).join('\n')}` : '';
-    const textContent = `${candidate.name}\n${candidate.title}\n${candidate.location} | ${candidate.email} | ${candidate.phone}\n\nSUMMARY\n${candidate.summary}\n\nEXPERIENCE\n${expText}`;
-    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${candidate.name.replace(/\s+/g, '_')}_Resume.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+      let resumeId = activeJob.tailored_resume_id;
+      if (!resumeId) {
+        showToast(`Synthesizing tailored resume for ${activeJob.company}...`);
+        const genRes = await apiService.generateTailoredResume(activeJob.id);
+        resumeId = genRes.resume_id;
+        setTailoredResumeDetail(genRes);
+      }
+      showToast(`Downloading ATS PDF for ${activeJob.company}...`);
+      const blob = await apiService.downloadResumeExport(resumeId, 'pdf');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Resume_${activeJob.company}_${activeJob.role}.pdf`.replace(/\s+/g, '_');
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('PDF downloaded successfully!');
+    } catch (err) {
+      showToast(`Download error: ${err.message}`);
+    }
   };
 
   const handleDownloadCoverLetter = () => {
     if (!activeJob) return;
-    const textContent = `Cover Letter for ${activeJob.role} at ${activeJob.company}\n\nDear Hiring Team at ${activeJob.company},\n\nI am writing to express my strong interest in the ${activeJob.role} opportunity. With proven experience in software engineering and distributed systems, I am eager to contribute to your team.\n\nSincerely,\n${candidate.name}`;
-    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+    const coverText = tailoredResumeDetail?.structured_content?.cover_letter || 
+      `Cover Letter for ${activeJob.role} at ${activeJob.company}\n\nDear Hiring Team at ${activeJob.company},\n\nI am writing to express my strong enthusiasm for the ${activeJob.role} opportunity.\n\nSincerely,\n${candidate.name}`;
+    const blob = new Blob([coverText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${activeJob.company}_Cover_Letter.txt`;
+    link.download = `${activeJob.company}_Cover_Letter.txt`.replace(/\s+/g, '_');
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -269,6 +349,13 @@ export default function GenerationView() {
             accept=".csv,.json,.pdf,.docx" 
             style={{ display: 'none' }} 
           />
+          <input 
+            type="file" 
+            ref={masterResumeInputRef} 
+            onChange={handleMasterResumeUpload} 
+            accept=".pdf,.docx" 
+            style={{ display: 'none' }} 
+          />
 
           <button 
             className="btn-generate-primary"
@@ -282,7 +369,21 @@ export default function GenerationView() {
 
           <button 
             className="btn-import-outline"
+            onClick={() => masterResumeInputRef.current?.click()}
+            title="Upload your master resume to extract career facts and semantic chunks"
+            style={{ 
+              background: masterResumeStatus?.indexed ? 'rgba(16, 185, 129, 0.12)' : undefined, 
+              borderColor: masterResumeStatus?.indexed ? '#10b981' : undefined 
+            }}
+          >
+            <Upload size={16} color={masterResumeStatus?.indexed ? '#10b981' : undefined} />
+            <span>{masterResumeStatus?.indexed ? `Master Resume (${masterResumeStatus.facts_count} facts)` : 'Upload Master Resume'}</span>
+          </button>
+
+          <button 
+            className="btn-import-outline"
             onClick={() => fileInputRef.current?.click()}
+            title="Import target job opportunities"
           >
             <Upload size={16} />
             <span>Import Jobs</span>
@@ -619,9 +720,100 @@ export default function GenerationView() {
                 </div>
               ) : previewTab === 'resume' ? (
                 <div className="resume-paper-body">
+                  {/* Master Resume Indexing and Verification Notice */}
+                  {!masterResumeStatus?.indexed ? (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 14px',
+                      marginBottom: '14px',
+                      backgroundColor: '#fffbeb',
+                      border: '1.5px solid #f59e0b',
+                      borderRadius: '6px',
+                      color: '#92400e',
+                      fontSize: '11.5px',
+                      fontWeight: 600
+                    }}>
+                      <AlertCircle size={16} color="#d97706" style={{ minWidth: '16px' }} />
+                      <span>Master resume not uploaded yet. Ingest your genuine master resume above to extract verified facts and unlock production export.</span>
+                    </div>
+                  ) : (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 14px',
+                      marginBottom: '14px',
+                      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                      border: '1.5px solid #10b981',
+                      borderRadius: '6px',
+                      color: '#065f46',
+                      fontSize: '11.5px',
+                      fontWeight: 600
+                    }}>
+                      <CheckCircle2 size={16} color="#10b981" style={{ minWidth: '16px' }} />
+                      <span>Verified Master Resume: Tailored experience bullets and skills are grounded in your indexed career facts.</span>
+                    </div>
+                  )}
+
                   {/* Name & Title */}
-                  <h2 className="doc-candidate-name">{candidate.name}</h2>
-                  <p className="doc-candidate-title">{candidate.title}</p>
+                  <h2 className="doc-candidate-name">{tailoredResumeDetail?.structured_content?.candidate_name || candidate.name}</h2>
+                  <p className="doc-candidate-title">{tailoredResumeDetail?.target_role ? `${tailoredResumeDetail.target_role} | Tailored for ${tailoredResumeDetail.target_company}` : candidate.title}</p>
+
+                  {/* ATS Grounded Evidence Banner */}
+                  {tailoredResumeDetail && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      background: 'rgba(37, 99, 235, 0.08)',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(37, 99, 235, 0.25)',
+                      margin: '12px 0 16px 0'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <CheckCircle2 size={16} color="var(--accent-blue, #2563eb)" />
+                          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            ATS Match Score: {tailoredResumeDetail.ats_score}%
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', opacity: 0.85, paddingLeft: '24px' }}>
+                          Algorithmic alignment score (skills & experience ratio); not an external ATS acceptance probability.
+                        </span>
+                      </div>
+                      <span style={{
+                        fontSize: '11px',
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                        background: tailoredResumeDetail.validation_status === 'verified' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                        color: tailoredResumeDetail.validation_status === 'verified' ? '#10b981' : '#f59e0b'
+                      }}>
+                        {tailoredResumeDetail.validation_status === 'verified' ? '✓ Grounded Evidence' : '⚠ Flagged for Review'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Matched & Missing Skills Chips */}
+                  {tailoredResumeDetail?.breakdown && (
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                        {(tailoredResumeDetail.breakdown.matched_skills || []).map((sk, idx) => (
+                          <span key={idx} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 500 }}>
+                            ✓ {sk}
+                          </span>
+                        ))}
+                        {(tailoredResumeDetail.breakdown.missing_skills || []).map((sk, idx) => (
+                          <span key={idx} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.12)', color: '#d97706', border: '1px solid rgba(245, 158, 11, 0.3)', fontWeight: 500 }}>
+                            Missing: {sk}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Metadata Info Bar */}
                   <div className="doc-metadata-bar">
@@ -634,7 +826,7 @@ export default function GenerationView() {
                   {/* Summary Section */}
                   <div className="doc-section">
                     <h3 className="doc-section-title">PROFESSIONAL SUMMARY</h3>
-                    <p className="doc-summary-text">{candidate.summary}</p>
+                    <p className="doc-summary-text">{tailoredResumeDetail?.tailored_summary || candidate.summary}</p>
                   </div>
 
                   {/* Skills Section */}
@@ -652,7 +844,30 @@ export default function GenerationView() {
                   )}
 
                   {/* Experience Section */}
-                  {candidate.experience && (
+                  {tailoredResumeDetail?.structured_content?.experiences && tailoredResumeDetail.structured_content.experiences.length > 0 ? (
+                    <div className="doc-section">
+                      <h3 className="doc-section-title">PROFESSIONAL EXPERIENCE</h3>
+                      {tailoredResumeDetail.structured_content.experiences.map((exp, idx) => (
+                        <div key={idx} className="doc-exp-item" style={{ marginBottom: '14px' }}>
+                          <div className="doc-exp-header">
+                            <span className="doc-company-name">{exp.company}</span>
+                            <span className="doc-period-text">{exp.period}</span>
+                          </div>
+                          <div className="doc-exp-subheader">
+                            <span className="doc-role-name">{exp.role}</span>
+                            <span className="doc-loc-text">{exp.location}</span>
+                          </div>
+                          {exp.bullets && exp.bullets.length > 0 && (
+                            <ul className="doc-bullets-list">
+                              {exp.bullets.map((b, bIdx) => (
+                                <li key={bIdx}>{typeof b === 'string' ? b : b.bullet_text}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : candidate.experience && (candidate.experience.company || candidate.experience.role) ? (
                     <div className="doc-section">
                       <h3 className="doc-section-title">PROFESSIONAL EXPERIENCE</h3>
                       <div className="doc-exp-item">
@@ -673,12 +888,12 @@ export default function GenerationView() {
                         )}
                       </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               ) : (
                 <div className="cover-letter-paper-body">
-                  <h2 className="doc-candidate-name">{candidate.name}</h2>
-                  <p className="doc-candidate-title">{candidate.title}</p>
+                  <h2 className="doc-candidate-name">{tailoredResumeDetail?.structured_content?.candidate_name || candidate.name}</h2>
+                  <p className="doc-candidate-title">{tailoredResumeDetail?.target_role ? `${tailoredResumeDetail.target_role} | Tailored for ${tailoredResumeDetail.target_company}` : candidate.title}</p>
                   <div className="doc-metadata-bar">
                     <span>📍 {candidate.location}</span>
                     <span>✉ {candidate.email}</span>
@@ -688,19 +903,27 @@ export default function GenerationView() {
                     <p><strong>To:</strong> Hiring Team, {activeJob.company}</p>
                     <p><strong>Position:</strong> {activeJob.role}</p>
                     <br />
-                    <p>Dear Hiring Team,</p>
-                    <p>
-                      I am writing to express my eager interest in the <strong>{activeJob.role}</strong> position at <strong>{activeJob.company}</strong>. Having extensively built reliable distributed microservices and intuitive cloud applications, I am confident in my ability to immediately add value to your engineering teams.
-                    </p>
-                    {candidate.experience && (
-                      <p>
-                        In my work, I have spearheaded the delivery of resilient backend architectures and automated CI/CD release cycles. My technical foundation across Java, Spring Boot, AWS, and modern frontends aligns directly with your team’s requirements.
-                      </p>
+                    {tailoredResumeDetail?.structured_content?.cover_letter ? (
+                      <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, fontSize: '13px' }}>
+                        {tailoredResumeDetail.structured_content.cover_letter}
+                      </div>
+                    ) : (
+                      <div style={{ padding: '28px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        <p style={{ margin: '0 0 14px 0', fontSize: '13px' }}>
+                          No tailored cover letter generated yet for <strong>{activeJob.company}</strong>.
+                        </p>
+                        <button 
+                          type="button" 
+                          className="btn-doc-download" 
+                          style={{ margin: '0 auto', display: 'inline-flex' }}
+                          onClick={() => handleRegenerateCurrent(activeJob)}
+                          disabled={isGenerating}
+                        >
+                          <Sparkles size={14} />
+                          <span>Generate Tailored Resume & Cover Letter</span>
+                        </button>
+                      </div>
                     )}
-                    <p>
-                      Thank you for reviewing my application. I look forward to the possibility of discussing how my experience can support {activeJob.company}'s upcoming milestones.
-                    </p>
-                    <p>Warm regards,<br /><strong>{candidate.name}</strong></p>
                   </div>
                 </div>
               )}
@@ -708,27 +931,29 @@ export default function GenerationView() {
 
             {/* Document Bottom Actions */}
             <div className="document-sheet-footer">
-              <button className="btn-doc-download" onClick={handleDownloadResume} disabled={!activeJob}>
+              <button className="btn-doc-download" onClick={handleDownloadDocx} disabled={!activeJob} title="Download tailored ATS Word document">
                 <Download size={14} />
-                <span>Download Resume</span>
+                <span>Download DOCX</span>
+              </button>
+
+              <button className="btn-doc-outline" onClick={handleDownloadPdf} disabled={!activeJob} title="Download clean ATS PDF document">
+                <Download size={14} />
+                <span>Download PDF</span>
               </button>
 
               <button className="btn-doc-outline" onClick={handleDownloadCoverLetter} disabled={!activeJob}>
                 <FileText size={14} />
-                <span>Download Cover Letter</span>
+                <span>Cover Letter</span>
               </button>
 
               <button 
                 className="btn-doc-outline" 
                 onClick={() => handleRegenerateCurrent(activeJob)}
                 disabled={isGenerating || !activeJob}
+                title="RAG-synthesize tailored resume for this opportunity"
               >
                 <RefreshCw size={14} className={isGenerating ? 'spin-anim' : ''} />
                 <span>{isGenerating ? 'Optimizing...' : 'Regenerate'}</span>
-              </button>
-
-              <button className="btn-doc-more" title="More Document Actions" disabled={!activeJob}>
-                <MoreHorizontal size={16} />
               </button>
             </div>
           </div>

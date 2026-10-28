@@ -12,10 +12,8 @@
 @import './foundations/panels.css';
 @import './foundations/enterprise-components.css';
 
-/* 3. Multi-Theme Engines */
+/* 3. Multi-Theme Engines (Strictly Default and Minimal) */
 @import './themes/theme-default.css';
-@import './themes/theme-difference.css';
-@import './themes/theme-glass.css';
 @import './themes/theme-minimal.css';
 
 /* 4. Global Viewport Lock Standard (Zero-Scroll 100vh) */

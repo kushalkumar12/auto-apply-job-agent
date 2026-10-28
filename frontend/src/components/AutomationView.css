@@ -102,6 +102,20 @@
   transition: all 150ms ease;
 }
 
+[data-theme="minimal"][data-mode="dark"] .btn-trigger-all,
+[data-theme="no-color"][data-mode="dark"] .btn-trigger-all {
+  background-color: #FAFAFA !important;
+  color: #09090B !important;
+  border-color: #FAFAFA !important;
+}
+
+[data-theme="minimal"]:not([data-mode="dark"]) .btn-trigger-all,
+[data-theme="no-color"]:not([data-mode="dark"]) .btn-trigger-all {
+  background-color: #18181B !important;
+  color: #FFFFFF !important;
+  border-color: #18181B !important;
+}
+
 .btn-trigger-all:hover {
   background-color: #27272A;
   border-color: #27272A;
@@ -240,15 +254,15 @@
 }
 
 .filter-pill-btn.active {
-  background-color: #FFFFFF;
-  border-color: var(--border-main, #DDE2DE);
-  color: var(--text-primary, #171A18);
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #FFFFFF));
+  border-color: var(--border-main, var(--rp-secondary-border, #DDE2DE));
+  color: var(--text-primary, var(--rp-text-dominant, #171A18));
   font-weight: 600;
 }
 
 .total-pipeline-badge {
   font-size: 11px;
-  color: var(--text-secondary, #777D79);
+  color: var(--text-secondary, var(--rp-text-secondary, #777D79));
 }
 
 .pipelines-scroll-list {
@@ -262,9 +276,9 @@
 }
 
 .pipeline-card {
-  border: 1px solid var(--border-main, #DDE2DE);
+  border: 1px solid var(--border-main, var(--rp-secondary-border, #DDE2DE));
   border-radius: 6px;
-  background-color: #FFFFFF;
+  background-color: var(--surface-primary, var(--rp-secondary-surface, #FFFFFF));
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -273,11 +287,11 @@
 }
 
 .pipeline-card:hover {
-  border-color: #B0B8B2;
+  border-color: var(--rp-secondary-border-hover, #B0B8B2);
 }
 
 .pipeline-card.is-paused {
-  background-color: #FAFAFA;
+  background-color: var(--surface-subtle, var(--rp-dominant-canvas, #FAFAFA));
   opacity: 0.85;
 }
 

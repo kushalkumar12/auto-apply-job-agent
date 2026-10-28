@@ -151,7 +151,7 @@ Unlike legacy job boards that suffer from stale aggregations, sponsored listings
    - Complete formula injection protection in all spreadsheet operations.
    - No sensitive tokens, cookies, or personal credentials logged.
 4. **Usability & Accessibility:**
-   - 100% theme tokenized styling across 4 themes (`default`, `glass`, `minimal`, `difference`) in both Dark and Light modes.
+   - 100% theme tokenized styling across 2 curated themes (`default`, `minimal`) in both Dark and Light modes with guaranteed input and button contrast.
    - WCAG 2.1 AA compliant contrast ratios across all active states.
    - Keyboard accessible navigation with visible focus rings.
 

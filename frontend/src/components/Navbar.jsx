@@ -7,12 +7,12 @@ import {
   BarChart3,
   Wrench,
   LogIn,
-  Bell
+  Bell,
+  Lock
 } from 'lucide-react';
 import StaticAvatar from './StaticAvatar';
 import ProfileDropdown from './ProfileDropdown';
 import Skill2RoleLogo from './Skill2RoleLogo';
-import CandidateProfileSwitcher from './CandidateProfileSwitcher';
 
 export default function Navbar({ 
   activeTab, 
@@ -20,8 +20,6 @@ export default function Navbar({
   currentUser, 
   candidateProfile,
   activeCandidateProfile,
-  onProfileSwitched,
-  onOpenCreateProfile,
   onOpenProfileGate,
   onOpenAuthModal,
   onOpenHelp,
@@ -47,7 +45,7 @@ export default function Navbar({
     { id: 'explore', label: 'Explore', enabled: true },
     { id: 'generation', label: 'Generation', enabled: true },
     { id: 'automation', label: 'Automation', enabled: true },
-    { id: 'profile', label: 'Profile', enabled: true },
+    { id: 'profile', label: 'Job Profile', enabled: true },
     { id: 'analytics', label: 'Analytics', enabled: true },
     { id: 'tools', label: 'Tools', enabled: true }
   ];
@@ -57,6 +55,7 @@ export default function Navbar({
     .filter(item => item.enabled !== false)
     .map(item => ({
       ...item,
+      label: item.id === 'profile' ? 'Job Profile' : item.label,
       icon: ICON_MAP[item.id] || Search
     }));
 
@@ -94,17 +93,30 @@ export default function Navbar({
       <nav className="nav-tabs-wrapper" aria-label="Main Navigation" role="tablist">
         {visibleNavItems.map((item) => {
           const isActive = activeTab === item.id;
-          const Icon = item.icon;
+          const isProfileComplete = Boolean(activeCandidateProfile?.isComplete || candidateProfile?.isComplete);
+          const GATED_TABS = ['explore', 'generation', 'automation', 'analytics'];
+          const isItemLocked = GATED_TABS.includes(item.id) && !isProfileComplete;
+          const Icon = isItemLocked ? Lock : item.icon;
+
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`nav-tab-btn ${isActive ? 'nav-tab-active' : ''}`}
+              onClick={() => {
+                if (isItemLocked) {
+                  setActiveTab('profile');
+                  if (onOpenProfileGate) onOpenProfileGate();
+                } else {
+                  setActiveTab(item.id);
+                }
+              }}
+              className={`nav-tab-btn ${isActive ? 'nav-tab-active' : ''} ${isItemLocked ? 'nav-tab-locked' : ''}`}
               role="tab"
               aria-selected={isActive}
               aria-label={`Navigate to ${item.label}`}
+              title={isItemLocked ? `${item.label} is locked until you complete your Candidate Profile (5 Primary Skills, Experience & Location)` : `Navigate to ${item.label}`}
+              style={isItemLocked ? { opacity: 0.72, cursor: 'not-allowed' } : {}}
             >
-              <Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} className="nav-tab-icon" />
+              <Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} className="nav-tab-icon" style={isItemLocked ? { color: '#f59e0b' } : {}} />
               <span>{item.label}</span>
             </button>
           );
@@ -113,14 +125,6 @@ export default function Navbar({
 
       {/* Right: Actions, Notifications & Profile Menu */}
       <div className="nav-actions">
-        {/* Candidate Profile Persona Switcher */}
-        <CandidateProfileSwitcher
-          activeProfile={activeCandidateProfile}
-          onProfileSwitched={onProfileSwitched}
-          onOpenCreateProfile={onOpenCreateProfile}
-          onOpenProfileGate={onOpenProfileGate}
-        />
-
         {/* Global Notification Bell Trigger */}
         <button 
           className="nav-action-icon-btn" 
@@ -142,26 +146,16 @@ export default function Navbar({
                 e.stopPropagation();
                 setIsDropdownOpen(prev => !prev);
               }}
-              aria-label="Open User Profile Menu"
+              aria-label="Open User Account Menu"
               aria-expanded={isDropdownOpen}
-              title={`${currentUser.name} (${currentUser.email})`}
+              title={`${currentUser.name || 'User'} (${currentUser.email || ''})`}
             >
-              {currentUser.avatar && (currentUser.avatar.startsWith('data:') || currentUser.avatar.startsWith('http')) ? (
-                <img 
-                  src={currentUser.avatar} 
-                  alt={currentUser.name || 'User'} 
-                  style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', display: 'block', border: '1.5px solid var(--border-color, #334155)' }} 
-                />
-              ) : (
-                <StaticAvatar avatarId={currentUser.avatar || 'avatar_1'} size={34} />
-              )}
+              <StaticAvatar name={currentUser.name || currentUser.email || 'User'} size={34} />
             </button>
             <ProfileDropdown 
               isOpen={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
               currentUser={currentUser}
-              candidateProfile={candidateProfile}
-              onNavigateProfile={() => setActiveTab('profile')}
               onOpenHelp={onOpenHelp}
               onOpenSettings={onOpenSettings}
               onOpenThemes={onOpenThemes}

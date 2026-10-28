@@ -54,3 +54,10 @@ venv/
 autoapply_ref/
 freehire/
 ai-job-search/
+
+# Local Runtime Data, Browser Caches & Uploads
+backend/browser_profile/
+backend/data/
+backend/uploads/
+scratch/
+scratch_*.py

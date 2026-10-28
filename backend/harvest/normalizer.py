@@ -4,13 +4,14 @@ from typing import List, Dict, Any, Tuple
 
 COMMON_TECH_SKILLS = [
     "Python", "JavaScript", "TypeScript", "React", "Node.js", "Go", "Golang",
-    "Java", "C++", "C#", "Rust", "Ruby", "PHP", "Kotlin", "Swift",
+    "Java", "Spring Boot", "Spring", "C++", "C#", ".NET", "Rust", "Ruby", "PHP", "Kotlin", "Swift",
     "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch",
     "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform", "CI/CD",
     "FastAPI", "Django", "Flask", "Next.js", "Vue.js", "Angular", "GraphQL",
     "REST API", "Microservices", "Kafka", "RabbitMQ", "Linux", "Git",
     "Machine Learning", "PyTorch", "TensorFlow", "Pandas", "Scikit-Learn",
-    "Distributed Systems", "SRE", "DevOps", "Cybersecurity", "Data Engineering"
+    "Distributed Systems", "SRE", "DevOps", "Cybersecurity", "Data Engineering",
+    "Backend", "Frontend", "Full-Stack", "System Design"
 ]
 
 def strip_html_tags(text: str) -> str:

@@ -10,12 +10,12 @@ if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
-const THEMES = ['default', 'difference', 'glass', 'minimal'];
+const THEMES = ['default', 'minimal'];
 const MODES = ['light', 'dark'];
 const VIEWS = ['explore', 'generation', 'automation', 'profile', 'analytics', 'tools', 'settings', 'popups'];
 
 async function run() {
-  console.log(`Starting 64-view capture across 4 themes x 2 modes x 8 views...`);
+  console.log(`Starting view capture across 2 themes x 2 modes x 8 views...`);
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
     headless: true,

@@ -7,13 +7,16 @@ GREENHOUSE_BASE_URL = "https://boards-api.greenhouse.io/v1/boards"
 
 # Curated list of high-reputation companies using Greenhouse public boards
 DEFAULT_GREENHOUSE_BOARDS = [
-    {"board": "figma", "company": "Figma"},
+    {"board": "inmobi", "company": "InMobi"},
     {"board": "stripe", "company": "Stripe"},
-    {"board": "cloudflare", "company": "Cloudflare"},
+    {"board": "mongodb", "company": "MongoDB"},
+    {"board": "elastic", "company": "Elastic"},
+    {"board": "datadog", "company": "Datadog"},
     {"board": "airbnb", "company": "Airbnb"},
+    {"board": "figma", "company": "Figma"},
+    {"board": "cloudflare", "company": "Cloudflare"},
     {"board": "gitlab", "company": "GitLab"},
     {"board": "pinterest", "company": "Pinterest"},
-    {"board": "datadog", "company": "Datadog"},
     {"board": "reddit", "company": "Reddit"},
     {"board": "discord", "company": "Discord"},
     {"board": "scaleai", "company": "Scale AI"},
@@ -21,8 +24,6 @@ DEFAULT_GREENHOUSE_BOARDS = [
     {"board": "robinhood", "company": "Robinhood"},
     {"board": "instacart", "company": "Instacart"},
     {"board": "gusto", "company": "Gusto"},
-    {"board": "elastic", "company": "Elastic"},
-    {"board": "mongodb", "company": "MongoDB"},
 ]
 
 def fetch_greenhouse_board(board: str, company_name: Optional[str] = None, timeout: float = 8.0) -> List[Dict[str, Any]]:

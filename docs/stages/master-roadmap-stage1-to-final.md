@@ -34,7 +34,7 @@ graph TD
 
 ### 2.1 Technology Stack
 - **Frontend:** React 18, Vite 8, Vanilla CSS (Strict adherence to custom CSS custom properties, zero TailwindCSS).
-- **Theme & Mode Matrix:** 4 Curated Themes (`default`, `glass`, `minimal`, `difference`) across 2 Color Modes (`light`, `dark`). Theme tokens ensure zero layout shift, zero contrast degradation, and complete modal adaptability.
+- **Theme & Mode Matrix:** 2 Curated Themes (`default` and `minimal`) across 2 Color Modes (`light`, `dark`). Theme tokens ensure zero layout shift, guaranteed high-contrast readability across inputs and buttons, and complete modal adaptability.
 - **Backend:** FastAPI (Python 3.12), SQLite in Write-Ahead Logging (`WAL`) mode with foreign key integrity and transactional isolation.
 - **Real-Time Streaming:** Server-Sent Events (`SSE`) delivering real-time discovery events, activity logs, and pipeline telemetry.
 - **Security & Authorization:** JWT (HS256) bearer token architecture, password hashing with PBKDF2/SHA256, server-side route guards, and CSV spreadsheet formula injection protection.
@@ -196,5 +196,5 @@ Stage 5 scales Skill2Role to multi-user organizations, recruitment agencies, and
 To ensure regression-free releases across all stages, the following quality gates must be satisfied:
 1. **Automated Backend Integration Suite:** `python test_backend.py` must achieve 100% pass rate.
 2. **Frontend Production Build:** `npm run build` must complete with zero errors and no bundle warnings.
-3. **Multi-Theme Visual Audit:** Browser validation across all 4 themes (`default`, `glass`, `minimal`, `difference`) in both Dark and Light modes using test automation helpers (`window.__setTestState`).
+3. **Dual-Theme Visual Audit:** Browser validation across both themes (`default` and `minimal`) in both Dark and Light modes using test automation helpers (`window.__setTestState`).
 4. **Data Integrity Rule:** Zero fake records, zero simulated particles, and truthful reporting of external connector limitations.

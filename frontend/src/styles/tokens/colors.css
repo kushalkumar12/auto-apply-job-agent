@@ -242,52 +242,54 @@
 /* -------------------------------------------------------------------------
    EXPLICIT DARK MODE
    Canvas (60%) → Panels (30%) → Accents (10%) → Semantic (5%)
+   Smooth Graphite Grey Reference (Edge Dark Mode #333333 / #3D3D3D)
+   Background is backcolor with 90% opacity (rgba(51, 51, 51, 0.90) / rgba(0, 0, 0, 0.90))
    ------------------------------------------------------------------------- */
 [data-mode="dark"] {
-  /* 60% Dominant */
-  --rp-dominant-bg: #0F1210;
-  --rp-dominant-bg-rgb: 15, 18, 16;
-  --rp-dominant-canvas: #090B0A;
+  /* 60% Dominant — 90% opacity deep background */
+  --rp-dominant-bg: rgba(51, 51, 51, 0.90);
+  --rp-dominant-bg-rgb: 51, 51, 51;
+  --rp-dominant-canvas: rgba(43, 43, 43, 0.90);
 
-  /* 30% Secondary */
-  --rp-secondary-surface: #181D1A;
-  --rp-secondary-surface-rgb: 24, 29, 26;
-  --rp-secondary-border: #28312B;
-  --rp-secondary-border-hover: #3E4C43;
-  --rp-secondary-divider: #222924;
+  /* 30% Secondary — elevated panel with 90% opacity */
+  --rp-secondary-surface: rgba(61, 61, 61, 0.90);
+  --rp-secondary-surface-rgb: 61, 61, 61;
+  --rp-secondary-border: rgba(255, 255, 255, 0.12);
+  --rp-secondary-border-hover: rgba(255, 255, 255, 0.22);
+  --rp-secondary-divider: rgba(255, 255, 255, 0.08);
 
-  /* Interactive Surface States */
-  --rp-surface-hover: #1E2520;
-  --rp-surface-active: #252E28;
-  --rp-surface-selected: #1A2332;
+  /* Interactive Surface States with 90% opacity */
+  --rp-surface-hover: rgba(72, 72, 72, 0.90);
+  --rp-surface-active: rgba(80, 80, 80, 0.90);
+  --rp-surface-selected: rgba(72, 72, 72, 0.90);
 
-  /* Text */
-  --rp-text-dominant: #E6EAE7;
-  --rp-text-secondary: #9AA39D;
-  --rp-text-muted: #7A847E;
-  --rp-text-inverse: #0F1210;
-  --rp-text-placeholder: #5C665F;
+  /* Text — Anti-glare, crisp soft white and balanced grays */
+  --rp-text-dominant: #FAFAFA;
+  --rp-text-secondary: #D4D2CF;
+  --rp-text-muted: #9E9C99;
+  --rp-text-inverse: #2B2B2B;
+  --rp-text-placeholder: #8C8987;
 
   /* 10% Accent */
   --rp-accent-primary: #3B82F6;
   --rp-accent-primary-hover: #60A5FA;
-  --rp-accent-primary-light: #1E3A5F;
+  --rp-accent-primary-light: rgba(59, 130, 246, 0.16);
   --rp-accent-secondary: #2DD4BF;
   --rp-accent-secondary-hover: #5EEAD4;
   --rp-accent-focus-ring: rgba(59, 130, 246, 0.35);
 
   /* 5% Semantic */
   --rp-semantic-success: #34D399;
-  --rp-semantic-success-bg: rgba(52, 211, 153, 0.12);
+  --rp-semantic-success-bg: rgba(52, 211, 153, 0.15);
   --rp-semantic-success-text: #6EE7B7;
   --rp-semantic-warning: #FBBF24;
-  --rp-semantic-warning-bg: rgba(251, 191, 36, 0.12);
+  --rp-semantic-warning-bg: rgba(251, 191, 36, 0.15);
   --rp-semantic-warning-text: #FCD34D;
   --rp-semantic-danger: #F87171;
-  --rp-semantic-danger-bg: rgba(248, 113, 113, 0.12);
+  --rp-semantic-danger-bg: rgba(248, 113, 113, 0.15);
   --rp-semantic-danger-text: #FCA5A5;
   --rp-semantic-info: #38BDF8;
-  --rp-semantic-info-bg: rgba(56, 189, 248, 0.12);
+  --rp-semantic-info-bg: rgba(56, 189, 248, 0.15);
   --rp-semantic-info-text: #7DD3FC;
 
   /* Modal Overlay */

@@ -36,7 +36,7 @@
 | `ST1-EXPL-002` | Explorer | Live ATS Connectors (Greenhouse, Ashby, Lever, RemoteOK) | `ExploreView.jsx` | `GET /api/discovery/connectors` | **COMPLETED** | Real ATS boards scraped without fake placeholders. |
 | `ST1-EXPL-003` | Explorer | 5-Day Historical Analytics Trajectory | `HistoryDropdown.jsx` | `GET /api/jobs/history-summary` | **COMPLETED** | Aggregates last 5 days with average ATS scores. |
 | `ST1-EXPL-004` | Explorer | Bidirectional Excel & CSV Import/Export | `ImportModal.jsx` | `GET /api/jobs/export`, `POST /api/jobs/import` | **COMPLETED** | Formula injection protected (`'=,+,-,@`); XLSX parsed cleanly. |
-| `ST1-UI-001` | UI/UX | 4 Themes (`default`, `glass`, `minimal`, `difference`) | `ThemeToggle.jsx`, `index.css` | `GET /api/settings/menu` | **COMPLETED** | Browser screenshot audit verified contrast across all themes. |
+| `ST1-UI-001` | UI/UX | Streamlined 2 Themes (`default`, `minimal`) | `ThemesModal.jsx`, `index.css` | `GET /api/settings/menu` | **COMPLETED** | Verified input/button contrast in Light and Dark modes. Glass & Difference removed. |
 | `ST1-UI-002` | UI/UX | Universal Modal System with backdrop blur & keyboard ESC | `UniversalModal.jsx` | N/A | **COMPLETED** | Modals render with consistent z-index, escape handling, and styling. |
 
 ---
@@ -103,8 +103,9 @@ The system has undergone rigorous automated and visual verification:
    - **Build Time:** 1.24 seconds
    - **Output:** Clean bundle (`dist/index.html`, `dist/assets/index.js`, `dist/assets/index.css`) with zero syntax, JSX, or token warnings.
 3. **Multi-Theme Visual Audit:**
-   - Evaluated across `default`, `glass`, `minimal`, and `difference` in both `dark` and `light` modes.
-   - Zero layout shifts, contrast failures, or missing token variables.
+   - Evaluated across streamlined `default` and `minimal` themes in both `dark` and `light` modes.
+   - Verified high-contrast input/textarea/select legibility and distinct button readability.
+   - Glass and Difference themes decommissioned and purged from code footprint.
 
 ---
 

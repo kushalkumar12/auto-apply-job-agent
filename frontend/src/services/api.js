@@ -5,15 +5,45 @@ const BASE_URL = 'http://localhost:5000/api';
  */
 async function apiFetch(endpoint, options = {}) {
   try {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const authHeaders = token && !options.headers?.Authorization ? { Authorization: `Bearer ${token}` } : {};
+
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
+        ...authHeaders,
         ...options.headers,
       },
       ...options,
     });
     if (!res.ok) {
-      throw new Error(`API error ${res.status}: ${res.statusText}`);
+      let errorData;
+      try {
+        errorData = await res.json();
+      } catch {
+        errorData = { detail: res.statusText };
+      }
+      const message =
+        (typeof errorData.detail === 'string' ? errorData.detail : errorData.detail?.message) ||
+        errorData.message ||
+        `API error ${res.status}: ${res.statusText}`;
+
+      // Handle session expiry on 401 for authenticated endpoints (excluding login/register)
+      if (res.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('rp_auth_token');
+          localStorage.removeItem('rp_user');
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('rp_session_expired', { detail: { message } }));
+        }
+      }
+
+      const err = new Error(message);
+      err.status = res.status;
+      err.statusText = res.statusText;
+      err.data = errorData;
+      throw err;
     }
     return await res.json();
   } catch (err) {
@@ -72,27 +102,25 @@ export const apiService = {
 
   async downloadExportJobs(params = {}) {
     const url = this.getExportJobsUrl(params);
-    const res = await fetch(url);
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(url, { headers });
     if (!res.ok) {
       throw new Error(`Export download error (${res.status}): ${res.statusText}`);
     }
     return await res.blob();
   },
 
-  async applyJob(id) {
-    try {
-      return await apiFetch(`/jobs/${id}/apply`, { method: 'POST' });
-    } catch {
-      return { success: true, jobId: id, applied: true, message: 'Applied offline fallback.' };
-    }
+  async applyJob(id, payload = {}) {
+    return await apiFetch(`/jobs/${id}/apply`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   },
 
-  async toggleJobMarker(id) {
-    try {
-      return await apiFetch(`/jobs/${id}/toggle-marker`, { method: 'POST' });
-    } catch {
-      return { success: true, jobId: id, marked: true };
-    }
+  async toggleJobMarker(id, profileId = null) {
+    const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+    return await apiFetch(`/jobs/${id}/toggle-marker${query}`, { method: 'POST' });
   },
 
   async getHistorySummary() {
@@ -150,7 +178,9 @@ export const apiService = {
   // Connect to Real-Time SSE Stream for continuous incoming job discoveries
   createDiscoveryStream(onJobDiscovered, onActivity, onMetrics) {
     try {
-      const es = new EventSource(`${BASE_URL}/discovery/stream`);
+      const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+      const url = token ? `${BASE_URL}/discovery/stream?token=${encodeURIComponent(token)}` : `${BASE_URL}/discovery/stream`;
+      const es = new EventSource(url);
       es.onmessage = (event) => {
         try {
           const parsed = JSON.parse(event.data);
@@ -186,17 +216,19 @@ export const apiService = {
   },
 
   // 4. Profile
-  async getProfile() {
+  async getProfile(profileId = null) {
     try {
-      return await apiFetch('/profile');
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      return await apiFetch(`/profile${query}`);
     } catch {
       return null;
     }
   },
 
-  async updateProfile(profileData) {
+  async updateProfile(profileData, profileId = null) {
     try {
-      return await apiFetch('/profile', {
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      return await apiFetch(`/profile${query}`, {
         method: 'PUT',
         body: JSON.stringify(profileData),
       });
@@ -205,32 +237,63 @@ export const apiService = {
     }
   },
 
-  async uploadResume(file) {
+  async uploadResume(file, profileId = null) {
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch(`${BASE_URL}/profile/resume`, {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+    const res = await fetch(`${BASE_URL}/profile/resume${query}`, {
       method: 'POST',
+      headers,
       body: formData,
     });
     if (!res.ok) {
-      throw new Error(`Resume upload failed (${res.status})`);
+      let errDetail;
+      try { errDetail = (await res.json()).detail; } catch {}
+      throw new Error(errDetail || `Resume upload failed (${res.status})`);
     }
     return await res.json();
   },
 
-  getResumeViewUrl() {
-    return `${BASE_URL}/profile/resume/view`;
+  getResumeViewUrl(profileId = null) {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const params = new URLSearchParams();
+    if (token) params.set('token', token);
+    if (profileId && profileId !== 'default') params.set('profile_id', profileId);
+    const qs = params.toString();
+    return `${BASE_URL}/profile/resume/view${qs ? `?${qs}` : ''}`;
   },
 
-  getResumeDownloadUrl() {
-    return `${BASE_URL}/profile/resume/download`;
+  async getResumeBlob(profileId = null) {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+    const res = await fetch(`${BASE_URL}/profile/resume/view${query}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    if (!res.ok) {
+      let detail;
+      try { detail = (await res.json()).detail; } catch {}
+      throw new Error(detail || `Failed to fetch resume file (${res.status})`);
+    }
+    return await res.blob();
   },
 
-  async getResumeContent() {
+  getResumeDownloadUrl(profileId = null) {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const params = new URLSearchParams();
+    if (token) params.set('token', token);
+    if (profileId && profileId !== 'default') params.set('profile_id', profileId);
+    const qs = params.toString();
+    return `${BASE_URL}/profile/resume/download${qs ? `?${qs}` : ''}`;
+  },
+
+  async getResumeContent(profileId = null) {
     try {
-      const res = await fetch(`${BASE_URL}/profile/resume/content`);
-      if (!res.ok) return { hasResume: false };
-      return await res.json();
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      return await apiFetch(`/profile/resume/content${query}`);
     } catch {
       return { hasResume: false };
     }
@@ -238,12 +301,29 @@ export const apiService = {
 
   async getResumeMap() {
     try {
-      const res = await fetch(`${BASE_URL}/profile/resume/map`);
-      if (!res.ok) return { hasResume: false, aiExtraction: null };
-      return await res.json();
+      return await apiFetch('/profile/resume/map');
     } catch {
       return { hasResume: false, aiExtraction: null };
     }
+  },
+
+  async generateKeywords(payload = {}) {
+    return await apiFetch('/profile/keywords/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async generateProfileRoles(payload = {}) {
+    return await apiFetch('/profile/roles/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async deleteResume(profileId = null) {
+    const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+    return await apiFetch(`/profile/resume${query}`, { method: 'DELETE' });
   },
 
   async applyResumeAiMap(customMap = null) {
@@ -253,21 +333,11 @@ export const apiService = {
     });
   },
 
-  async updateAvatar(avatar) {
-    try {
-      return await apiFetch('/auth/avatar', {
-        method: 'PUT',
-        body: JSON.stringify({ avatar }),
-      });
-    } catch {
-      return { success: true, avatar };
-    }
-  },
-
   // 5. Analytics
-  async getAnalytics() {
+  async getAnalytics(profileId = null) {
     try {
-      return await apiFetch('/analytics');
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      return await apiFetch(`/analytics${query}`);
     } catch {
       return null;
     }
@@ -295,10 +365,13 @@ export const apiService = {
     });
   },
 
-  async googleAuth(email, name, avatar) {
+  async googleAuth(credential, name, avatar) {
+    const payload = typeof credential === 'object' 
+      ? credential 
+      : { credential, name, avatar };
     return await apiFetch('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ email, name, avatar })
+      body: JSON.stringify(payload)
     });
   },
 
@@ -349,6 +422,19 @@ export const apiService = {
   async resetProfile() {
     return await apiFetch('/settings/reset-profile', {
       method: 'POST'
+    });
+  },
+
+  async resetUserData(confirmToken = 'reset') {
+    return await apiFetch('/settings/reset-user-data', {
+      method: 'POST',
+      body: JSON.stringify({ confirmToken })
+    });
+  },
+
+  async deleteAccount() {
+    return await apiFetch('/auth/account', {
+      method: 'DELETE'
     });
   },
 
@@ -421,32 +507,16 @@ export const apiService = {
     });
   },
 
-  async runAutomationPipeline(id) {
+  async runAutomationPipeline(id, payload = {}) {
     return await apiFetch(`/automation/pipelines/${id}/run`, {
-      method: 'POST'
+      method: 'POST',
+      body: JSON.stringify(payload)
     });
   },
 
   async deleteAutomationPipeline(id) {
     return await apiFetch(`/automation/pipelines/${id}`, {
       method: 'DELETE'
-    });
-  },
-
-  // 10. Resume Generation
-  async getGenerationJobs() {
-    try {
-      const data = await apiFetch('/generation/jobs');
-      return data.jobs || [];
-    } catch {
-      return [];
-    }
-  },
-
-  async generateTailoredResume(jobId, candidateName = '') {
-    return await apiFetch('/generation/generate', {
-      method: 'POST',
-      body: JSON.stringify({ jobId, candidateName })
     });
   },
 
@@ -474,7 +544,7 @@ export const apiService = {
     }
   },
 
-  // 12. Stage 1: Candidate Profiles & Multi-Profile Switcher
+  // 12. Candidate Profile Validation
   async getProfiles() {
     try {
       const data = await apiFetch('/profiles');
@@ -482,32 +552,6 @@ export const apiService = {
     } catch {
       return [];
     }
-  },
-
-  async createProfile(payload) {
-    return await apiFetch('/profiles', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  },
-
-  async activateProfile(profileId) {
-    return await apiFetch(`/profiles/${profileId}/activate`, {
-      method: 'POST'
-    });
-  },
-
-  async deleteProfile(profileId) {
-    return await apiFetch(`/profiles/${profileId}`, {
-      method: 'DELETE'
-    });
-  },
-
-  async renameProfile(profileId, name) {
-    return await apiFetch(`/profiles/${profileId}`, {
-      method: 'PUT',
-      body: JSON.stringify({ name })
-    });
   },
 
   async getActiveProfileValidation() {
@@ -574,22 +618,16 @@ export const apiService = {
   },
 
   // 15. Stage 1: Complete Dataset Export & Safe Import
-  getExportJobsUrl(params = {}) {
-    const cleanParams = {};
-    Object.keys(params).forEach(k => {
-      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
-        cleanParams[k] = params[k];
-      }
-    });
-    const query = new URLSearchParams(cleanParams).toString();
-    return `${BASE_URL}/jobs/export${query ? `?${query}` : ''}`;
-  },
-
   async importJobs(file) {
     const formData = new FormData();
     formData.append('file', file);
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const res = await fetch(`${BASE_URL}/jobs/import`, {
       method: 'POST',
+      headers,
       body: formData
     });
     if (!res.ok) {
@@ -597,6 +635,144 @@ export const apiService = {
       throw new Error(errData.detail || `Import failed (${res.status})`);
     }
     return await res.json();
+  },
+
+  // 16. Platform Login & Interactive Session Browser (FR-068 / AutoApply parity)
+  async openLoginBrowser(url) {
+    return await apiFetch('/login/open', {
+      method: 'POST',
+      body: JSON.stringify({ url })
+    });
+  },
+
+  async closeLoginBrowser() {
+    return await apiFetch('/login/close', {
+      method: 'POST'
+    });
+  },
+
+  async getLoginStatus() {
+    try {
+      return await apiFetch('/login/status');
+    } catch {
+      return { open: false };
+    }
+  },
+
+  async getLoginSessions() {
+    try {
+      return await apiFetch('/login/sessions');
+    } catch {
+      return { linkedin: false, indeed: false, naukri: false };
+    }
+  },
+
+  // Automation Pipelines (Module 3 - Profile-oriented)
+  async getAutomationPipelines(profileId = null) {
+    try {
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      const data = await apiFetch(`/automation/pipelines${query}`);
+      return Array.isArray(data.pipelines) ? data.pipelines : [];
+    } catch {
+      return [];
+    }
+  },
+
+  async createAutomationPipeline(data, profileId = null) {
+    const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+    return await apiFetch(`/automation/pipelines${query}`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  async toggleAutomationPipeline(pipeId) {
+    return await apiFetch(`/automation/pipelines/${pipeId}/toggle`, {
+      method: 'PUT'
+    });
+  },
+
+  async runAutomationPipeline(pipeId, profileId = null, userApproved = false) {
+    return await apiFetch(`/automation/pipelines/${pipeId}/run`, {
+      method: 'POST',
+      body: JSON.stringify({ user_approved: userApproved, profile_id: profileId })
+    });
+  },
+
+  async deleteAutomationPipeline(pipeId) {
+    return await apiFetch(`/automation/pipelines/${pipeId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // 17. Stage 2: RAG AI Generation Studio & ATS Tailoring (Module 2 - Profile-oriented)
+  async getGenerationJobs(profileId = null) {
+    try {
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      const data = await apiFetch(`/generation/jobs${query}`);
+      return data.jobs || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async generateTailoredResume(jobId, candidateName = '') {
+    return await apiFetch(`/generation/jobs/${jobId}/generate`, {
+      method: 'POST'
+    });
+  },
+
+  async uploadMasterResume(file, profileId = null) {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (profileId && profileId !== 'default') {
+      formData.append('profile_id', profileId);
+    }
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/generation/master-resume/upload`, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || `Upload failed (${res.status})`);
+    }
+    return await res.json();
+  },
+
+  async getMasterResumeStatus(profileId = null) {
+    try {
+      const query = profileId && profileId !== 'default' ? `?profile_id=${encodeURIComponent(profileId)}` : '';
+      return await apiFetch(`/generation/master-resume/status${query}`);
+    } catch {
+      return { indexed: false, facts_count: 0, chunks_count: 0 };
+    }
+  },
+
+  async getTailoredResume(resumeId) {
+    return await apiFetch(`/generation/resumes/${resumeId}`);
+  },
+
+  getResumeExportUrl(resumeId, format = 'docx') {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    return `${BASE_URL}/generation/resumes/${resumeId}/export/${format}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  },
+
+  async downloadResumeExport(resumeId, format = 'docx') {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('rp_auth_token') : null;
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const url = this.getResumeExportUrl(resumeId, format);
+    const res = await fetch(url, { headers });
+    if (!res.ok) {
+      throw new Error(`Export download error (${res.status})`);
+    }
+    return await res.blob();
   }
 };
 

@@ -2,7 +2,8 @@
    RESUME PORTER — THEME 1: DEFAULT (SWISS MINIMALIST SAAS)
    ========================================================================== */
 
-[data-theme="default"] {
+[data-theme="default"],
+[data-theme="default"][data-mode="light"] {
   --rp-theme-name: "default";
   
   /* 60% Dominant */
@@ -27,15 +28,39 @@
 }
 
 [data-theme="default"][data-mode="dark"] {
-  --rp-dominant-bg: #0F1210;
-  --rp-dominant-canvas: #090B0A;
-  --rp-secondary-surface: #181D1A;
-  --rp-secondary-border: #28312B;
-  --rp-secondary-border-hover: #3E4C43;
-  --rp-secondary-divider: #222924;
+  /* 60% Dominant — Smooth Graphite Grey with 90% opacity */
+  --rp-dominant-bg: rgba(51, 51, 51, 0.90);
+  --rp-dominant-bg-rgb: 51, 51, 51;
+  --rp-dominant-canvas: rgba(43, 43, 43, 0.90);
+
+  /* 30% Secondary Structures (Panels, Cards, Inputs, Lists with 90% opacity) */
+  --rp-secondary-surface: rgba(61, 61, 61, 0.90);
+  --rp-secondary-surface-rgb: 61, 61, 61;
+  --rp-secondary-border: rgba(255, 255, 255, 0.12);
+  --rp-secondary-border-hover: rgba(255, 255, 255, 0.22);
+  --rp-secondary-divider: rgba(255, 255, 255, 0.08);
+
+  /* Interactive Surface States with 90% opacity */
+  --rp-surface-hover: rgba(72, 72, 72, 0.90);
+  --rp-surface-active: rgba(80, 80, 80, 0.90);
+  --rp-surface-selected: rgba(72, 72, 72, 0.90);
+
+  /* 10% Accent */
   --rp-accent-primary: #3B82F6;
   --rp-accent-primary-hover: #60A5FA;
-  --rp-text-dominant: #E6EAE7;
-  --rp-text-secondary: #9AA39D;
-  --rp-text-muted: #6C756F;
+  --rp-accent-primary-light: rgba(59, 130, 246, 0.16);
+
+  /* Typography — Soft White and Balanced Grays (High Legibility, Anti-Glare) */
+  --rp-text-dominant: #FAFAFA;
+  --rp-text-secondary: #D4D2CF;
+  --rp-text-muted: #9E9C99;
+  --rp-text-placeholder: #8C8987;
+
+  /* Semantic Feedback */
+  --rp-semantic-success: #34D399;
+  --rp-semantic-success-bg: rgba(52, 211, 153, 0.15);
+  --rp-semantic-success-text: #6EE7B7;
+  --rp-semantic-danger: #F87171;
+  --rp-semantic-danger-bg: rgba(248, 113, 113, 0.15);
+  --rp-semantic-danger-text: #FCA5A5;
 }

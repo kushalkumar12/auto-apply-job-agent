@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  X, Sparkles, Cpu, Bot, CheckCircle2, ShieldCheck, Plus, Check, Trash2, 
+  X, Sparkles, Cpu, CheckCircle2, ShieldCheck, Plus, Check, Trash2, 
   AlertTriangle, Database, Menu, GripVertical, ChevronUp, ChevronDown, 
   RotateCcw, Search, FileText, Play, User, BarChart3, Wrench, SlidersHorizontal, Info
 } from 'lucide-react';
-import StaticAvatar, { AVATAR_OPTIONS } from './StaticAvatar';
 import { apiService } from '../services/api';
 
 const DEFAULT_MENU_ITEMS = [
   { id: 'explore', label: 'Explore', description: 'Job Discovery Radar & Live ATS Feed', enabled: true },
   { id: 'generation', label: 'Generation', description: 'AI Resume & Cover Letter Studio', enabled: true },
   { id: 'automation', label: 'Automation', description: 'Autonomous Application Pipelines', enabled: true },
-  { id: 'profile', label: 'Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
+  { id: 'profile', label: 'Job Profile', description: 'Candidate Identity & ATS Resume Data', enabled: true },
   { id: 'analytics', label: 'Analytics', description: 'Application Metrics & Conversion Rates', enabled: true },
   { id: 'tools', label: 'Tools', description: 'MCP Integrations & ATS Diagnostic Utilities', enabled: true }
 ];
@@ -29,7 +28,6 @@ export default function SettingsModal({
   isOpen,
   onClose,
   currentUser,
-  onUpdateAvatar,
   menuItems = [],
   onUpdateMenu
 }) {
@@ -39,7 +37,8 @@ export default function SettingsModal({
 
   // Menu Management State
   const [menuList, setMenuList] = useState(() => {
-    return menuItems && menuItems.length > 0 ? menuItems : DEFAULT_MENU_ITEMS;
+    const list = menuItems && menuItems.length > 0 ? menuItems : DEFAULT_MENU_ITEMS;
+    return list.map(item => item.id === 'profile' ? { ...item, label: 'Job Profile' } : item);
   });
   const [menuLoading, setMenuLoading] = useState(false);
   const [menuToast, setMenuToast] = useState('');
@@ -60,40 +59,61 @@ export default function SettingsModal({
   const [newMcpName, setNewMcpName] = useState('');
   const [newMcpUrl, setNewMcpUrl] = useState('');
 
-  // Database Truncate State
-  const [confirmProjectInput, setConfirmProjectInput] = useState('');
-  const [truncateError, setTruncateError] = useState('');
-  const [isTruncating, setIsTruncating] = useState(false);
+  // Scoped User Data Reset State
+  const [confirmResetInput, setConfirmResetInput] = useState('');
+  const [resetError, setResetError] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
 
-  const handleTruncateEntireDatabase = async () => {
-    const raw = confirmProjectInput.trim();
+  const handleResetUserData = async () => {
+    const raw = confirmResetInput.trim();
     const clean = raw.toLowerCase().replace(/[\s-_]/g, '');
-    const valid = clean === 'skill2role' || clean === 'resumeporter' || clean === 'jobsonly' || clean === 'reset' || raw.toLowerCase().includes('skill') || raw.toLowerCase().includes('porter');
+    const valid = clean === 'skill2role' || clean === 'reset' || clean === 'resumeporter' || clean === 'jobsonly' || clean.includes('reset') || clean.includes('skill');
     if (!valid) {
-      setTruncateError("Verification failed. Please type 'skill2role' or 'JobsOnly'.");
+      setResetError("Verification failed. Please type 'reset' or 'skill2role' to confirm.");
       return;
     }
-    setIsTruncating(true);
-    setTruncateError('');
+    setIsResetting(true);
+    setResetError('');
     try {
-      await apiService.factoryReset(raw || 'JobsOnly');
+      const res = await apiService.resetUserData(raw || 'reset');
+
+      // Clear cached candidate profile and drafts from localStorage
       try {
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.removeItem('rp_candidate_profile');
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith('rp_profile_draft_') || key.startsWith('skill2role_draft_'))) {
+            localStorage.removeItem(key);
+          }
+        }
       } catch (e) {
-        console.warn('Storage clear notice:', e);
+        console.warn('Local draft cleanup note:', e);
       }
-      window.location.href = '/#explore';
-      window.location.reload();
+
+      setResetSuccess(true);
+      window.dispatchEvent(new CustomEvent('rp_profile_updated', {
+        detail: { profile: res?.profile || null }
+      }));
+      window.dispatchEvent(new CustomEvent('rp_refresh_jobs'));
+
+      setTimeout(() => {
+        setIsResetting(false);
+        setResetSuccess(false);
+        setConfirmResetInput('');
+        if (onClose) onClose();
+        window.location.hash = '#profile';
+      }, 1000);
     } catch (err) {
-      setTruncateError(err.message || 'Truncate failed');
-      setIsTruncating(false);
+      setResetError(err.message || 'Failed to reset user data. Please try again.');
+      setIsResetting(false);
     }
   };
 
+
   useEffect(() => {
     if (menuItems && menuItems.length > 0) {
-      setMenuList(menuItems);
+      setMenuList(menuItems.map(item => item.id === 'profile' ? { ...item, label: 'Job Profile' } : item));
     }
   }, [menuItems]);
 
@@ -107,7 +127,7 @@ export default function SettingsModal({
           ]);
           if (aiData) setAiConfig(aiData);
           if (menuData && Array.isArray(menuData) && menuData.length > 0) {
-            setMenuList(menuData);
+            setMenuList(menuData.map(item => item.id === 'profile' ? { ...item, label: 'Job Profile' } : item));
           }
         } catch (e) {
           console.warn('Settings load notice:', e);
@@ -231,14 +251,16 @@ export default function SettingsModal({
     setMenuError('');
     try {
       const res = await apiService.resetMenuSettings();
-      const updated = res.items || DEFAULT_MENU_ITEMS;
+      const rawUpdated = res.items || DEFAULT_MENU_ITEMS;
+      const updated = rawUpdated.map(item => item.id === 'profile' ? { ...item, label: 'Job Profile' } : item);
       setMenuList(updated);
       if (onUpdateMenu) onUpdateMenu(updated);
       setMenuToast('Navigation menu layout reset to defaults.');
       setTimeout(() => setMenuToast(''), 3000);
     } catch {
-      setMenuList(DEFAULT_MENU_ITEMS);
-      if (onUpdateMenu) onUpdateMenu(DEFAULT_MENU_ITEMS);
+      const fallback = DEFAULT_MENU_ITEMS.map(item => item.id === 'profile' ? { ...item, label: 'Job Profile' } : item);
+      setMenuList(fallback);
+      if (onUpdateMenu) onUpdateMenu(fallback);
       setMenuToast('Navigation menu layout reset to defaults.');
       setTimeout(() => setMenuToast(''), 3000);
     } finally {
@@ -305,13 +327,6 @@ export default function SettingsModal({
               <span>Menu</span>
             </button>
 
-            <button 
-              className={`modal-sidebar-item ${activeTab === 'avatar' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('avatar')}
-            >
-              <Bot size={16} className="sidebar-item-icon" />
-              <span>Profile Avatars</span>
-            </button>
 
             <button 
               className={`modal-sidebar-item ${activeTab === 'database' ? 'is-active' : ''}`}
@@ -348,12 +363,6 @@ export default function SettingsModal({
                 <>
                   <Menu size={18} className="text-emerald-500" />
                   <span>Navigation Menu Layout & Ordering</span>
-                </>
-              )}
-              {activeTab === 'avatar' && (
-                <>
-                  <Bot size={18} className="text-emerald-500" />
-                  <span>Curated Profile Avatars</span>
                 </>
               )}
               {activeTab === 'database' && (
@@ -725,53 +734,24 @@ export default function SettingsModal({
               </div>
             )}
 
-            {/* TAB 3: AVATARS */}
-            {activeTab === 'avatar' && (
-              <div className="settings-section">
-                <span className="block-title" style={{ display: 'block' }}>Choose from 5 Curated Static Avatars</span>
-                <p className="block-help-text" style={{ marginBottom: 18 }}>
-                  Select a high-resolution static avatar to customize your personal profile across the application.
-                </p>
 
-                <div className="avatar-chooser-grid">
-                  {AVATAR_OPTIONS.map(opt => {
-                    const isCurrent = (currentUser?.avatar || 'avatar_1') === opt.id;
-                    return (
-                      <div 
-                        key={opt.id}
-                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
-                      >
-                        <button 
-                          className={`avatar-choice-btn ${isCurrent ? 'is-active' : ''}`}
-                          onClick={() => onUpdateAvatar(opt.id)}
-                          title={`Select ${opt.label}`}
-                        >
-                          <StaticAvatar avatarId={opt.id} size={54} />
-                        </button>
-                        <span style={{ fontSize: 11, fontWeight: 500, color: isCurrent ? '#16A34A' : '#4B5563' }}>
-                          {opt.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
-            {/* TAB 4: DATA & DATABASE (FULL APP TRUNCATE) */}
+            {/* TAB 4: DATA & RESET (SCOPED USER DATA RESET) */}
             {activeTab === 'database' && (
               <div className="settings-section">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                   <AlertTriangle size={20} style={{ color: '#DC2626' }} />
                   <span style={{ fontWeight: 700, fontSize: 16, color: '#991B1B' }}>
-                    Danger Zone: Truncate Entire Application Database
+                    Reset User Profile & Application Data
                   </span>
                 </div>
 
                 <p className="block-help-text" style={{ color: '#475569', lineHeight: 1.6, marginBottom: 16 }}>
-                  This action performs a <strong>complete, permanent database flush</strong>. It truncates every table:
-                  all discovered jobs, ATS activity logs, application pipelines, candidate profile data, feedback tickets, 
-                  and clears all locally uploaded resumes and session data.
+                  This action clears all candidate profile records, uploaded resumes, generated tailored CVs, bookmarks, 
+                  and activity logs associated with <strong>your account</strong>.
+                  <span style={{ display: 'block', marginTop: 6, color: '#047857', fontWeight: 600 }}>
+                    ✓ Your account login credentials remain active and you will stay logged in. Other users' profiles and global jobs are preserved.
+                  </span>
                 </p>
 
                 <div style={{ 
@@ -782,42 +762,57 @@ export default function SettingsModal({
                   marginBottom: 20 
                 }}>
                   <div style={{ fontWeight: 600, color: '#B91C1C', marginBottom: 8, fontSize: 13.5 }}>
-                    What gets wiped:
+                    What gets reset for your account:
                   </div>
                   <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#7F1D1D', lineHeight: 1.6 }}>
-                    <li>All harvested jobs across all sources (Explore table cleared to 0)</li>
-                    <li>All candidate profile entries, resumes, and contact links</li>
-                    <li>All ATS application pipelines and automated activity streams</li>
-                    <li>All feedback tickets and uploaded resume files in disk storage</li>
+                    <li>Candidate profile & preferences (re-enters fresh onboarding state)</li>
+                    <li>Uploaded master resumes and extracted skill facts</li>
+                    <li>Generated tailored resumes and exported CV files</li>
+                    <li>Saved automation pipelines, bookmarks, and activity feed entries</li>
                   </ul>
                 </div>
 
+                {resetSuccess && (
+                  <div style={{ 
+                    background: '#ECFDF5', 
+                    border: '1px solid #A7F3D0', 
+                    color: '#065F46', 
+                    padding: '12px 16px', 
+                    borderRadius: 8, 
+                    marginBottom: 16,
+                    fontSize: 13.5,
+                    fontWeight: 600
+                  }}>
+                    ✓ User data has been reset successfully! Redirecting to profile onboarding...
+                  </div>
+                )}
+
                 <div style={{ marginBottom: 16 }}>
                   <label className="auth-form-label" style={{ fontWeight: 600, color: '#334155' }}>
-                    To confirm, please type <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, color: '#DC2626', fontWeight: 700 }}>skill2role</code> below:
+                    To confirm, please type <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, color: '#DC2626', fontWeight: 700 }}>reset</code> or <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, color: '#DC2626', fontWeight: 700 }}>skill2role</code> below:
                   </label>
                   <input 
                     type="text" 
                     className="auth-form-input" 
-                    placeholder="Type skill2role to confirm" 
-                    value={confirmProjectInput}
+                    placeholder="Type reset or skill2role to confirm" 
+                    value={confirmResetInput}
                     onChange={(e) => {
-                      setConfirmProjectInput(e.target.value);
-                      if (truncateError) setTruncateError('');
+                      setConfirmResetInput(e.target.value);
+                      if (resetError) setResetError('');
                     }}
                     style={{ maxWidth: 360, marginTop: 6 }}
                   />
-                  {truncateError && (
+                  {resetError && (
                     <div style={{ marginTop: 8, color: '#DC2626', fontSize: 12.5, fontWeight: 500 }}>
-                      {truncateError}
+                      {resetError}
                     </div>
                   )}
                 </div>
 
                 <button 
                   className="auth-btn-ghost"
-                  onClick={handleTruncateEntireDatabase}
-                  disabled={isTruncating}
+                  onClick={handleResetUserData}
+                  disabled={isResetting || !confirmResetInput.trim()}
                   style={{
                     background: '#DC2626',
                     color: '#FFFFFF',
@@ -829,12 +824,12 @@ export default function SettingsModal({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 8,
-                    cursor: isTruncating ? 'not-allowed' : 'pointer',
-                    opacity: isTruncating ? 0.7 : 1
+                    cursor: (isResetting || !confirmResetInput.trim()) ? 'not-allowed' : 'pointer',
+                    opacity: (isResetting || !confirmResetInput.trim()) ? 0.7 : 1
                   }}
                 >
                   <Trash2 size={15} />
-                  <span>{isTruncating ? 'Truncating Database...' : 'Flush & Truncate Entire Database'}</span>
+                  <span>{isResetting ? 'Resetting User Data...' : 'Reset My User Data'}</span>
                 </button>
               </div>
             )}
@@ -842,7 +837,7 @@ export default function SettingsModal({
 
           <footer className="modal-right-footer">
             <button className="btn-modal-cancel" onClick={onClose}>
-              {activeTab === 'database' ? 'Close' : 'Cancel'}
+              {activeTab === 'database' || activeTab === 'login' ? 'Close' : 'Cancel'}
             </button>
             {activeTab === 'menu' && (
               <button 
@@ -853,7 +848,7 @@ export default function SettingsModal({
                 {menuLoading ? 'Saving...' : 'Save Menu Configuration'}
               </button>
             )}
-            {activeTab !== 'database' && activeTab !== 'menu' && (
+            {activeTab !== 'database' && activeTab !== 'menu' && activeTab !== 'login' && (
               <button className="btn-primary-olive" onClick={handleSaveSettings} disabled={loading}>
                 {loading ? 'Saving...' : 'Save Configuration'}
               </button>

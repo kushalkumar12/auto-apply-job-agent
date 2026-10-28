@@ -95,19 +95,7 @@ export function SkeletonLoader({ variant = 'text', width, height, size, columns 
 export function ExplorePageSkeleton() {
   return (
     <div className="skeleton-page-wrapper">
-      {/* Radar area skeleton */}
-      <div className="skeleton-shimmer skeleton-radar-placeholder" />
-      {/* Two column layout */}
-      <div className="skeleton-two-col">
-        <div className="skeleton-col-main">
-          <SkeletonLoader variant="table-row" columns={7} rows={8} />
-        </div>
-        <div className="skeleton-col-side">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="skeleton-shimmer skeleton-activity-row" />
-          ))}
-        </div>
-      </div>
+      <SkeletonLoader variant="table-row" columns={7} rows={10} />
     </div>
   );
 }

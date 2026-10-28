@@ -1,52 +1,150 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Query, HTTPException
 from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
 import math
 
 try:
     from ..database import get_db
+    from ..services.auth_service import get_current_user
 except (ImportError, ValueError):
     from database import get_db
+    from services.auth_service import get_current_user
 
 router = APIRouter(tags=["Analytics"])
 
-def generate_dynamic_heatmap_and_metrics(conn):
+def generate_dynamic_heatmap_and_metrics(conn, user_id: Optional[str] = None, profile_id: Optional[str] = None):
     """
-    Computes 365-day activity ledger and metrics directly from SQLite database records.
+    Computes 365-day activity ledger and metrics directly from SQLite database records
+    scoped strictly to the authenticated user and their active/selected profile.
     When brand new, returns 0s and empty maps without any artificial or mock data.
     """
+    now = datetime.now()
+    
+    # Pristine 0 fallback for unauthenticated or brand new sessions
+    if not user_id:
+        timeline_bars = []
+        for i in range(6, -1, -1):
+            d = now - timedelta(days=i)
+            d_str = d.strftime("%Y-%m-%d")
+            timeline_bars.append({
+                "day": d.strftime("%b %d"),
+                "date": d_str,
+                "formattedDate": d_str,
+                "count": 0,
+                "applications": 0,
+                "jobsDiscovered": 0
+            })
+        heatmap_payload = {
+            "searches": {},
+            "applied": {},
+            "failed": {},
+            "interviews": {},
+            "all": {},
+            "totals": {"searches": 0, "applied": 0, "failed": 0, "interviews": 0, "all": 0},
+            "activeDays": {"searches": 0, "applied": 0, "failed": 0, "interviews": 0, "all": 0},
+            "maxStreaks": {"searches": 0, "applied": 0, "failed": 0, "interviews": 0, "all": 0}
+        }
+        return heatmap_payload, timeline_bars, 0, 0, 0
+
     cur = conn.cursor()
     
-    # 1. Query real jobs by date
+    # 1. Query user-specific jobs & applications by date, scoped to profile_id
     db_applied_by_date = {}
     db_jobs_by_date = {}
     try:
-        job_rows = cur.execute("""
+        bm_query = """
+            SELECT date(jb.created_at / 1000, 'unixepoch') as dStr, 
+                   COUNT(*) as cnt,
+                   SUM(CASE WHEN j.applied = 1 THEN 1 ELSE 0 END) as appCnt
+            FROM job_bookmarks jb
+            JOIN jobs j ON jb.job_id = j.id
+            WHERE jb.user_id = ? AND jb.created_at > 0
+        """
+        bm_params = [user_id]
+        if profile_id:
+            bm_query += " AND jb.profile_id = ?"
+            bm_params.append(profile_id)
+        bm_query += " GROUP BY dStr"
+        bm_rows = cur.execute(bm_query, bm_params).fetchall()
+        for r in bm_rows:
+            if r["dStr"]:
+                db_jobs_by_date[r["dStr"]] = db_jobs_by_date.get(r["dStr"], 0) + (r["cnt"] or 0)
+                if r["appCnt"]:
+                    db_applied_by_date[r["dStr"]] = db_applied_by_date.get(r["dStr"], 0) + r["appCnt"]
+        
+        job_query = """
             SELECT date(created_at / 1000, 'unixepoch') as dStr, 
                    COUNT(*) as cnt,
                    SUM(CASE WHEN applied = 1 THEN 1 ELSE 0 END) as appCnt
             FROM jobs
-            WHERE created_at > 0
-            GROUP BY dStr
-        """).fetchall()
-        for r in job_rows:
+            WHERE user_id = ? AND user_id != 'default' AND created_at > 0
+        """
+        job_params = [user_id]
+        if profile_id:
+            job_query += " AND profile_id = ?"
+            job_params.append(profile_id)
+        job_query += " GROUP BY dStr"
+        user_job_rows = cur.execute(job_query, job_params).fetchall()
+        for r in user_job_rows:
             if r["dStr"]:
-                db_jobs_by_date[r["dStr"]] = r["cnt"] or 0
+                db_jobs_by_date[r["dStr"]] = db_jobs_by_date.get(r["dStr"], 0) + (r["cnt"] or 0)
                 if r["appCnt"]:
-                    db_applied_by_date[r["dStr"]] = r["appCnt"]
+                    db_applied_by_date[r["dStr"]] = db_applied_by_date.get(r["dStr"], 0) + r["appCnt"]
     except Exception:
         pass
 
-    # 2. Query real activities by date
-    db_interviews_by_date = {}
-    db_failed_by_date = {}
+    # 2. Explorer runs (user-specific job searches / discoveries scoped to profile_id)
     db_searches_by_date = {}
     try:
-        act_rows = cur.execute("""
+        exp_query = """
+            SELECT date(started_at / 1000, 'unixepoch') as dStr,
+                   SUM(jobs_discovered) as discCnt
+            FROM explorer_runs
+            WHERE user_id = ? AND started_at > 0
+        """
+        exp_params = [user_id]
+        if profile_id:
+            exp_query += " AND profile_id = ?"
+            exp_params.append(profile_id)
+        exp_query += " GROUP BY dStr"
+        exp_rows = cur.execute(exp_query, exp_params).fetchall()
+        for r in exp_rows:
+            if r["dStr"]:
+                db_searches_by_date[r["dStr"]] = db_searches_by_date.get(r["dStr"], 0) + (r["discCnt"] or 0)
+    except Exception:
+        pass
+
+    # 3. User-specific tailored resumes
+    if profile_id:
+        try:
+            tr_rows = cur.execute("""
+                SELECT date(created_at / 1000, 'unixepoch') as dStr,
+                       COUNT(*) as cnt
+                FROM tailored_resumes
+                WHERE profile_id = ? AND created_at > 0
+                GROUP BY dStr
+            """, (profile_id,)).fetchall()
+            for r in tr_rows:
+                if r["dStr"]:
+                    db_applied_by_date[r["dStr"]] = db_applied_by_date.get(r["dStr"], 0) + (r["cnt"] or 0)
+        except Exception:
+            pass
+
+    # 4. User-specific activities scoped to profile_id
+    db_interviews_by_date = {}
+    db_failed_by_date = {}
+    try:
+        act_query = """
             SELECT date(created_at / 1000, 'unixepoch') as dStr,
                    text, status
             FROM activities
-            WHERE created_at > 0
-        """).fetchall()
+            WHERE user_id = ? AND created_at > 0
+        """
+        act_params = [user_id]
+        if profile_id:
+            act_query += " AND profile_id = ?"
+            act_params.append(profile_id)
+        act_rows = cur.execute(act_query, act_params).fetchall()
         for r in act_rows:
             d_str = r["dStr"]
             if not d_str:
@@ -58,10 +156,11 @@ def generate_dynamic_heatmap_and_metrics(conn):
                 db_failed_by_date[d_str] = db_failed_by_date.get(d_str, 0) + 1
             elif "search" in txt or "scan" in txt or "discover" in txt:
                 db_searches_by_date[d_str] = db_searches_by_date.get(d_str, 0) + 1
+            elif "applied" in txt or "submit" in txt:
+                db_applied_by_date[d_str] = db_applied_by_date.get(d_str, 0) + 1
     except Exception:
         pass
 
-    now = datetime.now()
     searches_map = {}
     applied_map = {}
     failed_map = {}
@@ -211,75 +310,165 @@ def generate_dynamic_heatmap_and_metrics(conn):
     return heatmap_payload, timeline_bars, total_applied, total_interviews, total_searches
 
 @router.get("/analytics")
-def get_analytics():
+@router.get("/analytics/overview")
+def get_analytics(
+    profile_id: Optional[str] = Query(None),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
+    user_id = current_user.get("id") if current_user else None
+
     with get_db() as conn:
-        heatmap_data, timeline_bars, total_apps, interviews_count, total_searches = generate_dynamic_heatmap_and_metrics(conn)
         cur = conn.cursor()
 
-        stats_row = cur.execute("""
-            SELECT 
-                COUNT(*) as total_jobs,
-                COUNT(DISTINCT company) as distinct_companies,
-                AVG(atsScore) as avg_ats,
-                SUM(CASE WHEN applied = 1 THEN 1 ELSE 0 END) as applied_jobs,
-                SUM(CASE WHEN atsScore >= 90 THEN 1 ELSE 0 END) as b90,
-                SUM(CASE WHEN atsScore >= 80 AND atsScore < 90 THEN 1 ELSE 0 END) as b80,
-                SUM(CASE WHEN atsScore >= 70 AND atsScore < 80 THEN 1 ELSE 0 END) as b70,
-                SUM(CASE WHEN atsScore < 70 THEN 1 ELSE 0 END) as bBelow70
-            FROM jobs
-        """).fetchone()
+        # Resolve candidate profile for this user
+        resolved_pid = profile_id
+        if resolved_pid and user_id:
+            p_row = cur.execute(
+                "SELECT id FROM candidate_profiles WHERE id = ? AND user_id = ?",
+                (resolved_pid, user_id)
+            ).fetchone()
+            if not p_row:
+                other_u = cur.execute("SELECT user_id FROM candidate_profiles WHERE id = ?", (resolved_pid,)).fetchone()
+                if other_u and other_u["user_id"] != user_id:
+                    raise HTTPException(status_code=403, detail="Forbidden: You cannot access another user's candidate profile analytics.")
+                resolved_pid = None
 
-        total_db_jobs = stats_row["total_jobs"] or 0
-        company_cnt = stats_row["distinct_companies"] or 0
-        avg_ats = stats_row["avg_ats"]
+        if not resolved_pid and user_id:
+            p_row = cur.execute(
+                "SELECT id FROM candidate_profiles WHERE user_id = ? AND is_active = 1",
+                (user_id,)
+            ).fetchone()
+            if not p_row:
+                p_row = cur.execute(
+                    "SELECT id FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1",
+                    (user_id,)
+                ).fetchone()
+            resolved_pid = p_row["id"] if p_row else None
 
-        # Real platform metrics from actual jobs
-        platform_rows = cur.execute("""
-            SELECT source as name,
-                   COUNT(*) as jobsCount,
-                   SUM(CASE WHEN applied = 1 THEN 1 ELSE 0 END) as applications
-            FROM jobs
-            GROUP BY source
-            ORDER BY jobsCount DESC
-        """).fetchall()
+        heatmap_data, timeline_bars, total_apps, interviews_count, total_searches = generate_dynamic_heatmap_and_metrics(conn, user_id, resolved_pid)
 
-        platform_metrics = []
-        for pr in platform_rows:
-            p_apps = pr["applications"] or 0
-            succ_rate = f"{round((interviews_count / max(1, p_apps)) * 100, 1)}%" if p_apps > 0 else "0.0%"
-            platform_metrics.append({
-                "name": pr["name"],
-                "applications": p_apps,
-                "interviews": 0,
-                "successRate": succ_rate
-            })
+        # 1. Fetch user tailored resumes
+        tailored_resumes = []
+        if resolved_pid:
+            tailored_resumes = cur.execute("""
+                SELECT tr.id, tr.job_id, tr.ats_score, tr.target_role, tr.target_company, tr.created_at,
+                       j.source
+                FROM tailored_resumes tr
+                LEFT JOIN jobs j ON tr.job_id = j.id
+                WHERE tr.profile_id = ?
+            """, (resolved_pid,)).fetchall()
 
-        # Real top roles from actual jobs
-        role_rows = cur.execute("""
-            SELECT role,
-                   COUNT(*) as jobsCount,
-                   SUM(CASE WHEN applied = 1 THEN 1 ELSE 0 END) as applications
-            FROM jobs
-            GROUP BY role
-            ORDER BY jobsCount DESC
-            LIMIT 5
-        """).fetchall()
+        # 2. Fetch user bookmarked/applied jobs scoped to resolved_pid
+        user_jobs = []
+        if user_id:
+            if resolved_pid:
+                user_jobs = cur.execute("""
+                    SELECT j.id, j.role, j.company, j.source, j.atsScore, j.applied
+                    FROM jobs j
+                    JOIN job_bookmarks jb ON j.id = jb.job_id
+                    WHERE jb.user_id = ? AND jb.profile_id = ?
+                    UNION
+                    SELECT j.id, j.role, j.company, j.source, j.atsScore, j.applied
+                    FROM jobs j
+                    WHERE j.user_id = ? AND j.profile_id = ?
+                """, (user_id, resolved_pid, user_id, resolved_pid)).fetchall()
+            else:
+                user_jobs = cur.execute("""
+                    SELECT j.id, j.role, j.company, j.source, j.atsScore, j.applied
+                    FROM jobs j
+                    JOIN job_bookmarks jb ON j.id = jb.job_id
+                    WHERE jb.user_id = ?
+                    UNION
+                    SELECT j.id, j.role, j.company, j.source, j.atsScore, j.applied
+                    FROM jobs j
+                    WHERE j.user_id = ?
+                """, (user_id, user_id)).fetchall()
 
-        top_roles = []
-        for rr in role_rows:
-            top_roles.append({
-                "role": rr["role"],
-                "applications": rr["applications"] or 0,
-                "interviews": 0
-            })
+        user_jobs_count = len(user_jobs)
+        tailored_count = len(tailored_resumes)
+
+        # Truthful multi-tenant metrics: When user has 0 records, return clean zeros!
+        if user_jobs_count == 0 and tailored_count == 0:
+            total_db_jobs = 0
+            company_cnt = 0
+            avg_ats_str = "0%"
+            platform_metrics = []
+            top_roles = []
+            ats_brackets = {
+                "bracket90": 0,
+                "bracket80": 0,
+                "bracket70": 0,
+                "bracketBelow70": 0
+            }
+        else:
+            # Calculate ATS score metrics from user's real tailored resumes or tracked jobs
+            ats_scores = []
+            companies_set = set()
+            role_counts = {}
+            platform_counts = {}
+
+            if tailored_count > 0:
+                for tr in tailored_resumes:
+                    score = tr["ats_score"] or 0
+                    ats_scores.append(score)
+                    if tr["target_company"]:
+                        companies_set.add(tr["target_company"])
+                    r = tr["target_role"] or "Software Engineer"
+                    role_counts[r] = role_counts.get(r, 0) + 1
+                    src = tr["source"] or "Platform"
+                    platform_counts[src] = platform_counts.get(src, 0) + 1
+            else:
+                for j in user_jobs:
+                    score = j["atsScore"] or 0
+                    ats_scores.append(score)
+                    if j["company"]:
+                        companies_set.add(j["company"])
+                    r = j["role"] or "Software Engineer"
+                    role_counts[r] = role_counts.get(r, 0) + 1
+                    src = j["source"] or "Platform"
+                    platform_counts[src] = platform_counts.get(src, 0) + 1
+
+            total_db_jobs = user_jobs_count + tailored_count
+            company_cnt = len(companies_set)
+            avg_val = (sum(ats_scores) / len(ats_scores)) if ats_scores else 0
+            avg_ats_str = f"{round(avg_val)}%"
+
+            b90 = sum(1 for s in ats_scores if s >= 90)
+            b80 = sum(1 for s in ats_scores if 80 <= s < 90)
+            b70 = sum(1 for s in ats_scores if 70 <= s < 80)
+            bBelow = sum(1 for s in ats_scores if s < 70)
+
+            ats_brackets = {
+                "bracket90": b90,
+                "bracket80": b80,
+                "bracket70": b70,
+                "bracketBelow70": bBelow
+            }
+
+            platform_metrics = []
+            for p_name, p_cnt in sorted(platform_counts.items(), key=lambda x: x[1], reverse=True):
+                platform_metrics.append({
+                    "name": p_name,
+                    "applications": p_cnt,
+                    "interviews": 0,
+                    "successRate": f"{round((interviews_count / max(1, p_cnt)) * 100, 1)}%" if p_cnt > 0 else "0.0%"
+                })
+
+            top_roles = []
+            for r_name, r_cnt in sorted(role_counts.items(), key=lambda x: x[1], reverse=True)[:5]:
+                top_roles.append({
+                    "role": r_name,
+                    "applications": r_cnt,
+                    "interviews": 0
+                })
 
     offers_count = 0
-    response_rate = f"{round((interviews_count / total_apps) * 100, 1)}%" if total_apps > 0 else "0.0%"
-    avg_ats_str = f"{round(avg_ats)}%" if (avg_ats is not None and total_db_jobs > 0) else "0%"
+    actual_apps = max(total_apps, tailored_count)
+    response_rate = f"{round((interviews_count / actual_apps) * 100, 1)}%" if actual_apps > 0 else "0%"
 
     return {
         "totalJobsInDb": total_db_jobs,
-        "totalApplications": total_apps,
+        "totalApplications": actual_apps,
         "interviews": interviews_count,
         "offers": offers_count,
         "responseRate": response_rate,
@@ -290,14 +479,14 @@ def get_analytics():
         "dailyBreakdown": timeline_bars,
         "heatmap": heatmap_data,
         "funnel": {
-            "jobsFound": total_db_jobs,
-            "tailoredResumes": total_apps,
-            "applications": total_apps,
+            "jobsFound": max(total_db_jobs, total_searches),
+            "tailoredResumes": tailored_count,
+            "applications": actual_apps,
             "interviews": interviews_count,
             "offers": offers_count
         },
         "statusDistribution": {
-            "applied": total_apps,
+            "applied": actual_apps,
             "inProgress": 0,
             "interview": interviews_count,
             "rejected": heatmap_data["totals"]["failed"],
@@ -305,10 +494,5 @@ def get_analytics():
         },
         "platformMetrics": platform_metrics,
         "topRoles": top_roles,
-        "atsBrackets": {
-            "bracket90": stats_row["b90"] or 0,
-            "bracket80": stats_row["b80"] or 0,
-            "bracket70": stats_row["b70"] or 0,
-            "bracketBelow70": stats_row["bBelow70"] or 0
-        }
+        "atsBrackets": ats_brackets
     }

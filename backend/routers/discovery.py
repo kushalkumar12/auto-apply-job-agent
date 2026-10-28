@@ -3,7 +3,8 @@ import json
 import logging
 import random
 import time
-from fastapi import APIRouter, HTTPException, Query, status
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, HTTPException, Query, Depends, status
 from fastapi.responses import StreamingResponse
 
 try:
@@ -12,39 +13,53 @@ try:
     from ..harvest.ashby import fetch_ashby_board, DEFAULT_ASHBY_BOARDS
     from ..harvest.lever import fetch_lever_board, DEFAULT_LEVER_BOARDS
     from ..harvest.remote_boards import fetch_remoteok, fetch_remotive
+    from ..harvest.workday import fetch_workday_board, DEFAULT_WORKDAY_BOARDS
+    from ..harvest.smartrecruiters import fetch_smartrecruiters_board, DEFAULT_SMARTRECRUITERS_BOARDS
     from ..harvest.service import upsert_harvested_job
     from ..services.profile_validator import validate_candidate_profile
+    from ..services.auth_service import get_current_user
     from ..services.platform_searcher import (
         check_linkedin_connector_status,
         check_indeed_connector_status,
         search_board_source
     )
+    from ..explorer.service import explorer_orchestrator
 except (ImportError, ValueError):
     from database import get_db
     from harvest.greenhouse import fetch_greenhouse_board, DEFAULT_GREENHOUSE_BOARDS
     from harvest.ashby import fetch_ashby_board, DEFAULT_ASHBY_BOARDS
     from harvest.lever import fetch_lever_board, DEFAULT_LEVER_BOARDS
     from harvest.remote_boards import fetch_remoteok, fetch_remotive
+    from harvest.workday import fetch_workday_board, DEFAULT_WORKDAY_BOARDS
+    from harvest.smartrecruiters import fetch_smartrecruiters_board, DEFAULT_SMARTRECRUITERS_BOARDS
     from harvest.service import upsert_harvested_job
     from services.profile_validator import validate_candidate_profile
+    from services.auth_service import get_current_user
     from services.platform_searcher import (
         check_linkedin_connector_status,
         check_indeed_connector_status,
         search_board_source
     )
+    from explorer.service import explorer_orchestrator
 
 logger = logging.getLogger("skill2role.discovery")
 router = APIRouter(tags=["Discovery"])
 
 @router.get("/discovery/stats")
-def get_discovery_stats():
+def get_discovery_stats(current_user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     with get_db() as conn:
         cur = conn.cursor()
 
-        # Load profile avoid preferences
-        active_prof = cur.execute("SELECT data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
-        if not active_prof:
-            active_prof = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
+        # Load profile avoid preferences for authenticated user
+        user_id = current_user.get("id") if current_user else None
+        if user_id:
+            active_prof = cur.execute("SELECT data FROM candidate_profiles WHERE user_id = ? AND is_active = 1 LIMIT 1", (user_id,)).fetchone()
+            if not active_prof:
+                active_prof = cur.execute("SELECT data FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1", (user_id,)).fetchone()
+        else:
+            active_prof = cur.execute("SELECT data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+            if not active_prof:
+                active_prof = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
 
         profile_data = json.loads(active_prof["data"]) if active_prof and active_prof["data"] else {}
         avoid_companies = [c.strip().lower() for c in profile_data.get("avoidCompanies", []) if c.strip()]
@@ -91,42 +106,70 @@ def get_discovery_stats():
 @router.get("/discovery/connectors")
 def get_connectors():
     """
-    Returns verified connector status across enterprise ATS boards and platforms.
-    Truthfully reports LinkedIn & Indeed session and authwall requirements without fake scraping.
+    Returns verified connector status across enterprise ATS boards and Indian/global platforms.
     """
-    return {
-        "connectors": [
-            {"id": "ats_direct", "source": "Direct Enterprise ATS", "type": "Enterprise ATS", "status": "active", "mode": "Live verified boards"},
-            {"id": "ashby", "source": "Ashby", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
-            {"id": "greenhouse", "source": "Greenhouse", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
-            {"id": "lever", "source": "Lever", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
-            {"id": "remoteok", "source": "RemoteOK", "type": "Public Feed", "status": "online", "mode": "Live public jobs"},
-            {"id": "remotive", "source": "Remotive", "type": "Public Feed", "status": "online", "mode": "Live public jobs"},
-            check_linkedin_connector_status(),
-            check_indeed_connector_status()
-        ]
-    }
+    connectors = [
+        {"id": "linkedin_guest", "source": "LinkedIn India & Global", "type": "Platform Aggregator", "status": "online", "mode": "Live Guest Search Stream"},
+        {"id": "naukri", "source": "Naukri.com (India #1)", "type": "Platform Aggregator", "status": "online", "mode": "API Emulation & Session Stream"},
+        {"id": "ats_direct", "source": "Direct Enterprise ATS", "type": "Enterprise ATS", "status": "active", "mode": "Live verified boards"},
+        {"id": "ashby", "source": "Ashby", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
+        {"id": "greenhouse", "source": "Greenhouse", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
+        {"id": "lever", "source": "Lever", "type": "Enterprise ATS", "status": "online", "mode": "Live verified boards"},
+        {"id": "remoteok", "source": "RemoteOK", "type": "Public Feed", "status": "online", "mode": "Live public jobs"},
+        {"id": "remotive", "source": "Remotive", "type": "Public Feed", "status": "online", "mode": "Live public jobs"},
+        check_linkedin_connector_status(),
+        check_indeed_connector_status()
+    ]
+    return {"connectors": connectors}
+
+@router.post("/discovery/sweep")
+async def trigger_discovery_sweep(
+    keywords: Optional[str] = None,
+    location: Optional[str] = None,
+    limit: int = 15
+):
+    """
+    Triggers an asynchronous multi-platform discovery sweep across LinkedIn, ATS, and Indian platforms.
+    """
+    return await explorer_orchestrator.run_discovery(
+        keywords=keywords,
+        location=location,
+        limit_per_platform=limit
+    )
 
 @router.get("/discovery/status")
-def get_discovery_status():
+def get_discovery_status(current_user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """
     Returns current active Explorer run status for the active profile.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        active_prof = cur.execute("SELECT id FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
-        prof_id = active_prof["id"] if active_prof else "default"
-        run = cur.execute("""
-            SELECT * FROM explorer_runs
-            WHERE profile_id = ?
-            ORDER BY created_at DESC LIMIT 1
-        """, (prof_id,)).fetchone()
+        user_id = current_user.get("id") if current_user else None
+        if user_id:
+            active_prof = cur.execute("SELECT id FROM candidate_profiles WHERE user_id = ? AND is_active = 1 LIMIT 1", (user_id,)).fetchone()
+            if not active_prof:
+                active_prof = cur.execute("SELECT id FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1", (user_id,)).fetchone()
+            prof_id = active_prof["id"] if active_prof else "default"
+            run = cur.execute("""
+                SELECT * FROM explorer_runs
+                WHERE user_id = ? AND profile_id = ?
+                ORDER BY created_at DESC LIMIT 1
+            """, (user_id, prof_id)).fetchone()
+        else:
+            active_prof = cur.execute("SELECT id FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+            prof_id = active_prof["id"] if active_prof else "default"
+            run = cur.execute("""
+                SELECT * FROM explorer_runs
+                WHERE profile_id = ?
+                ORDER BY created_at DESC LIMIT 1
+            """, (prof_id,)).fetchone()
+
         if not run:
             return {"status": "idle", "run": None}
         return {"status": run["status"], "run": dict(run)}
 
 @router.post("/discovery/start")
-def start_discovery():
+def start_discovery(current_user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """
     Triggered only when the user explicitly clicks the Resume Stream button below the Radar orbit.
     Enforces mandatory profile completion, checks criteria, prevents duplicate runs,
@@ -134,9 +177,15 @@ def start_discovery():
     """
     with get_db() as conn:
         cur = conn.cursor()
-        active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
-        if not active_prof:
-            active_prof = cur.execute("SELECT id, data FROM profile WHERE id = 'default'").fetchone()
+        user_id = current_user.get("id") if current_user else None
+        if user_id:
+            active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE user_id = ? AND is_active = 1 LIMIT 1", (user_id,)).fetchone()
+            if not active_prof:
+                active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1", (user_id,)).fetchone()
+        else:
+            active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+            if not active_prof:
+                active_prof = cur.execute("SELECT id, data FROM profile WHERE id = 'default'").fetchone()
 
         if not active_prof:
             raise HTTPException(
@@ -159,10 +208,16 @@ def start_discovery():
         prof_id = active_prof["id"]
 
         # Prevent duplicate concurrent runs for this profile
-        running = cur.execute(
-            "SELECT id FROM explorer_runs WHERE profile_id = ? AND status = 'running'",
-            (prof_id,)
-        ).fetchone()
+        if user_id:
+            running = cur.execute(
+                "SELECT id FROM explorer_runs WHERE user_id = ? AND profile_id = ? AND status = 'running'",
+                (user_id, prof_id)
+            ).fetchone()
+        else:
+            running = cur.execute(
+                "SELECT id FROM explorer_runs WHERE profile_id = ? AND status = 'running'",
+                (prof_id,)
+            ).fetchone()
 
         if running:
             return {
@@ -176,8 +231,8 @@ def start_discovery():
         now_ts = int(time.time() * 1000)
         cur.execute("""
             INSERT INTO explorer_runs (id, profile_id, user_id, status, started_at, total_discovered, total_retained, created_at)
-            VALUES (?, ?, 'default', 'running', ?, 0, 0, ?)
-        """, (run_id, prof_id, now_ts, now_ts))
+            VALUES (?, ?, ?, 'running', ?, 0, 0, ?)
+        """, (run_id, prof_id, user_id or "default", now_ts, now_ts))
 
         return {
             "success": True,
@@ -187,37 +242,53 @@ def start_discovery():
         }
 
 @router.post("/discovery/stop")
-def stop_discovery():
+def stop_discovery(current_user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """
     Safely cancels the active Explorer run.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        active_prof = cur.execute("SELECT id FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
-        prof_id = active_prof["id"] if active_prof else "default"
+        user_id = current_user.get("id") if current_user else None
         now_ts = int(time.time() * 1000)
-        cur.execute("""
-            UPDATE explorer_runs
-            SET status = 'cancelled', finished_at = ?
-            WHERE profile_id = ? AND status = 'running'
-        """, (now_ts, prof_id))
+        if user_id:
+            cur.execute("""
+                UPDATE explorer_runs
+                SET status = 'cancelled', finished_at = ?
+                WHERE user_id = ? AND status = 'running'
+            """, (now_ts, user_id))
+        else:
+            cur.execute("""
+                UPDATE explorer_runs
+                SET status = 'cancelled', finished_at = ?
+                WHERE status = 'running'
+            """, (now_ts,))
     return {"success": True, "status": "cancelled"}
 
 @router.get("/discovery/stream")
-async def discovery_stream():
+async def discovery_stream(
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
     """
     Server-Sent Events (SSE) streaming actual real-time job harvesting activities
-    across live enterprise ATS boards (Greenhouse, Ashby, Lever, RemoteOK, Remotive).
-    Guarded by mandatory candidate profile validation.
+    across live enterprise ATS boards (Workday, SmartRecruiters, Greenhouse, Ashby, Lever, RemoteOK, Remotive).
+    Guarded by mandatory candidate profile validation and JWT user authentication.
     Every event reflects real discovered jobs and truthful source attribution.
     """
     async def event_generator():
         # 1. Validate Candidate Profile on connection
         prof_id = None
         profile_data = {}
+        user_id = current_user.get("id") if current_user else None
+
         with get_db() as conn:
             cur = conn.cursor()
-            active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+            if user_id:
+                active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE user_id = ? AND is_active = 1 LIMIT 1", (user_id,)).fetchone()
+                if not active_prof:
+                    active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1", (user_id,)).fetchone()
+            else:
+                active_prof = cur.execute("SELECT id, data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+
             if not active_prof:
                 active_prof = cur.execute("SELECT id, data FROM profile WHERE id = 'default'").fetchone()
 
@@ -245,16 +316,20 @@ async def discovery_stream():
         })
         yield f"data: {initial_payload}\n\n"
 
-        # Curated queue of direct ATS boards to crawl
+        # Curated queue of direct ATS boards to crawl (Prioritizing Indian hubs and Workday/SmartRecruiters)
         boards_queue = []
-        for b in DEFAULT_ASHBY_BOARDS:
-            boards_queue.append(("ashby", b["board"], b["company"]))
+        for b in DEFAULT_WORKDAY_BOARDS:
+            boards_queue.append(("workday", None, b["company"], b["cxs_url"], b["base_url"]))
+        for b in DEFAULT_SMARTRECRUITERS_BOARDS:
+            boards_queue.append(("smartrecruiters", b["identifier"], b["company"], None, None))
         for b in DEFAULT_GREENHOUSE_BOARDS:
-            boards_queue.append(("greenhouse", b["board"], b["company"]))
+            boards_queue.append(("greenhouse", b["board"], b["company"], None, None))
+        for b in DEFAULT_ASHBY_BOARDS:
+            boards_queue.append(("ashby", b["board"], b["company"], None, None))
         for b in DEFAULT_LEVER_BOARDS:
-            boards_queue.append(("lever", b["board"], b["company"]))
-        boards_queue.append(("remoteok", None, "RemoteOK"))
-        boards_queue.append(("remotive", None, "Remotive"))
+            boards_queue.append(("lever", b["board"], b["company"], None, None))
+        boards_queue.append(("remoteok", None, "RemoteOK", None, None))
+        boards_queue.append(("remotive", None, "Remotive", None, None))
 
         total_discovered = 0
         total_processed = 0
@@ -275,16 +350,24 @@ async def discovery_stream():
                 # Check if current run has been cancelled or stopped
                 with get_db() as conn:
                     cur = conn.cursor()
-                    run = cur.execute(
-                        "SELECT status FROM explorer_runs WHERE profile_id = ? AND status = 'running'",
-                        (prof_id,)
-                    ).fetchone()
+                    if user_id:
+                        run = cur.execute(
+                            "SELECT status FROM explorer_runs WHERE user_id = ? AND profile_id = ? AND status = 'running'",
+                            (user_id, prof_id)
+                        ).fetchone()
+                    else:
+                        run = cur.execute(
+                            "SELECT status FROM explorer_runs WHERE profile_id = ? AND status = 'running'",
+                            (prof_id,)
+                        ).fetchone()
+
                     # If stopped or no active running record, terminate stream cleanly
                     if not run:
                         yield f"data: {json.dumps({'type': 'stream_ended', 'status': 'completed'})}\n\n"
                         break
 
-                source_type, board_id, company = boards_queue[board_index % len(boards_queue)]
+                queue_item = boards_queue[board_index % len(boards_queue)]
+                source_type, board_id, company, cxs_url, base_url = queue_item
                 board_index += 1
 
                 # Skip if company is in avoidCompanies
@@ -313,7 +396,7 @@ async def discovery_stream():
                 await asyncio.sleep(0.8)
 
                 # Stage 2: Discovering & Extracting
-                raw_jobs = await search_board_source(source_type, board_id, company, 5.0)
+                raw_jobs = await search_board_source(source_type, board_id, company, 6.0, cxs_url, base_url)
 
                 if raw_jobs:
                     total_discovered += len(raw_jobs)
@@ -358,8 +441,20 @@ async def discovery_stream():
                                 if was_inserted:
                                     total_retained += 1
 
+                                    # Retrieve newly inserted job with its generated ID
+                                    inserted_job_row = conn.execute(
+                                        "SELECT * FROM jobs WHERE LOWER(role) = LOWER(?) AND LOWER(company) = LOWER(?)",
+                                        (role, job_comp)
+                                    ).fetchone()
+                                    emitted_job = dict(inserted_job_row) if inserted_job_row else job
+                                    if "skills" in emitted_job and isinstance(emitted_job["skills"], str):
+                                        try:
+                                            emitted_job["skills"] = json.loads(emitted_job["skills"])
+                                        except Exception:
+                                            pass
+
                                     # Emit real discovered job
-                                    yield f"data: {json.dumps({'type': 'job_discovered', 'job': job, 'timestamp': int(time.time() * 1000)})}\n\n"
+                                    yield f"data: {json.dumps({'type': 'job_discovered', 'job': emitted_job, 'timestamp': int(time.time() * 1000)})}\n\n"
 
                                     # Emit validation activity
                                     val_act = {

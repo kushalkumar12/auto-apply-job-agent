@@ -1,6 +1,6 @@
 /* ==========================================================================
    ACTIVITY PAD — COMPONENT STYLES
-   Supports all 4 Themes (Default, Difference, Glass, Minimal)
+   Supports 2 Themes (Default, Minimal)
    and both 2 Modes (Light / Dark) via canonical CSS variables & theme hooks.
    ========================================================================== */
 
@@ -31,23 +31,6 @@
   color: var(--rp-text-dominant, #e6eae7);
 }
 
-/* Theme: Glass */
-[data-theme="glass"] .activity-pad-container {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
-}
-
-[data-theme="glass"][data-mode="dark"] .activity-pad-container {
-  background: rgba(24, 29, 26, 0.65);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-}
-
 /* Theme: Minimal */
 [data-theme="minimal"] .activity-pad-container {
   background: #ffffff;
@@ -61,19 +44,6 @@
   border: 1.5px solid #ffffff;
   border-radius: 4px;
   box-shadow: none;
-}
-
-/* Theme: Difference */
-[data-theme="difference"] .activity-pad-container {
-  background: var(--rp-secondary-surface, #ffffff);
-  border: 1px solid var(--rp-accent-secondary, #0d9488);
-  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
-}
-
-[data-theme="difference"][data-mode="dark"] .activity-pad-container {
-  background: #141b17;
-  border: 1px solid rgba(45, 212, 191, 0.3);
-  box-shadow: 0 4px 24px rgba(45, 212, 191, 0.1);
 }
 
 /* -------------------------------------------------------------------------
@@ -470,16 +440,6 @@
   border-color: #242c26;
 }
 
-[data-theme="glass"] .activity-trade-col {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-[data-theme="glass"][data-mode="dark"] .activity-trade-col {
-  background: rgba(18, 23, 20, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
 
 [data-theme="minimal"] .activity-trade-col {
   background: #ffffff;

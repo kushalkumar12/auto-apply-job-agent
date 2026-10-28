@@ -15,7 +15,7 @@ import { apiService } from '../services/api';
 import ActivityPad from './ActivityPad';
 import './AnalyticsView.css';
 
-export default function AnalyticsView() {
+export default function AnalyticsView({ activeCandidateProfile }) {
   const [timeRange, setTimeRange] = useState('Last 30 days');
   const [hoveredBar, setHoveredBar] = useState(null);
   const [analytics, setAnalytics] = useState(null);
@@ -26,7 +26,7 @@ export default function AnalyticsView() {
     async function loadData() {
       try {
         const [aData, actData] = await Promise.all([
-          apiService.getAnalytics(),
+          apiService.getAnalytics(activeCandidateProfile?.id),
           apiService.getActivities()
         ]);
         if (mounted) {
@@ -42,7 +42,7 @@ export default function AnalyticsView() {
     }
     loadData();
     return () => { mounted = false; };
-  }, []);
+  }, [activeCandidateProfile?.id]);
 
   const totalApps = analytics?.totalApplications || 0;
   const interviewsCount = analytics?.interviews || 0;

@@ -13,7 +13,6 @@ import {
   Globe,
   Database,
   Cpu,
-  RefreshCw,
   ExternalLink,
   Sparkles,
   History,
@@ -137,8 +136,8 @@ export default function JobList({
                 fontSize: 12,
                 fontWeight: 600,
                 background: (selectedHistoryDay && selectedHistoryDay.dayOffset > 0) ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-                borderColor: (selectedHistoryDay && selectedHistoryDay.dayOffset > 0) ? '#f59e0b' : 'var(--border-color, #334155)',
-                color: (selectedHistoryDay && selectedHistoryDay.dayOffset > 0) ? '#f59e0b' : 'var(--text-primary, #f8fafc)'
+                borderColor: (selectedHistoryDay && selectedHistoryDay.dayOffset > 0) ? '#f59e0b' : 'var(--border-card, #DDE2DE)',
+                color: (selectedHistoryDay && selectedHistoryDay.dayOffset > 0) ? '#f59e0b' : 'var(--text-primary, #171A18)'
               }}
             >
               <Clock size={13} />
@@ -154,15 +153,15 @@ export default function JobList({
                   top: 'calc(100% + 6px)',
                   left: 0,
                   width: 230,
-                  background: 'var(--bg-card, #1e293b)',
-                  border: '1px solid var(--border-color, #334155)',
+                  background: 'var(--bg-card, var(--surface-primary, #ffffff))',
+                  border: '1px solid var(--border-card, #DDE2DE)',
                   borderRadius: 10,
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.35)',
+                  boxShadow: 'var(--rp-shadow-md, 0 10px 25px rgba(0,0,0,0.15))',
                   padding: '6px',
                   zIndex: 200
                 }}
               >
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted, #94a3b8)', padding: '4px 8px 6px 8px' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted, #777D79)', padding: '4px 8px 6px 8px' }}>
                   Discovery Date (Last 5 Days)
                 </div>
                 {historyOptions && historyOptions.length > 0 ? (
@@ -183,7 +182,7 @@ export default function JobList({
                         borderRadius: 6,
                         border: 'none',
                         background: selectedHistoryDay?.dayOffset === opt.dayOffset ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-                        color: selectedHistoryDay?.dayOffset === opt.dayOffset ? 'var(--accent-color, #3b82f6)' : 'var(--text-primary, #f8fafc)',
+                        color: selectedHistoryDay?.dayOffset === opt.dayOffset ? 'var(--action-primary, #2563EB)' : 'var(--text-primary, #171A18)',
                         fontSize: 12,
                         fontWeight: selectedHistoryDay?.dayOffset === opt.dayOffset ? 600 : 500,
                         cursor: 'pointer',
@@ -212,35 +211,6 @@ export default function JobList({
               <X size={12} className="company-filter-clear" onClick={onClearCompanyFilter} title="Clear company filter" />
             </span>
           )}
-          {onToggleProfileDriven && (
-            <button
-              type="button"
-              className="profile-tailor-toggle-pill"
-              onClick={onToggleProfileDriven}
-              title={profileDriven ? "Jobs are tailored to your Profile data. Click to show all jobs unfiltered." : "Showing all jobs. Click to filter by your Profile data."}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 10px',
-                borderRadius: '16px',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                border: profileDriven ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid #cbd5e1',
-                background: profileDriven ? 'rgba(16, 185, 129, 0.12)' : 'rgba(241, 245, 249, 0.6)',
-                color: profileDriven ? '#10b981' : '#64748b'
-              }}
-            >
-              <span>{profileDriven ? '🎯 Tailored to Profile: ON' : '🌐 All Jobs: Unfiltered'}</span>
-              {profileDriven && activeProfileRoles && activeProfileRoles.length > 0 && (
-                <span style={{ opacity: 0.85, fontWeight: 500, fontSize: '10px' }}>
-                  ({activeProfileRoles.slice(0, 2).join(', ')})
-                </span>
-              )}
-            </button>
-          )}
         </div>
 
         <div className="job-list-control-actions">
@@ -255,6 +225,20 @@ export default function JobList({
               className="table-search-input"
             />
           </div>
+
+          {/* Profile-Driven Matching Toggle */}
+          {onToggleProfileDriven && (
+            <button
+              type="button"
+              className={`table-btn-outline ${profileDriven ? 'btn-active' : ''}`}
+              onClick={onToggleProfileDriven}
+              title={profileDriven ? "Profile matching is ON (filters by your skills, role, and location). Click to show all harvested jobs." : "Profile matching is OFF (showing all harvested jobs). Click to filter by your profile."}
+              style={profileDriven ? { borderColor: 'var(--accent-primary, #10b981)', color: 'var(--accent-primary, #10b981)', background: 'rgba(16, 185, 129, 0.12)', fontWeight: 600 } : { opacity: 0.75 }}
+            >
+              <Sparkles size={14} />
+              <span>{profileDriven ? 'Profile Match: ON' : 'Profile Match: OFF'}</span>
+            </button>
+          )}
 
           {/* Filters Toggle Button */}
           <div className="filter-dropdown-anchor">
@@ -311,19 +295,6 @@ export default function JobList({
             <span>Sort</span>
           </button>
 
-          {/* Live ATS Sync Button */}
-          <button 
-            type="button"
-            className={`btn-harvest-sync-compact ${isHarvesting ? 'syncing' : ''}`}
-            onClick={() => onHarvestSync && onHarvestSync()}
-            disabled={isHarvesting}
-            title="Crawl live direct ATS feeds (Greenhouse, Ashby, Lever, RemoteOK)"
-          >
-            <RefreshCw size={13} className={isHarvesting ? 'spin-icon' : ''} />
-            <span>{isHarvesting ? 'Harvesting...' : 'Harvest ATS'}</span>
-            <span className="live-ping-dot" />
-          </button>
-
           {/* Excel Import Button (Stage 1 Requirement 10) */}
           <button
             type="button"
@@ -366,7 +337,7 @@ export default function JobList({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Clock size={15} color="#f59e0b" style={{ flexShrink: 0 }} />
             <span>
-              <strong>Historical Archive:</strong> Viewing results from <strong>{selectedHistoryDay.formattedDate}</strong> ({selectedHistoryDay.label}). Radar orbit remains in the present.
+              <strong>Historical Archive:</strong> Viewing results from <strong>{selectedHistoryDay.formattedDate}</strong> ({selectedHistoryDay.label}). Live feeds reflect the present.
             </span>
           </div>
           <button
@@ -423,15 +394,54 @@ export default function JobList({
                   <td colSpan="8" style={{ textAlign: 'center', padding: '56px 16px', color: 'var(--text-secondary)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <Search size={28} style={{ opacity: 0.35 }} />
-                      <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>No opportunities found</span>
-                      <span style={{ fontSize: '12px', opacity: 0.7 }}>Try adjusting your search criteria, sync your profile, or clear active filters</span>
+                      {(!selectedHistoryDay || selectedHistoryDay.dayOffset === 0) && !effectiveSearch && (!companyFilter || companyFilter === 'All') && effectiveMode === 'All' && !isMarkedOnly ? (
+                        <>
+                          <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            No opportunities discovered today yet
+                          </span>
+                          <span style={{ fontSize: '12px', opacity: 0.75, maxWidth: '440px', lineHeight: 1.5 }}>
+                            Today's discovery space is fresh and ready. Click <strong>Sync Harvest</strong> to scan live ATS boards.
+                          </span>
+                          {historyOptions && historyOptions.find(o => o.dayOffset === 1 && o.count > 0) && (
+                            <button
+                              type="button"
+                              className="table-btn-outline"
+                              onClick={() => {
+                                const yest = historyOptions.find(o => o.dayOffset === 1);
+                                if (onSelectHistoryDay && yest) onSelectHistoryDay(yest);
+                              }}
+                              style={{
+                                marginTop: '12px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                padding: '6px 14px',
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                borderColor: '#f59e0b',
+                                color: '#f59e0b',
+                                background: 'rgba(245, 158, 11, 0.1)'
+                              }}
+                            >
+                              <Clock size={13} />
+                              <span>Browse Yesterday's Archive ({historyOptions.find(o => o.dayOffset === 1).count.toLocaleString()} jobs)</span>
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>No opportunities found</span>
+                          <span style={{ fontSize: '12px', opacity: 0.7 }}>Try adjusting your search criteria, sync your profile, or clear active filters</span>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
               ) : (
-                sortedJobs.map((job) => (
+                sortedJobs.map((job, idx) => (
                   <tr 
-                    key={job.id} 
+                    key={job.id || `job-idx-${idx}-${job.company}-${job.role}`} 
                     className="table-body-row"
                     onClick={() => onSelectJob(job)}
                     role="button"
@@ -448,7 +458,28 @@ export default function JobList({
                     <td className="cell-role">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span className="role-heading">{job.role}</span>
-                        {job.primarySkillMatched && (
+                        
+                        {/* 1. Primary Skills Matched Badge */}
+                        {job.matchedPrimarySkills && job.matchedPrimarySkills.length > 0 ? (
+                          <span 
+                            title={`Matched Primary Skills: ${job.matchedPrimarySkills.join(', ')}`}
+                            style={{ 
+                              fontSize: '10.5px', 
+                              fontWeight: 700, 
+                              color: '#92400E', 
+                              background: '#FEF3C7', 
+                              border: '1px solid #FDE68A',
+                              padding: '1px 6px', 
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px'
+                            }}
+                          >
+                            <Star size={10} color="#D97706" fill="#D97706" />
+                            <span>{job.matchedPrimarySkills.slice(0, 2).join(', ')}{job.matchedPrimarySkills.length > 2 ? ` +${job.matchedPrimarySkills.length - 2}` : ''}</span>
+                          </span>
+                        ) : job.primarySkillMatched && (
                           <span 
                             title={`Top match for your Primary Skill: ${job.primarySkill}`}
                             style={{ 
@@ -466,6 +497,48 @@ export default function JobList({
                           >
                             <Star size={10} color="#D97706" fill="#D97706" />
                             <span>{job.primarySkill}</span>
+                          </span>
+                        )}
+
+                        {/* 2. Experience Fit Badge */}
+                        {job.experienceFit && (
+                          <span 
+                            title={`Candidate Exp: ${job.experienceFit.candidateYears ?? 'N/A'} yrs · Job Req: ${job.experienceFit.requiredText || 'Open'}`}
+                            style={{ 
+                              fontSize: '10.5px', 
+                              fontWeight: 600, 
+                              color: job.experienceFit.status === 'qualified' ? '#166534' : '#475569', 
+                              background: job.experienceFit.status === 'qualified' ? '#dcfce7' : '#f1f5f9', 
+                              border: `1px solid ${job.experienceFit.status === 'qualified' ? '#bbf7d0' : '#e2e8f0'}`,
+                              padding: '1px 6px', 
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px'
+                            }}
+                          >
+                            <span>⏳ {job.experienceFit.requiredText}</span>
+                          </span>
+                        )}
+
+                        {/* 3. Location Match Badge */}
+                        {job.location && (
+                          <span 
+                            title={`Location: ${job.location}`}
+                            style={{ 
+                              fontSize: '10.5px', 
+                              fontWeight: 600, 
+                              color: job.locationMatched ? '#1e40af' : '#64748b', 
+                              background: job.locationMatched ? '#dbeafe' : '#f8fafc', 
+                              border: `1px solid ${job.locationMatched ? '#bfdbfe' : '#e2e8f0'}`,
+                              padding: '1px 6px', 
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px'
+                            }}
+                          >
+                            <span>📍 {job.location.split(',')[0]}</span>
                           </span>
                         )}
                       </div>

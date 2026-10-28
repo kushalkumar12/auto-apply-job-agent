@@ -24,15 +24,13 @@ Skill2Role implements a high-density, low-friction professional design system bu
 
 ## 2. Supported Themes & Color Modes
 
-The system supports **4 Themes** across **2 Color Modes** ($4 \times 2 = 8$ distinct visual presentations).
+The system supports **2 Curated Themes** across **2 Color Modes** ($2 \times 2 = 4$ distinct visual presentations). Note: *Glass* and *Difference* themes were decommissioned to guarantee strict UI/UX contrast, eliminate cross-browser blur degradation, and minimize maintenance complexity.
 
 ### 2.1 Supported Themes
 | Theme ID | Design Aesthetic | Key Visual Signature |
 | :--- | :--- | :--- |
-| `default` | Clean Modern Enterprise | Slate/emerald borders, crisp typography, subtle shadows. |
-| `glass` | Liquid Glassmorphism | `backdrop-filter: blur(16px)`, translucent surfaces, floating glass-orb gradient meshes. |
-| `minimal` | Stark Monospace & Line Art | 1px clean hairline borders, zero box-shadows, geometric precision. |
-| `difference` | High-Contrast Accessible | High delta-E contrast, inverted accenting for accessibility and vision support. |
+| `default` | Clean Modern Enterprise | Slate/emerald borders, crisp typography, subtle shadows, balanced 60–30–10 hierarchy. |
+| `minimal` | Stark Monospace & High-Contrast | 1px clean hairline borders, zero box-shadows, geometric precision, monochrome high-contrast. |
 
 ### 2.2 Color Modes
 - **Light Mode (`data-mode="light"`):** Bright, high-clarity canvas designed for daytime readability.
@@ -40,7 +38,7 @@ The system supports **4 Themes** across **2 Color Modes** ($4 \times 2 = 8$ dist
 
 ### 2.3 Theme Initialization & Persistence
 - The active theme is stored in `localStorage` keys:
-  - `rp_theme`: `'default' | 'glass' | 'minimal' | 'difference'`
+  - `rp_theme`: `'default' | 'minimal'` (legacy `'glass'` or `'difference'` are automatically migrated to `'default'`)
   - `rp_color_mode`: `'light' | 'dark' | 'default'`
 - Synchronized to the root DOM node:
   ```html

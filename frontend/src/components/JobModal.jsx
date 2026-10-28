@@ -10,7 +10,7 @@ import {
   Bookmark
 } from 'lucide-react';
 
-export default function JobModal({ job, onClose, onApply, onToggleMarker }) {
+export default function JobModal({ job, onClose, onApply, onToggleMarker, onTailorResume }) {
   React.useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && job) {
@@ -194,7 +194,11 @@ export default function JobModal({ job, onClose, onApply, onToggleMarker }) {
           <button 
             type="button"
             className="tailor-resume-btn"
-            onClick={() => alert(`Tailoring Resume for ${job.role} at ${job.company} via AI Engine!`)}
+            onClick={() => {
+              if (onTailorResume) {
+                onTailorResume(job);
+              }
+            }}
           >
             <Sparkles size={16} />
             <span>Tailor Resume</span>

@@ -3,8 +3,9 @@ import time
 import io
 import re
 import zipfile
+import uuid
 from typing import Dict, Any, Optional, List
-from fastapi import APIRouter, HTTPException, Body, UploadFile, File
+from fastapi import APIRouter, HTTPException, Body, UploadFile, File, Depends
 
 import os
 from pathlib import Path
@@ -13,23 +14,21 @@ from fastapi.responses import FileResponse, PlainTextResponse, Response
 try:
     from ..database import get_db
     from ..models import (
-        CandidateProfileCreate, 
-        CandidateProfileUpdate, 
         KeywordsGenerateRequest, 
         KeywordsUpdateRequest
     )
     from ..services.profile_validator import validate_candidate_profile, MANDATORY_FIELD_DEFINITIONS
     from ..services.keyword_generator import generate_keywords_for_profile
+    from ..services.auth_service import get_current_user
 except (ImportError, ValueError):
     from database import get_db
     from models import (
-        CandidateProfileCreate, 
-        CandidateProfileUpdate, 
         KeywordsGenerateRequest, 
         KeywordsUpdateRequest
     )
     from services.profile_validator import validate_candidate_profile, MANDATORY_FIELD_DEFINITIONS
     from services.keyword_generator import generate_keywords_for_profile
+    from services.auth_service import get_current_user
 
 RESUME_UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "resumes"
 RESUME_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -58,8 +57,13 @@ KNOWN_ROLES = [
 
 def deep_merge(dict1: dict, dict2: dict) -> dict:
     result = dict(dict1)
+    # Certain field dictionaries represent direct user state (e.g. screeningAnswers, workFormats)
+    # and should be overwritten completely if provided in dict2 rather than endlessly unioned.
+    REPLACE_ENTIRELY_KEYS = {"screeningAnswers", "workFormats"}
     for key, value in dict2.items():
-        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+        if key in REPLACE_ENTIRELY_KEYS:
+            result[key] = value
+        elif key in result and isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = deep_merge(result[key], value)
         else:
             result[key] = value
@@ -424,11 +428,49 @@ def parse_resume_ai_template(raw_text: str) -> Dict[str, Any]:
         "provenanceMap": provenance_map
     }
 
-def get_or_create_active_candidate_profile(cur):
-    """Retrieves or creates the currently active candidate profile."""
-    row = cur.execute("SELECT id, name, is_active, is_complete, data FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
+def get_or_create_active_candidate_profile(cur, user_id: Optional[str] = None, user_name: str = "", user_email: str = "") -> dict:
+    """Retrieves or creates the currently active candidate profile for the specified user."""
+    if user_id:
+        row = cur.execute(
+            "SELECT * FROM candidate_profiles WHERE user_id = ? AND is_active = 1 LIMIT 1",
+            (user_id,)
+        ).fetchone()
+        if not row:
+            row = cur.execute(
+                "SELECT * FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1",
+                (user_id,)
+            ).fetchone()
+            if row:
+                cur.execute("UPDATE candidate_profiles SET is_active = 1 WHERE id = ?", (row["id"],))
+        if not row:
+            now = int(time.time() * 1000)
+            prof_id = f"prof_{now}_{uuid.uuid4().hex[:6]}"
+            prof_name = f"{user_name}'s Profile" if user_name else "Default Profile"
+            clean_data = {
+                "general": {"fullName": user_name, "email": user_email, "phone": "", "city": "", "bio": "", "links": ""},
+                "contacts": {"fullName": user_name, "email": user_email},
+                "avatar": "avatar_1",
+                "primarySkill": "",
+                "experienceYears": 0,
+                "skillsList": [],
+                "experiences": [],
+                "educationList": [],
+                "userLocation": "",
+                "desiredLocations": [],
+                "selectedRoles": [],
+                "resume": None
+            }
+            cur.execute("""
+                INSERT INTO candidate_profiles (id, user_id, name, is_active, is_complete, data, created_at, updated_at)
+                VALUES (?, ?, ?, 1, 0, ?, ?, ?)
+            """, (prof_id, user_id, prof_name, json.dumps(clean_data), now, now))
+            row = cur.execute("SELECT * FROM candidate_profiles WHERE id = ?", (prof_id,)).fetchone()
+        return row
+
+    # Global fallback if user_id is None (e.g., initial system migration)
+    row = cur.execute("SELECT * FROM candidate_profiles WHERE is_active = 1 LIMIT 1").fetchone()
     if not row:
-        row = cur.execute("SELECT id, name, is_active, is_complete, data FROM candidate_profiles ORDER BY created_at ASC LIMIT 1").fetchone()
+        row = cur.execute("SELECT * FROM candidate_profiles ORDER BY created_at ASC LIMIT 1").fetchone()
     if not row:
         def_p = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
         data_str = def_p["data"] if def_p and def_p["data"] else "{}"
@@ -437,14 +479,40 @@ def get_or_create_active_candidate_profile(cur):
             INSERT INTO candidate_profiles (id, user_id, name, is_active, is_complete, data, created_at, updated_at)
             VALUES ('default', 'default', 'Default Profile', 1, 0, ?, ?, ?)
         """, (data_str, now, now))
-        row = cur.execute("SELECT id, name, is_active, is_complete, data FROM candidate_profiles WHERE id = 'default'").fetchone()
+        row = cur.execute("SELECT * FROM candidate_profiles WHERE id = 'default'").fetchone()
     return row
 
+def resolve_user_profile(
+    cur, 
+    user_id: str, 
+    profile_id: Optional[str] = None, 
+    user_name: str = "", 
+    user_email: str = ""
+) -> dict:
+    if profile_id and profile_id != "default":
+        row = cur.execute(
+            "SELECT * FROM candidate_profiles WHERE id = ? AND user_id = ?",
+            (profile_id, user_id)
+        ).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Candidate profile not found.")
+        return row
+    return get_or_create_active_candidate_profile(cur, user_id=user_id, user_name=user_name, user_email=user_email)
+
 @router.get("/profile")
-def get_profile():
+def get_profile(
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = resolve_user_profile(
+            cur, 
+            user_id=current_user["id"], 
+            profile_id=profile_id,
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         if not active_row or not active_row["data"]:
             return {}
         try:
@@ -457,11 +525,21 @@ def get_profile():
             return {}
 
 @router.put("/profile")
-def update_profile(profile_data: Dict[str, Any] = Body(...)):
+def update_profile(
+    profile_data: Dict[str, Any] = Body(...),
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     now = int(time.time() * 1000)
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = resolve_user_profile(
+            cur, 
+            user_id=current_user["id"], 
+            profile_id=profile_id,
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         existing = {}
         if active_row and active_row["data"]:
             try:
@@ -470,27 +548,87 @@ def update_profile(profile_data: Dict[str, Any] = Body(...)):
                 existing = {}
 
         merged = deep_merge(existing, profile_data)
+
+        # Enforce maximum 5 primary skills
+        if isinstance(merged.get("primarySkills"), list):
+            merged["primarySkills"] = [str(s).strip() for s in merged["primarySkills"] if str(s).strip()][:5]
+            if merged["primarySkills"]:
+                merged["primarySkill"] = merged["primarySkills"][0]
+
+        # Sync Name fields
+        first_name = (merged.get("firstName") if merged.get("firstName") is not None else merged.get("general", {}).get("firstName") or "").strip()
+        last_name = (merged.get("lastName") if merged.get("lastName") is not None else merged.get("general", {}).get("lastName") or "").strip()
+        full_n = f"{first_name} {last_name}".strip() if (first_name or last_name) else ""
+        merged["firstName"] = first_name
+        merged["lastName"] = last_name
+        merged["fullName"] = full_n
+        merged.setdefault("general", {})["fullName"] = full_n
+        merged.setdefault("general", {})["firstName"] = first_name
+        merged.setdefault("general", {})["lastName"] = last_name
+        merged.setdefault("contacts", {})["fullName"] = full_n
+
+        # Sync Preferred Roles
+        if merged.get("preferredRoles"):
+            merged["selectedRoles"] = merged["preferredRoles"]
+
+        # Sync Preferred Locations
+        if merged.get("preferredLocations"):
+            merged["desiredLocations"] = merged["preferredLocations"]
+            if len(merged["preferredLocations"]) > 0:
+                merged["userLocation"] = merged["preferredLocations"][0]
+                merged.setdefault("general", {})["city"] = merged["preferredLocations"][0]
+
+        # Sync Preferred Work Modes
+        if merged.get("preferredWorkModes") and isinstance(merged["preferredWorkModes"], list) and len(merged["preferredWorkModes"]) > 0:
+            modes_lower = [str(m).lower() for m in merged["preferredWorkModes"]]
+            merged["workFormats"] = {
+                "onsite": any("onsite" in m or "on-site" in m for m in modes_lower),
+                "hybrid": any("hybrid" in m for m in modes_lower),
+                "remote": any("remote" in m for m in modes_lower)
+            }
+        elif merged.get("workFormats") and isinstance(merged["workFormats"], dict) and any(merged["workFormats"].values()):
+            merged["preferredWorkModes"] = [k.capitalize() for k, v in merged["workFormats"].items() if v]
+        else:
+            merged["preferredWorkModes"] = ["Hybrid", "Remote"]
+            merged["workFormats"] = {"onsite": False, "hybrid": True, "remote": True}
+
+        # Sync Additional Skills into skillsList
+        all_skills = list(merged.get("primarySkills") or [])
+        for add_s in (merged.get("additionalSkills") or []):
+            if str(add_s).strip() and str(add_s).strip() not in all_skills:
+                all_skills.append(str(add_s).strip())
+        if all_skills and not merged.get("skillsList"):
+            merged["skillsList"] = [{"name": s} for s in all_skills]
+
+        # Sync Professional Summary and Experience Years
+        if merged.get("professionalSummary"):
+            merged["summary"] = merged["professionalSummary"]
+            merged.setdefault("general", {})["bio"] = merged["professionalSummary"]
+        if merged.get("totalExperienceYears") is not None:
+            merged["experienceYears"] = merged["totalExperienceYears"]
+            merged.setdefault("general", {})["experienceYears"] = merged["totalExperienceYears"]
+        if merged.get("experienceYears") is not None:
+            merged["totalExperienceYears"] = merged["experienceYears"]
+            merged.setdefault("general", {})["experienceYears"] = merged["experienceYears"]
+
+        # Sync Education
+        if merged.get("education") and not merged.get("educationList"):
+            merged["educationList"] = merged["education"]
+
         is_complete, missing, field_status = validate_candidate_profile(merged)
         merged_json = json.dumps(merged)
 
-        # Update candidate profile
+        # Update candidate profile strictly scoped to this user
         cur.execute("""
             UPDATE candidate_profiles
             SET data = ?, is_complete = ?, updated_at = ?
-            WHERE id = ?
-        """, (merged_json, 1 if is_complete else 0, now, active_row["id"]))
+            WHERE id = ? AND user_id = ?
+        """, (merged_json, 1 if is_complete else 0, now, active_row["id"], current_user["id"]))
 
-        # Sync to legacy profile table
-        cur.execute("""
-            INSERT INTO profile (id, data, updated_at)
-            VALUES ('default', ?, ?)
-            ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-        """, (merged_json, now))
-
-        # Sync avatar or user details to users table if provided
-        avatar = merged.get("avatar")
-        if avatar:
-            cur.execute("UPDATE users SET avatar = ? WHERE id = (SELECT id FROM users LIMIT 1)", (avatar,))
+        # Sync avatar to users table if provided
+        avatar = merged.get("avatar") or merged.get("profilePicture")
+        if avatar and isinstance(avatar, str) and not avatar.startswith("data:"):
+            cur.execute("UPDATE users SET avatar = ? WHERE id = ?", (avatar, current_user["id"]))
 
     merged["_profileId"] = active_row["id"]
     merged["_profileName"] = active_row["name"]
@@ -506,84 +644,62 @@ def update_profile(profile_data: Dict[str, Any] = Body(...)):
     }
 
 # ---------------------------------------------------------------------------
-# Multi-Profile Management (Requirement 3)
+# Single-Profile Architecture (Multi-Profile Feature Removed)
 # ---------------------------------------------------------------------------
 @router.get("/profiles")
-def list_candidate_profiles():
+def list_candidate_profiles(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Return the candidate profile for the current user (single profile architecture)."""
     with get_db() as conn:
         cur = conn.cursor()
-        # Ensure default profile row exists
-        get_or_create_active_candidate_profile(cur)
-        rows = cur.execute("""
-            SELECT id, user_id, name, is_active, is_complete, created_at, updated_at, data
-            FROM candidate_profiles
-            ORDER BY is_active DESC, updated_at DESC
-        """).fetchall()
-
-        result = []
-        for r in rows:
-            data_dict = {}
-            try:
-                data_dict = json.loads(r["data"]) if r["data"] else {}
-            except Exception:
-                pass
-            is_comp, missing, _ = validate_candidate_profile(data_dict)
-            result.append({
-                "id": r["id"],
-                "userId": r["user_id"],
-                "name": r["name"],
-                "isActive": bool(r["is_active"]),
+        row = get_or_create_active_candidate_profile(
+            cur, 
+            user_id=current_user["id"], 
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
+        data_dict = {}
+        try:
+            data_dict = json.loads(row["data"]) if row["data"] else {}
+        except Exception:
+            pass
+        is_comp, missing, _ = validate_candidate_profile(data_dict)
+        return {
+            "profiles": [{
+                "id": row["id"],
+                "userId": row["user_id"],
+                "name": row["name"],
+                "isActive": True,
                 "isComplete": is_comp,
                 "missingFields": missing,
-                "createdAt": r["created_at"],
-                "updatedAt": r["updated_at"]
-            })
-
-    return {"profiles": result}
-
-@router.post("/profiles", status_code=201)
-def create_candidate_profile(body: CandidateProfileCreate):
-    name = body.name.strip()
-    if not name:
-        raise HTTPException(status_code=400, detail="Profile name is required.")
-
-    now = int(time.time() * 1000)
-    prof_id = f"prof_{now}"
-    initial_data = body.data or {
-        "general": {"fullName": "", "email": "", "phone": "", "city": ""},
-        "primarySkill": "",
-        "skillsList": [],
-        "selectedRoles": [],
-        "userLocation": "",
-        "summary": "",
-        "avatar": "avatar_1"
-    }
-    is_comp, missing, _ = validate_candidate_profile(initial_data)
-
-    with get_db() as conn:
-        cur = conn.cursor()
-        cur.execute("""
-            INSERT INTO candidate_profiles (id, user_id, name, is_active, is_complete, data, created_at, updated_at)
-            VALUES (?, 'default', ?, 0, ?, ?, ?, ?)
-        """, (prof_id, name, 1 if is_comp else 0, json.dumps(initial_data), now, now))
-
-    return {
-        "success": True,
-        "profile": {
-            "id": prof_id,
-            "name": name,
-            "isActive": False,
-            "isComplete": is_comp,
-            "missingFields": missing,
-            "data": initial_data
+                "createdAt": row["created_at"],
+                "updatedAt": row["updated_at"]
+            }]
         }
-    }
+
+@router.post("/profiles", status_code=400)
+def create_candidate_profile(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Multi-profile creation is disabled. Each account maintains a single candidate profile."""
+    raise HTTPException(
+        status_code=400,
+        detail="Multi-profile feature is disabled. Each account maintains a single candidate profile."
+    )
 
 @router.get("/profiles/{profile_id}")
-def get_candidate_profile_by_id(profile_id: str):
+def get_candidate_profile_by_id(
+    profile_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT * FROM candidate_profiles WHERE id = ?", (profile_id,)).fetchone()
+        row = cur.execute(
+            "SELECT * FROM candidate_profiles WHERE id = ? AND user_id = ?",
+            (profile_id, current_user["id"])
+        ).fetchone()
+        if not row and profile_id == "default":
+            row = cur.execute(
+                "SELECT * FROM candidate_profiles WHERE user_id = ? ORDER BY created_at ASC LIMIT 1",
+                (current_user["id"],)
+            ).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Candidate profile not found.")
         data = json.loads(row["data"]) if row["data"] else {}
@@ -591,134 +707,60 @@ def get_candidate_profile_by_id(profile_id: str):
         return {
             "id": row["id"],
             "name": row["name"],
-            "isActive": bool(row["is_active"]),
+            "isActive": True,
             "isComplete": is_comp,
             "missingFields": missing,
             "fieldStatus": field_status,
             "data": data
         }
 
-@router.put("/profiles/{profile_id}")
-def update_candidate_profile_by_id(profile_id: str, body: CandidateProfileUpdate):
-    now = int(time.time() * 1000)
-    with get_db() as conn:
-        cur = conn.cursor()
-        row = cur.execute("SELECT * FROM candidate_profiles WHERE id = ?", (profile_id,)).fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Candidate profile not found.")
-
-        existing = json.loads(row["data"]) if row["data"] else {}
-        if body.data:
-            merged = deep_merge(existing, body.data)
-        else:
-            merged = existing
-
-        name = body.name.strip() if (body.name and body.name.strip()) else row["name"]
-        is_comp, missing, field_status = validate_candidate_profile(merged)
-        merged_json = json.dumps(merged)
-
-        cur.execute("""
-            UPDATE candidate_profiles
-            SET name = ?, data = ?, is_complete = ?, updated_at = ?
-            WHERE id = ?
-        """, (name, merged_json, 1 if is_comp else 0, now, profile_id))
-
-        if row["is_active"]:
-            cur.execute("""
-                INSERT INTO profile (id, data, updated_at)
-                VALUES ('default', ?, ?)
-                ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-            """, (merged_json, now))
-
-    return {
-        "success": True,
-        "profile": {
-            "id": profile_id,
-            "name": name,
-            "isActive": bool(row["is_active"]),
-            "isComplete": is_comp,
-            "missingFields": missing,
-            "fieldStatus": field_status
-        }
-    }
-
-@router.post("/profiles/{profile_id}/activate")
-def activate_candidate_profile(profile_id: str):
-    """
-    Activates the designated candidate profile and isolates/cancels any running search task.
-    """
-    with get_db() as conn:
-        cur = conn.cursor()
-        target = cur.execute("SELECT id, name, is_complete, data FROM candidate_profiles WHERE id = ?", (profile_id,)).fetchone()
-        if not target:
-            raise HTTPException(status_code=404, detail="Candidate profile not found.")
-
-        # Halt / isolate any active explorer run for previously active profile
-        cur.execute("UPDATE explorer_runs SET status = 'cancelled' WHERE status = 'running'")
-
-        # Deactivate all and activate selected
-        cur.execute("UPDATE candidate_profiles SET is_active = 0")
-        cur.execute("UPDATE candidate_profiles SET is_active = 1 WHERE id = ?", (profile_id,))
-
-        # Synchronize active profile data to main profile table
-        cur.execute("""
-            INSERT INTO profile (id, data, updated_at)
-            VALUES ('default', ?, ?)
-            ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-        """, (target["data"], int(time.time() * 1000)))
-
-        is_comp, missing, _ = validate_candidate_profile(json.loads(target["data"]) if target["data"] else {})
-
-    return {
-        "success": True,
-        "message": f"Switched active candidate profile to '{target['name']}'.",
-        "activeProfileId": target["id"],
-        "activeProfile": {
-            "id": target["id"],
-            "name": target["name"],
-            "isComplete": is_comp,
-            "missingFields": missing
-        }
-    }
-
-@router.delete("/profiles/{profile_id}")
-def delete_candidate_profile(profile_id: str):
-    with get_db() as conn:
-        cur = conn.cursor()
-        all_profs = cur.execute("SELECT id, is_active FROM candidate_profiles").fetchall()
-        if len(all_profs) <= 1:
-            raise HTTPException(status_code=400, detail="Cannot delete the only candidate profile. At least one candidate profile must remain.")
-        target = cur.execute("SELECT id, is_active FROM candidate_profiles WHERE id = ?", (profile_id,)).fetchone()
-        if not target:
-            raise HTTPException(status_code=404, detail="Profile not found.")
-
-        cur.execute("DELETE FROM candidate_profiles WHERE id = ?", (profile_id,))
-        if target["is_active"]:
-            remaining = cur.execute("SELECT id, name, data FROM candidate_profiles ORDER BY updated_at DESC LIMIT 1").fetchone()
-            cur.execute("UPDATE candidate_profiles SET is_active = 1 WHERE id = ?", (remaining["id"],))
-            cur.execute("""
-                INSERT INTO profile (id, data, updated_at)
-                VALUES ('default', ?, ?)
-                ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-            """, (remaining["data"], int(time.time() * 1000)))
-
-    return {"success": True, "message": "Candidate profile deleted successfully."}
 
 # ---------------------------------------------------------------------------
 # Mandatory Profile Completion Gate (Requirement 2)
 # ---------------------------------------------------------------------------
 @router.get("/profiles/active/validation")
-def get_active_profile_validation():
+def get_active_profile_validation(current_user: Dict[str, Any] = Depends(get_current_user)):
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = get_or_create_active_candidate_profile(
+            cur, 
+            user_id=current_user["id"], 
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         data = json.loads(active_row["data"]) if active_row and active_row["data"] else {}
         is_comp, missing, field_status = validate_candidate_profile(data)
+
+        # Evaluate candidate data authenticity & verification blockers
+        blockers = []
+        email = data.get("general", {}).get("email") or data.get("contacts", {}).get("email") or ""
+        phone = data.get("general", {}).get("phone") or data.get("contacts", {}).get("phone") or ""
+        
+        if not email or "@example." in email.lower() or "@test." in email.lower():
+            blockers.append("Genuine contact email required (placeholder '@example.com' detected).")
+        if not phone or "9876543210" in phone or "1234567890" in phone:
+            blockers.append("Genuine contact phone number required (placeholder '+91 9876543210' detected).")
+
+        doc_row = cur.execute("""
+            SELECT * FROM career_documents
+            WHERE user_id = ? AND profile_id = ? AND document_type = 'master_resume' AND processing_status = 'indexed'
+            ORDER BY created_at DESC LIMIT 1
+        """, (current_user["id"], active_row["id"])).fetchone()
+
+        if not doc_row:
+            blockers.append("User must upload genuine master resume (PDF or DOCX).")
+
+        is_verified = bool(is_comp and len(blockers) == 0)
+        ver_status = "verified" if is_verified else "unverified_synthetic_data"
 
     return {
         "profileId": active_row["id"],
         "profileName": active_row["name"],
         "isComplete": is_comp,
+        "isVerified": is_verified,
+        "verificationStatus": ver_status,
+        "submissionReady": is_verified,
+        "verificationBlockers": blockers,
         "missingFields": missing,
         "fieldStatus": field_status,
         "mandatoryDefinitions": MANDATORY_FIELD_DEFINITIONS
@@ -728,10 +770,18 @@ def get_active_profile_validation():
 # AI-Generated Role and Search Keywords (Requirement 4)
 # ---------------------------------------------------------------------------
 @router.post("/profile/keywords/generate")
-def generate_role_keywords(body: Optional[KeywordsGenerateRequest] = None):
+def generate_role_keywords(
+    body: Optional[KeywordsGenerateRequest] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = get_or_create_active_candidate_profile(
+            cur, 
+            user_id=current_user["id"], 
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         data = json.loads(active_row["data"]) if active_row and active_row["data"] else {}
 
         ai_row = cur.execute("SELECT * FROM settings_ai WHERE id = 'default'").fetchone()
@@ -751,16 +801,20 @@ def generate_role_keywords(body: Optional[KeywordsGenerateRequest] = None):
         data["keywordsGeneratedAt"] = result["generatedAt"]
         now = int(time.time() * 1000)
 
-        cur.execute("UPDATE candidate_profiles SET data = ?, updated_at = ? WHERE id = ?", (json.dumps(data), now, active_row["id"]))
-        cur.execute("UPDATE profile SET data = ?, updated_at = ? WHERE id = 'default'", (json.dumps(data), now))
+        cur.execute("UPDATE candidate_profiles SET data = ?, updated_at = ? WHERE id = ? AND user_id = ?", (json.dumps(data), now, active_row["id"], current_user["id"]))
 
     return result
 
 @router.get("/profile/keywords")
-def get_role_keywords():
+def get_role_keywords(current_user: Dict[str, Any] = Depends(get_current_user)):
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = get_or_create_active_candidate_profile(
+            cur, 
+            user_id=current_user["id"], 
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         data = json.loads(active_row["data"]) if active_row and active_row["data"] else {}
         keywords = data.get("generatedKeywords") or []
         return {
@@ -773,23 +827,264 @@ def get_role_keywords():
         }
 
 @router.put("/profile/keywords")
-def save_role_keywords(body: KeywordsUpdateRequest):
+def save_role_keywords(
+    body: KeywordsUpdateRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     now = int(time.time() * 1000)
     with get_db() as conn:
         cur = conn.cursor()
-        active_row = get_or_create_active_candidate_profile(cur)
+        active_row = get_or_create_active_candidate_profile(
+            cur, 
+            user_id=current_user["id"], 
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         data = json.loads(active_row["data"]) if active_row and active_row["data"] else {}
         data["generatedKeywords"] = body.keywords
         data["keywordsGeneratedAt"] = now
 
-        cur.execute("UPDATE candidate_profiles SET data = ?, updated_at = ? WHERE id = ?", (json.dumps(data), now, active_row["id"]))
-        cur.execute("UPDATE profile SET data = ?, updated_at = ? WHERE id = 'default'", (json.dumps(data), now))
+        cur.execute("UPDATE candidate_profiles SET data = ?, updated_at = ? WHERE id = ? AND user_id = ?", (json.dumps(data), now, active_row["id"], current_user["id"]))
 
     return {"success": True, "count": len(body.keywords), "keywords": body.keywords, "message": "Role keywords saved successfully."}
 
+@router.post("/profile/roles/generate")
+def generate_roles_with_llm(
+    payload: Optional[Dict[str, Any]] = Body(None),
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Generates 5-10 tailored target role names based on candidate skills, experience,
+    location, and resume context using configured low-tier LLM (e.g. Gemini 2.5 Flash).
+    Validates and deduplicates against existing roles in DB, saving new roles to the profile.
+    """
+    now = int(time.time() * 1000)
+    target_prof_id = profile_id or (payload and payload.get("profileId"))
+    with get_db() as conn:
+        cur = conn.cursor()
+        active_row = resolve_user_profile(
+            cur,
+            user_id=current_user["id"],
+            profile_id=target_prof_id,
+            user_name=current_user.get("name", ""),
+            user_email=current_user.get("email", "")
+        )
+        if not active_row:
+            active_row = get_or_create_active_candidate_profile(cur, user_id=current_user["id"])
+        data = json.loads(active_row["data"]) if active_row and active_row["data"] else {}
+
+        ai_row = cur.execute("SELECT * FROM settings_ai WHERE id = 'default'").fetchone()
+        ai_settings = dict(ai_row) if ai_row else {}
+
+    # Extract candidate skills
+    skills_raw = (payload and payload.get("skills")) or data.get("primarySkills") or data.get("skillsList") or []
+    skills_list = []
+    if isinstance(skills_raw, list):
+        for s in skills_raw:
+            if isinstance(s, dict):
+                skills_list.append(s.get("name", ""))
+            elif isinstance(s, str):
+                skills_list.append(s)
+    elif isinstance(skills_raw, str):
+        skills_list = [s.strip() for s in skills_raw.split(",") if s.strip()]
+
+    if not skills_list:
+        skills_list = ["Software Engineering", "Full-Stack Development"]
+    skills_str = ", ".join(skills_list[:8])
+
+    # Extract experience years
+    exp = (payload and payload.get("experience")) or data.get("experienceYears") or data.get("totalExperienceYears") or 3
+
+    # Extract location
+    loc = (payload and payload.get("location")) or data.get("userLocation") or data.get("city") or (data.get("preferredLocations") and data.get("preferredLocations")[0]) or "Remote / Hybrid"
+
+    # Context & Bio
+    resume = data.get("resume") or {}
+    context_str = (payload and payload.get("context")) or data.get("bio") or data.get("summary") or resume.get("rawText", "")[:400] or "Experienced software engineer"
+
+    # Existing roles to exclude (from payload or database profile)
+    raw_existing = (payload and payload.get("existingRoles")) or data.get("preferredRoles") or data.get("selectedRoles") or []
+    existing_roles = [str(r).strip() for r in raw_existing if str(r).strip()]
+    
+    # Enforce strict 10 roles maximum limit
+    if len(existing_roles) >= 10:
+        return {
+            "success": True,
+            "newRoles": [],
+            "allRoles": existing_roles[:10],
+            "countAdded": 0,
+            "totalCount": 10,
+            "modelUsed": "gemini-2.5-flash",
+            "message": "Maximum limit of 10 target roles has already been reached."
+        }
+
+    slots_needed = max(1, min(10 - len(existing_roles), 10))
+    slots_instruction = f"between {min(3, slots_needed)} and {slots_needed}" if slots_needed >= 4 else f"strictly {slots_needed}"
+    existing_roles_str = ", ".join(existing_roles) if existing_roles else "None (first-time generation)"
+
+    # Check configured API key
+    gemini_key = (ai_settings.get("gemini_key") or "").strip() or os.environ.get("GEMINI_API_KEY", "").strip()
+    openai_key = (ai_settings.get("openai_key") or "").strip() or os.environ.get("OPENAI_API_KEY", "").strip()
+
+    if not gemini_key and not openai_key:
+        raise HTTPException(
+            status_code=400,
+            detail="No AI API key configured. Please configure your Gemini API Key in Settings to generate roles."
+        )
+
+    model_used = "gemini-2.5-flash"
+    raw_response_text = ""
+
+    prompt = (
+        f"You are an expert technical talent recruiter. Generate a JSON array of {slots_instruction} market-standard job role titles for this candidate:\n"
+        f"- SKILLS: {skills_str}\n"
+        f"- EXPERIENCE: {exp} years\n"
+        f"- LOCATION: {loc}\n"
+        f"- BACKGROUND CONTEXT: {context_str[:250]}\n"
+        f"- EXISTING TARGET ROLES (MUST EXCLUDE): {existing_roles_str}\n\n"
+        f"INSTRUCTIONS:\n"
+        f"1. Generate {slots_instruction} relevant, industry-recognized target role titles.\n"
+        f"2. Every role title must directly match their skills and experience level.\n"
+        f"3. STRICT DEDUPLICATION: You MUST NOT repeat, duplicate, or slightly rephrase any of the existing roles listed above. Ensure all generated roles are 100% unique and distinct.\n"
+        f"4. Output STRICTLY a valid JSON array of strings: [\"Role 1\", \"Role 2\", ...].\n"
+        f"5. No explanations, no markdown tags, no markdown codeblocks, only the JSON array."
+    )
+
+    if gemini_key:
+        try:
+            from google import genai
+            from google.genai import types
+            gemini_model = ai_settings.get("gemini_model") or "gemini-2.5-flash"
+            if "1.5" in gemini_model:
+                gemini_model = "gemini-2.5-flash"
+            model_used = gemini_model
+            client = genai.Client(api_key=gemini_key)
+            
+            gen_config_kwargs = {
+                "max_output_tokens": 1500,
+                "temperature": 0.2
+            }
+            try:
+                gen_config_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+            except Exception:
+                pass
+
+            resp = client.models.generate_content(
+                model=gemini_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(**gen_config_kwargs)
+            )
+            raw_response_text = resp.text or ""
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Gemini role generation failed: {str(e)}")
+    elif openai_key:
+        try:
+            import urllib.request
+            model_used = "gpt-4o-mini"
+            req_data = json.dumps({
+                "model": model_used,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 500,
+                "temperature": 0.2
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.openai.com/v1/chat/completions",
+                data=req_data,
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
+            )
+            with urllib.request.urlopen(req, timeout=12) as response:
+                body = json.loads(response.read().decode("utf-8"))
+                raw_response_text = body["choices"][0]["message"]["content"]
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"OpenAI role generation failed: {str(e)}")
+
+    # Parse JSON array from raw response
+    parsed_roles = []
+    clean_text = raw_response_text.strip()
+    if "```" in clean_text:
+        clean_text = re.sub(r'```(?:json)?', '', clean_text).strip('` \n')
+    m = re.search(r'\[.*\]', clean_text, re.DOTALL)
+    if m:
+        try:
+            parsed_roles = json.loads(m.group(0))
+        except Exception:
+            parsed_roles = []
+
+    # Resilient fallback: extract all quoted strings inside the response
+    if not parsed_roles or not isinstance(parsed_roles, list):
+        quoted = re.findall(r'"([^"\\]+)"', clean_text)
+        if len(quoted) >= 2:
+            parsed_roles = quoted
+
+    if not parsed_roles:
+        lines = [re.sub(r'^[0-9\.\-\*\s]+', '', line).strip(' ",\'') for line in clean_text.split('\n')]
+        parsed_roles = [l for l in lines if len(l) > 2 and not l.startswith('[') and not l.startswith(']')]
+
+    # Canonical helper to detect duplicates regardless of punctuation, case, or hyphens
+    def to_canonical_key(role_str: str) -> str:
+        return re.sub(r'[^a-z0-9]', '', str(role_str).lower().strip())
+
+    # Server-Side Robust Validation & Deduplication:
+    # 1. Fetch freshest state directly from DB to prevent race conditions
+    with get_db() as conn:
+        cur = conn.cursor()
+        fresh_profile_row = cur.execute("SELECT data FROM candidate_profiles WHERE id = ?", (active_row["id"],)).fetchone()
+        fresh_data = json.loads(fresh_profile_row["data"]) if fresh_profile_row and fresh_profile_row["data"] else data
+
+    db_existing_roles = fresh_data.get("preferredRoles") or fresh_data.get("selectedRoles") or []
+    all_known_existing = list(dict.fromkeys(existing_roles + [str(r).strip() for r in db_existing_roles if str(r).strip()]))
+    
+    seen_canonical = {to_canonical_key(r) for r in all_known_existing if to_canonical_key(r)}
+    new_roles = []
+
+    for r in parsed_roles:
+        # Clean up formatting: strip numbering, bullet marks, quotes, brackets
+        clean_r = re.sub(r'^[0-9\.\-\*\•\—\s]+', '', str(r)).strip(' "\'[],')
+        clean_r = re.sub(r'\s+', ' ', clean_r)
+        
+        # Validation checks
+        if not clean_r or len(clean_r) < 3 or len(clean_r) > 60:
+            continue
+        if any(token in clean_r.lower() for token in ['```', 'http:', 'https:', '{', '}', '<', '>']):
+            continue
+        
+        c_key = to_canonical_key(clean_r)
+        if c_key and c_key not in seen_canonical:
+            seen_canonical.add(c_key)
+            new_roles.append(clean_r)
+
+    # Save to candidate profile in database (capped at maximum 10 roles)
+    remaining_db_slots = max(0, 10 - len(all_known_existing))
+    new_roles = new_roles[:remaining_db_slots]
+    updated_roles = (all_known_existing + new_roles)[:10]
+    fresh_data["preferredRoles"] = updated_roles
+    fresh_data["selectedRoles"] = updated_roles
+
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE candidate_profiles 
+            SET data = ?, updated_at = ? 
+            WHERE id = ? AND user_id = ?
+        """, (json.dumps(fresh_data), now, active_row["id"], current_user["id"]))
+
+    return {
+        "success": True,
+        "newRoles": new_roles,
+        "allRoles": updated_roles,
+        "countAdded": len(new_roles),
+        "totalCount": len(updated_roles),
+        "modelUsed": model_used,
+        "message": f"Successfully generated and added {len(new_roles)} target roles."
+    }
 
 @router.post("/profile/resume")
-async def upload_resume(file: UploadFile = File(...)):
+async def upload_resume(
+    file: UploadFile = File(...),
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Uploads a CV/Resume (PDF, DOCX, TXT), automatically parses candidate details,
     saves the file locally for viewing/downloading, and fills profile fields automatically.
@@ -798,9 +1093,17 @@ async def upload_resume(file: UploadFile = File(...)):
     if not file_bytes:
         raise HTTPException(status_code=400, detail="Empty resume file uploaded.")
 
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+    if len(file_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="Resume file size exceeds maximum permitted limit (10MB).")
+
+    fname_lower = (file.filename or "").lower()
+    if not fname_lower.endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Invalid file format. Please upload a PDF resume (.pdf).")
+
     now = int(time.time() * 1000)
     safe_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', file.filename or "resume.pdf")
-    stored_filename = f"resume_{now}_{safe_name}"
+    stored_filename = f"resume_{current_user['id']}_{now}_{safe_name}"
     disk_path = RESUME_UPLOAD_DIR / stored_filename
     with open(disk_path, "wb") as f:
         f.write(file_bytes)
@@ -820,18 +1123,24 @@ async def upload_resume(file: UploadFile = File(...)):
         "uploadedAt": now,
         "fileType": file.content_type or "application/octet-stream",
         "storedFile": stored_filename,
-        "rawText": raw_text[:12000], # snippet for fast preview
+        "rawText": raw_text[:12000],
         "aiExtraction": ai_template_data
     }
 
-    # 3. Save to database profile
+    # 3. Save to active candidate profile in database
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
+        active_row = resolve_user_profile(
+            cur, 
+            user_id=current_user["id"], 
+            profile_id=profile_id,
+            user_name=current_user.get("name", ""), 
+            user_email=current_user.get("email", "")
+        )
         existing = {}
-        if row and row["data"]:
+        if active_row and active_row["data"]:
             try:
-                existing = json.loads(row["data"])
+                existing = json.loads(active_row["data"])
             except Exception:
                 existing = {}
 
@@ -847,24 +1156,57 @@ async def upload_resume(file: UploadFile = File(...)):
         existing["userLocation"] = parsed["location"]
         
         general = existing.get("general", {})
-        general["fullName"] = parsed["fullName"]
-        general["email"] = parsed["email"]
+        general["fullName"] = parsed["fullName"] or current_user.get("name", "")
+        general["email"] = parsed["email"] or current_user.get("email", "")
         general["phone"] = parsed["phone"]
         general["city"] = parsed["location"]
         general["links"] = parsed["links"]
         general["bio"] = parsed["summary"]
         existing["general"] = general
 
+        is_comp, _, _ = validate_candidate_profile(existing)
         merged_json = json.dumps(existing)
+
         cur.execute("""
-            INSERT INTO profile (id, data, updated_at)
-            VALUES ('default', ?, ?)
-            ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-        """, (merged_json, now))
+            UPDATE candidate_profiles
+            SET data = ?, is_complete = ?, updated_at = ?
+            WHERE id = ? AND user_id = ?
+        """, (merged_json, 1 if is_comp else 0, now, active_row["id"], current_user["id"]))
+
+        # Also register in career_documents for RAG pipeline indexing
+        import hashlib
+        c_hash = hashlib.sha256(file_bytes).hexdigest()
+        doc_id = f"doc_{now}"
+        cur.execute("""
+            INSERT OR REPLACE INTO career_documents (
+                id, user_id, profile_id, document_type, original_filename,
+                storage_path, file_size, content_hash, document_version,
+                processing_status, created_at, updated_at
+            ) VALUES (?, ?, ?, 'master_resume', ?, ?, ?, ?, 1, 'indexed', ?, ?)
+        """, (doc_id, current_user["id"], active_row["id"], file.filename, str(disk_path), len(file_bytes), c_hash, now, now))
+
+        # Store binary PDF directly in SQLite DB as BLOB
+        res_file_id = f"res_{now}_{current_user['id']}"
+        cur.execute("""
+            INSERT OR REPLACE INTO resume_files (
+                id, user_id, profile_id, file_name, file_bytes, file_size, content_type, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            res_file_id,
+            current_user["id"],
+            active_row["id"],
+            file.filename,
+            file_bytes,
+            len(file_bytes),
+            "application/pdf",
+            now,
+            now
+        ))
 
     return {
         "success": True,
         "resume": resume_metadata,
+        "resumeFileName": file.filename,
         "profile": existing,
         "parsed": parsed,
         "aiExtraction": ai_template_data,
@@ -872,49 +1214,109 @@ async def upload_resume(file: UploadFile = File(...)):
     }
 
 @router.get("/profile/resume/view")
-def view_resume():
+def view_resume(
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Returns the uploaded resume file to view inline in browser or modal.
+    Retrieves directly from SQLite DB (resume_files BLOB) with filesystem fallback.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        if not row or not row["data"]:
+        active_row = resolve_user_profile(cur, user_id=current_user["id"], profile_id=profile_id)
+        if not active_row or not active_row["data"]:
             raise HTTPException(status_code=404, detail="No resume uploaded yet.")
-        data = json.loads(row["data"])
+        data = json.loads(active_row["data"])
         resume = data.get("resume")
         if not resume:
             raise HTTPException(status_code=404, detail="No resume on profile.")
 
+        # 1. Primary Source: SQLite resume_files table (BLOB)
+        cur.execute("""
+            SELECT file_bytes, file_name, content_type 
+            FROM resume_files 
+            WHERE user_id = ? AND profile_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        """, (current_user["id"], active_row["id"]))
+        res_row = cur.fetchone()
+        if res_row and res_row["file_bytes"]:
+            safe_name = res_row["file_name"] or resume.get("fileName", "resume.pdf")
+            return Response(
+                content=res_row["file_bytes"],
+                media_type="application/pdf",
+                headers={
+                    "Content-Disposition": f'inline; filename="{safe_name}"',
+                    "Content-Type": "application/pdf",
+                    "X-Content-Type-Options": "nosniff"
+                }
+            )
+
+        # 2. Secondary Fallback: Disk storage
         stored = resume.get("storedFile")
         if stored:
             file_path = RESUME_UPLOAD_DIR / stored
             if file_path.exists():
-                media_type = resume.get("fileType", "application/pdf")
-                return FileResponse(path=str(file_path), media_type=media_type, filename=resume.get("fileName", "resume.pdf"))
+                is_pdf = file_path.suffix.lower() == ".pdf"
+                media_type = "application/pdf" if is_pdf else resume.get("fileType", "application/octet-stream")
+                safe_name = resume.get("fileName", "resume.pdf")
+                return FileResponse(
+                    path=str(file_path),
+                    media_type=media_type,
+                    content_disposition_type="inline",
+                    filename=safe_name,
+                    headers={
+                        "Content-Disposition": f'inline; filename="{safe_name}"',
+                        "Content-Type": "application/pdf",
+                        "X-Content-Type-Options": "nosniff"
+                    }
+                )
 
-        # Fallback to returning raw text if file on disk was cleared
         raw_text = resume.get("rawText", "")
         if raw_text:
             return PlainTextResponse(content=raw_text)
 
-        raise HTTPException(status_code=404, detail="Resume file not found on disk.")
+        raise HTTPException(status_code=404, detail="Resume file not found in database or on disk.")
 
 @router.get("/profile/resume/download")
-def download_resume():
+def download_resume(
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Triggers download of the uploaded resume file.
+    Retrieves directly from SQLite DB (resume_files BLOB) with filesystem fallback.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        if not row or not row["data"]:
+        active_row = resolve_user_profile(cur, user_id=current_user["id"], profile_id=profile_id)
+        if not active_row or not active_row["data"]:
             raise HTTPException(status_code=404, detail="No resume uploaded yet.")
-        data = json.loads(row["data"])
+        data = json.loads(active_row["data"])
         resume = data.get("resume")
         if not resume:
             raise HTTPException(status_code=404, detail="No resume on profile.")
 
+        # 1. Primary Source: SQLite resume_files table (BLOB)
+        cur.execute("""
+            SELECT file_bytes, file_name, content_type 
+            FROM resume_files 
+            WHERE user_id = ? AND profile_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        """, (current_user["id"], active_row["id"]))
+        res_row = cur.fetchone()
+        if res_row and res_row["file_bytes"]:
+            safe_name = res_row["file_name"] or resume.get("fileName", "resume.pdf")
+            return Response(
+                content=res_row["file_bytes"],
+                media_type="application/pdf",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{safe_name}"',
+                    "Content-Type": "application/pdf"
+                }
+            )
+
+        # 2. Secondary Fallback: Disk storage
         stored = resume.get("storedFile")
         if stored:
             file_path = RESUME_UPLOAD_DIR / stored
@@ -925,19 +1327,22 @@ def download_resume():
                     content_disposition_type="attachment"
                 )
 
-        raise HTTPException(status_code=404, detail="Resume file not found.")
+        raise HTTPException(status_code=404, detail="Resume file not found in database or on disk.")
 
 @router.get("/profile/resume/content")
-def get_resume_content():
+def get_resume_content(
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Returns structured text and parse info for in-app preview modal.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        if not row or not row["data"]:
+        active_row = resolve_user_profile(cur, user_id=current_user["id"], profile_id=profile_id)
+        if not active_row or not active_row["data"]:
             return {"hasResume": False}
-        data = json.loads(row["data"])
+        data = json.loads(active_row["data"])
         resume = data.get("resume")
         if not resume:
             return {"hasResume": False}
@@ -964,23 +1369,22 @@ def get_resume_content():
         }
 
 @router.get("/profile/resume/map")
-def get_resume_map():
+def get_resume_map(current_user: Dict[str, Any] = Depends(get_current_user)):
     """
     Returns the comprehensive AI/NLP JSON extraction map and field provenance mapping.
     """
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        if not row or not row["data"]:
+        active_row = get_or_create_active_candidate_profile(cur, user_id=current_user["id"])
+        if not active_row or not active_row["data"]:
             return {"hasResume": False, "aiExtraction": None}
-        data = json.loads(row["data"])
+        data = json.loads(active_row["data"])
         resume = data.get("resume")
         if not resume:
             return {"hasResume": False, "aiExtraction": None}
 
         ai_map = data.get("resumeAiMap") or resume.get("aiExtraction")
         if not ai_map:
-            # Generate dynamically from rawText if not yet cached
             raw_text = resume.get("rawText", "")
             stored = resume.get("storedFile")
             if stored and not raw_text:
@@ -992,10 +1396,9 @@ def get_resume_map():
                     except Exception:
                         pass
             ai_map = parse_resume_ai_template(raw_text or "")
-            # Cache generated AI map
             try:
                 data["resumeAiMap"] = ai_map
-                conn.cursor().execute("UPDATE profile SET data = ? WHERE id = 'default'", (json.dumps(data),))
+                cur.execute("UPDATE candidate_profiles SET data = ? WHERE id = ? AND user_id = ?", (json.dumps(data), active_row["id"], current_user["id"]))
             except Exception:
                 pass
 
@@ -1009,20 +1412,20 @@ def get_resume_map():
         }
 
 @router.post("/profile/resume/apply-ai-map")
-def apply_ai_map(custom_map: Optional[Dict[str, Any]] = Body(None)):
+def apply_ai_map(
+    custom_map: Optional[Dict[str, Any]] = Body(None),
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Applies the structured AI JSON extraction template directly into the live profile.
     """
     now = int(time.time() * 1000)
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        existing = {}
-        if row and row["data"]:
-            try:
-                existing = json.loads(row["data"])
-            except Exception:
-                existing = {}
+        active_row = get_or_create_active_candidate_profile(cur, user_id=current_user["id"])
+        if not active_row or not active_row["data"]:
+            raise HTTPException(status_code=400, detail="Profile not found.")
+        existing = json.loads(active_row["data"])
 
         ai_data = custom_map or existing.get("resumeAiMap")
         if not ai_data:
@@ -1120,10 +1523,10 @@ def apply_ai_map(custom_map: Optional[Dict[str, Any]] = Body(None)):
         merged_json = json.dumps(existing)
 
         cur.execute("""
-            INSERT INTO profile (id, data, updated_at)
-            VALUES ('default', ?, ?)
-            ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-        """, (merged_json, now))
+            UPDATE candidate_profiles
+            SET data = ?, updated_at = ?
+            WHERE id = ? AND user_id = ?
+        """, (merged_json, now, active_row["id"], current_user["id"]))
 
     return {
         "success": True,
@@ -1132,20 +1535,20 @@ def apply_ai_map(custom_map: Optional[Dict[str, Any]] = Body(None)):
     }
 
 @router.delete("/profile/resume")
-def delete_resume():
+def delete_resume(
+    profile_id: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Deletes the current uploaded resume metadata and marks resume as removed.
     """
     now = int(time.time() * 1000)
     with get_db() as conn:
         cur = conn.cursor()
-        row = cur.execute("SELECT data FROM profile WHERE id = 'default'").fetchone()
-        existing = {}
-        if row and row["data"]:
-            try:
-                existing = json.loads(row["data"])
-            except Exception:
-                existing = {}
+        active_row = resolve_user_profile(cur, user_id=current_user["id"], profile_id=profile_id)
+        if not active_row or not active_row["data"]:
+            return {"success": True, "message": "No profile found."}
+        existing = json.loads(active_row["data"])
 
         resume = existing.pop("resume", None)
         existing.pop("resumeAiMap", None)
@@ -1158,12 +1561,14 @@ def delete_resume():
                     pass
 
         merged_json = json.dumps(existing)
-
         cur.execute("""
-            INSERT INTO profile (id, data, updated_at)
-            VALUES ('default', ?, ?)
-            ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
-        """, (merged_json, now))
+            UPDATE candidate_profiles
+            SET data = ?, updated_at = ?
+            WHERE id = ? AND user_id = ?
+        """, (merged_json, now, active_row["id"], current_user["id"]))
+
+        cur.execute("DELETE FROM career_documents WHERE user_id = ? AND profile_id = ?", (current_user["id"], active_row["id"]))
+        cur.execute("DELETE FROM resume_files WHERE user_id = ? AND profile_id = ?", (current_user["id"], active_row["id"]))
 
     return {
         "success": True,

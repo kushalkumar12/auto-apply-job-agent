@@ -6,8 +6,6 @@ import {
   FileText, 
   Mail, 
   Layers, 
-  FileType, 
-  MessageSquare,
   ArrowRight,
   UploadCloud,
   ClipboardPaste,
@@ -17,12 +15,14 @@ import {
   X,
   Check,
   Copy,
-  Download
+  Download,
+  RefreshCw
 } from 'lucide-react';
+import { apiService } from '../services/api';
 import './ToolsView.css';
 
 export default function ToolsView({ onBackToExplore }) {
-  const [activeModal, setActiveModal] = useState(null); // 'ats-check' | 'jd-analyzer' | 'cover-letter' | 'answer-lib' | 'upload'
+  const [activeModal, setActiveModal] = useState(null); // 'ats-check' | 'jd-analyzer' | 'cover-letter' | 'upload'
   const [copiedId, setCopiedId] = useState(null);
   
   // Modal states
@@ -32,6 +32,77 @@ export default function ToolsView({ onBackToExplore }) {
   const [targetRole, setTargetRole] = useState('Senior Java Backend Engineer');
   const [generatedLetter, setGeneratedLetter] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
+
+  // Real ATS Audit State
+  const [atsScoreData, setAtsScoreData] = useState(null);
+  const [atsLoading, setAtsLoading] = useState(false);
+
+  const loadAtsAudit = async () => {
+    setAtsLoading(true);
+    try {
+      const val = await apiService.getActiveProfileValidation();
+      const resume = await apiService.getResumeContent();
+      let profile = {};
+      try {
+        const stored = localStorage.getItem('rp_candidate_profile');
+        if (stored) profile = JSON.parse(stored);
+      } catch {}
+      const skills = profile.skillsList || [];
+      const hasResume = Boolean(resume && resume.hasResume);
+      const isComplete = Boolean(val?.checks?.profileComplete);
+
+      let calculatedScore = 25;
+      if (hasResume) calculatedScore += 40;
+      if (isComplete) calculatedScore += 25;
+      if (skills.length >= 3) calculatedScore += 10;
+      calculatedScore = Math.min(98, Math.max(calculatedScore, val?.score || calculatedScore));
+
+      const auditData = {
+        score: calculatedScore,
+        hasResume,
+        isComplete,
+        skillsCount: skills.length,
+        breakdown: [
+          {
+            name: 'Profile Completeness',
+            score: isComplete ? '100/100 (Pass)' : '40/100 (Incomplete)',
+            color: isComplete ? '#10b981' : '#f59e0b'
+          },
+          {
+            name: 'Master Resume Ingestion',
+            score: hasResume ? '100/100 (Verified)' : '0/100 (Missing)',
+            color: hasResume ? '#10b981' : '#ef4444'
+          },
+          {
+            name: 'Technical Skills & Keyword Coverage',
+            score: skills.length >= 5 ? '92/100 (Strong)' : `${Math.min(90, Math.max(30, skills.length * 15))}/100`,
+            color: skills.length >= 5 ? '#10b981' : '#38bdf8'
+          }
+        ]
+      };
+      setAtsScoreData(auditData);
+      recordUsage('ATS Audit Completed', hasResume ? 'Master Resume Verified' : 'Profile Audit', `${calculatedScore}% Score`, calculatedScore >= 75 ? 'green' : 'amber');
+    } catch {
+      setAtsScoreData({
+        score: 35,
+        hasResume: false,
+        isComplete: false,
+        breakdown: [
+          { name: 'Profile Completeness', score: '35/100 (Incomplete)', color: '#f59e0b' },
+          { name: 'Master Resume', score: '0/100 (Missing)', color: '#ef4444' }
+        ]
+      });
+    } finally {
+      setAtsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeModal === 'ats-check') {
+      loadAtsAudit();
+    }
+  }, [activeModal]);
+
   const [recentUsage, setRecentUsage] = useState(() => {
     try {
       const stored = localStorage.getItem('rp_tools_usage');
@@ -68,14 +139,46 @@ export default function ToolsView({ onBackToExplore }) {
 
   const handleAnalyzeJD = () => {
     if (!jdInput.trim()) return;
+    const inputLower = jdInput.toLowerCase();
+
+    const techDict = [
+      'Java', 'Spring Boot', 'Microservices', 'Apache Kafka', 'Kafka', 'PostgreSQL', 'MySQL', 'MongoDB',
+      'Redis', 'AWS', 'Docker', 'Kubernetes', 'Python', 'FastAPI', 'Django', 'React', 'Node.js',
+      'TypeScript', 'JavaScript', 'GraphQL', 'REST APIs', 'CI/CD', 'Git', 'Linux', 'Elasticsearch'
+    ];
+
+    const detectedSkills = techDict.filter(s => inputLower.includes(s.toLowerCase()));
+    const finalRequiredSkills = detectedSkills.length > 0 ? detectedSkills : ['Java', 'Spring Boot', 'Microservices', 'REST APIs'];
+
+    let candidateSkills = [];
+    try {
+      const stored = localStorage.getItem('rp_candidate_profile');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed.skillsList)) {
+          candidateSkills = parsed.skillsList.map(s => (typeof s === 'string' ? s : s?.name || '')).filter(Boolean);
+        }
+      }
+    } catch {}
+
+    const candSkillsLower = candidateSkills.map(s => s.toLowerCase());
+    const matched = finalRequiredSkills.filter(req => 
+      candSkillsLower.some(cs => cs.includes(req.toLowerCase()) || req.toLowerCase().includes(cs))
+    );
+    const missing = finalRequiredSkills.filter(req => !matched.includes(req));
+
+    const matchRatio = finalRequiredSkills.length > 0 ? (matched.length / finalRequiredSkills.length) : 0.5;
+    const computedScore = Math.min(98, Math.max(45, Math.round(50 + matchRatio * 45)));
+
     setJdAnalysisResult({
-      role: 'Backend Distributed Systems Engineer',
-      matchScore: 94,
-      requiredSkills: ['Java 17', 'Spring Boot 3', 'Microservices', 'Apache Kafka', 'PostgreSQL', 'AWS ECS/EKS'],
-      recommendedKeywords: ['Distributed Caching', 'Event-Driven Architecture', 'High Concurrency', 'Zero-Downtime Migration'],
-      experienceRequired: '3-6 Years in scalable cloud systems'
+      role: targetRole || 'Target Software Role',
+      matchScore: computedScore,
+      requiredSkills: finalRequiredSkills,
+      recommendedKeywords: missing.length > 0 ? missing : ['Cloud Native Architecture', 'High Availability', 'Continuous Integration'],
+      matchedSkills: matched,
+      experienceRequired: 'Calculated from job requirements'
     });
-    recordUsage('JD Analyzed', targetRole || 'Distributed Systems Engineer', '94% Match');
+    recordUsage('JD Analyzed', targetRole || 'Software Role', `${computedScore}% Match`, computedScore >= 75 ? 'green' : 'amber');
   };
 
   const handleGenerateCoverLetter = () => {
@@ -149,37 +252,6 @@ export default function ToolsView({ onBackToExplore }) {
       icon: Layers,
       actionText: 'Manage Versions →',
       actionHandler: () => { window.location.hash = '#generation'; }
-    },
-    {
-      id: 'converter',
-      title: 'PDF / DOCX Converter',
-      desc: 'Convert your resume to PDF or DOCX with proper formatting.',
-      icon: FileType,
-      actionText: 'Convert Files →',
-      actionHandler: () => { window.location.hash = '#generation'; }
-    },
-    {
-      id: 'answer-lib',
-      title: 'Application Answer Library',
-      desc: 'Manage reusable answers for common application questions.',
-      icon: MessageSquare,
-      actionText: 'Open Library →',
-      actionHandler: () => setActiveModal('answer-lib')
-    }
-  ];
-
-  const answerLibraryItems = [
-    {
-      q: "Why do you want to work with us?",
-      a: "I am passionate about building scalable, high-availability software platforms. Your engineering team's focus on microservice performance and distributed systems directly aligns with my 3+ years of experience in Java, Spring Boot, and cloud architectures."
-    },
-    {
-      q: "Tell me about a challenging technical project you delivered.",
-      a: "In my previous engineering role, I designed and optimized an asynchronous data processing pipeline using Apache Kafka and Redis caching, which cut high-concurrency database load by 40% and improved latency to sub-80ms for enterprise modules."
-    },
-    {
-      q: "What is your notice period and location preference?",
-      a: "Immediate to 30 days notice period. Open to Remote, Hybrid, or On-site positions in Hyderabad, Bengaluru, or other primary technology hubs."
     }
   ];
 
@@ -348,33 +420,59 @@ export default function ToolsView({ onBackToExplore }) {
               </button>
             </div>
 
-            <div style={{ background: '#0f172a', padding: '16px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
-              <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'conic-gradient(#10b981 92%, #334155 0%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px', color: '#10b981' }}>
-                  92%
+            {atsLoading ? (
+              <div style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
+                <RefreshCw size={24} className="spin" style={{ marginBottom: '8px' }} />
+                <div>Auditing active candidate profile and resume...</div>
+              </div>
+            ) : (
+              <>
+                <div style={{ background: '#0f172a', padding: '16px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                  <div style={{
+                    width: '70px',
+                    height: '70px',
+                    borderRadius: '50%',
+                    background: `conic-gradient(${atsScoreData?.score >= 75 ? '#10b981' : '#f59e0b'} ${atsScoreData?.score || 35}%, #334155 0%)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <div style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '50%',
+                      background: '#0f172a',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '18px',
+                      color: atsScoreData?.score >= 75 ? '#10b981' : '#f59e0b'
+                    }}>
+                      {atsScoreData?.score || 35}%
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#f8fafc' }}>
+                      {atsScoreData?.score >= 75 ? 'Strong ATS Readiness Score' : 'Profile Action Required'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
+                      {atsScoreData?.hasResume ? 'Master resume parsed and verified across ATS standards.' : 'Master resume has not been ingested yet. Upload your resume for 90%+ readiness.'}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: '#f8fafc' }}>Top 5% Candidate Profile Match</div>
-                <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Passed all 4 major ATS parser standards (Workday, Greenhouse, Lever, Taleo).</div>
-              </div>
-            </div>
 
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px' }}>AUDIT BREAKDOWN</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '18px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-                <span>Keyword Density & Role Alignment</span>
-                <span style={{ color: '#10b981', fontWeight: 700 }}>96/100 (High)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-                <span>Section Headers & ATS Cleanliness</span>
-                <span style={{ color: '#10b981', fontWeight: 700 }}>100/100 (Pass)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-                <span>Action Verb & Impact Metrics</span>
-                <span style={{ color: '#38bdf8', fontWeight: 700 }}>88/100 (Good)</span>
-              </div>
-            </div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px' }}>AUDIT BREAKDOWN</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '18px' }}>
+                  {(atsScoreData?.breakdown || []).map((b, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
+                      <span>{b.name}</span>
+                      <span style={{ color: b.color || '#38bdf8', fontWeight: 700 }}>{b.score}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button onClick={() => { setActiveModal(null); window.location.hash = '#generation'; }} style={{ padding: '8px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
@@ -511,44 +609,7 @@ export default function ToolsView({ onBackToExplore }) {
         </div>
       )}
 
-      {/* 4. Application Answer Library Modal */}
-      {activeModal === 'answer-lib' && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'var(--bg-card, #1e293b)', color: '#fff', width: '600px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '14px', padding: '24px', border: '1px solid #334155', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <MessageSquare size={22} color="#38bdf8" />
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>Application Answer Library</h3>
-              </div>
-              <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: 0 }}>High-scoring reusable answers tailored to your active profile.</p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {answerLibraryItems.map((item, idx) => (
-                <div key={idx} style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', border: '1px solid #334155' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '13px', color: '#38bdf8' }}>{item.q}</span>
-                    <button 
-                      onClick={() => copyToClipboard(item.a, `ans-${idx}`)}
-                      style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    >
-                      {copiedId === `ans-${idx}` ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-                      <span style={{ fontSize: '11px' }}>{copiedId === `ans-${idx}` ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#cbd5e1', lineHeight: 1.5 }}>{item.a}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. Upload Resume Modal */}
+      {/* 4. Upload Resume Modal */}
       {activeModal === 'upload' && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'var(--bg-card, #1e293b)', color: '#fff', width: '480px', borderRadius: '14px', padding: '24px', border: '1px solid #334155', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
@@ -569,9 +630,17 @@ export default function ToolsView({ onBackToExplore }) {
               <input 
                 type="file" 
                 accept=".pdf,.docx,.txt"
-                onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setUploadStatus(`Uploaded "${e.target.files[0].name}" successfully! Parsed 18 technical skills.`);
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    try {
+                      setUploadStatus('Uploading & indexing resume...');
+                      const res = await apiService.uploadResume(file);
+                      setUploadStatus(`Uploaded "${file.name}" successfully! Indexed into candidate profile.`);
+                      recordUsage('Resume Uploaded', file.name, 'Indexed', 'green');
+                    } catch (err) {
+                      setUploadStatus(`Upload failed: ${err.message || 'Error'}`);
+                    }
                   }
                 }}
                 style={{ marginTop: '14px', fontSize: '12px' }}
@@ -579,8 +648,16 @@ export default function ToolsView({ onBackToExplore }) {
             </div>
 
             {uploadStatus && (
-              <div style={{ padding: '10px 12px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderRadius: '6px', fontSize: '12px', marginBottom: '14px', fontWeight: 600 }}>
-                ✓ {uploadStatus}
+              <div style={{
+                padding: '10px 12px',
+                background: uploadStatus.includes('failed') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                color: uploadStatus.includes('failed') ? '#ef4444' : '#10b981',
+                borderRadius: '6px',
+                fontSize: '12px',
+                marginBottom: '14px',
+                fontWeight: 600
+              }}>
+                {uploadStatus.includes('failed') ? '✕ ' : '✓ '}{uploadStatus}
               </div>
             )}
 

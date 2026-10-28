@@ -1,66 +1,86 @@
 import sys
+import os
 import json
 import time
-import urllib.request
-import urllib.error
-import urllib.parse
-from database import clear_dummy_data, get_db
+from pathlib import Path
 
-BASE_URL = "http://127.0.0.1:5000/api"
+# Guarantee isolated temporary test database
+TEST_DB_NAME = "test_jobs_acceptance.db"
+TEST_DB_PATH = (Path(__file__).resolve().parent / TEST_DB_NAME).resolve()
+os.environ["SKILL2ROLE_DB_PATH"] = str(TEST_DB_PATH)
+
+from database import init_db, get_db, assert_test_database
+from seed_india_jobs import seed
+from main import app
+from fastapi.testclient import TestClient
+
+client = TestClient(app)
+
+def setup_test_environment():
+    os.environ["SKILL2ROLE_DB_PATH"] = str(TEST_DB_PATH)
+    assert_test_database()
+    for p in [TEST_DB_PATH, Path(str(TEST_DB_PATH) + "-wal"), Path(str(TEST_DB_PATH) + "-shm")]:
+        if p.exists():
+            try:
+                p.unlink()
+            except Exception:
+                pass
+    init_db()
+    seed(target_db_path=TEST_DB_PATH)
+
+def teardown_test_environment():
+    for p in [TEST_DB_PATH, Path(str(TEST_DB_PATH) + "-wal"), Path(str(TEST_DB_PATH) + "-shm")]:
+        if p.exists():
+            try:
+                p.unlink()
+            except Exception:
+                pass
+    os.environ.pop("SKILL2ROLE_DB_PATH", None)
+
+AUTH_TOKEN = None
+
+def set_auth_token(token: str):
+    global AUTH_TOKEN
+    AUTH_TOKEN = token
 
 def request(method, path, data=None, headers=None):
     if headers is None:
         headers = {}
-    url = f"{BASE_URL}{path}"
-    req_data = None
-    if data is not None:
-        req_data = json.dumps(data).encode("utf-8")
-        headers["Content-Type"] = "application/json"
-
-    req = urllib.request.Request(url, data=req_data, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            content_type = resp.headers.get("Content-Type", "")
-            body = resp.read()
-            if "application/json" in content_type:
-                return resp.status, json.loads(body.decode("utf-8"))
-            elif "text/csv" in content_type:
-                return resp.status, body.decode("utf-8")
-            else:
-                try:
-                    return resp.status, json.loads(body.decode("utf-8"))
-                except Exception:
-                    return resp.status, body.decode("utf-8", errors="ignore")
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8")
+    if AUTH_TOKEN and "Authorization" not in headers:
+        headers["Authorization"] = f"Bearer {AUTH_TOKEN}"
+    url = f"/api{path}"
+    resp = client.request(method, url, json=data, headers=headers)
+    content_type = resp.headers.get("Content-Type", "")
+    if "application/json" in content_type:
         try:
-            return e.code, json.loads(err_body)
+            return resp.status_code, resp.json()
         except Exception:
-            return e.code, {"error": err_body}
+            return resp.status_code, {"error": resp.text}
+    elif "text/csv" in content_type:
+        return resp.status_code, resp.text
+    else:
+        try:
+            return resp.status_code, resp.json()
+        except Exception:
+            return resp.status_code, resp.text
 
 def multipart_request(path, filename, content_bytes, field_name="file"):
-    boundary = "----TestBoundaryStage1SanityCheck"
-    body = (
-        f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="{field_name}"; filename="{filename}"\r\n'
-        f"Content-Type: text/csv\r\n\r\n"
-    ).encode("utf-8") + content_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
-    headers = {"Content-Type": f"multipart/form-data; boundary={boundary}"}
-    req = urllib.request.Request(f"{BASE_URL}{path}", data=body, headers=headers, method="POST")
+    url = f"/api{path}"
+    files = {field_name: (filename, content_bytes, "text/csv")}
+    headers = {}
+    if AUTH_TOKEN:
+        headers["Authorization"] = f"Bearer {AUTH_TOKEN}"
+    resp = client.post(url, files=files, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            return resp.status, json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8")
-        try:
-            return e.code, json.loads(err_body)
-        except Exception:
-            return e.code, {"error": err_body}
+        return resp.status_code, resp.json()
+    except Exception:
+        return resp.status_code, {"error": resp.text}
 
 def run_tests():
     print("======================================================================")
     print("SKILL2ROLE STAGE 1 ACCEPTANCE CRITERIA VERIFICATION SUITE")
     print("======================================================================")
+    setup_test_environment()
     passed = 0
     total = 0
 
@@ -111,11 +131,16 @@ def run_tests():
     status, wrong_login = request("POST", "/auth/login", data={"email": test_user_email, "password": "WrongPassword"})
     assert_eq("Login with bad password rejected (401)", status, 401)
 
+    # Verify protected endpoints reject unauthenticated access with HTTP 401
+    status_unauth, _ = request("GET", "/jobs")
+    assert_eq("Unauthenticated access to /api/jobs rejected (401)", status_unauth, 401)
+
     # Successful login
     status, login_res = request("POST", "/auth/login", data={"email": test_user_email, "password": "StrongPassword123!"})
     assert_eq("Login with correct credentials succeeds (200)", status, 200)
     user_token = login_res.get("token")
     assert_eq("Valid JWT token received on login", bool(user_token), True)
+    set_auth_token(user_token)
 
     # ------------------------------------------------------------------
     # 3. Mandatory Profile Completion Gate
@@ -134,13 +159,15 @@ def run_tests():
     assert_eq("403 error identifies mandatory profile requirement", "Mandatory profile" in str(disc_start), True)
 
     # Complete all 7 mandatory profile fields:
-    # 1. fullName, 2. email, 3. primarySkill, 4. skillsList (>=2), 5. selectedRoles (>=1), 6. userLocation, 7. resume
+    # 1. fullName, 2. email, 3. primarySkill, 4. skillsList (>=2), 5. selectedRoles (>=1), 6. userLocation, 7. experienceYears, 8. resume
     complete_profile_payload = {
+        "experienceYears": 10.0,
         "general": {
             "fullName": "Kushal Kumar",
             "email": "kushal@example.com",
             "title": "Principal Java Architect",
             "primarySkill": "Java",
+            "experienceYears": 10.0,
             "bio": "Expert in distributed Java microservices and enterprise architecture."
         },
         "contacts": {
@@ -182,39 +209,32 @@ def run_tests():
     assert_eq("Explorer /discovery/stop returns status (200)", status, 200)
 
     # ------------------------------------------------------------------
-    # 4. Candidate Profiles & Persona Isolation
+    # 4. Single-Profile Architecture & Multi-Profile Disabled Enforcement
     # ------------------------------------------------------------------
-    print("\n--- 4. Multi-Profile Management & Identity Isolation ---")
+    print("\n--- 4. Single-Profile Architecture & Disabled Multi-Profile Enforcement ---")
     status, profiles_resp = request("GET", "/profiles")
     assert_eq("GET /profiles status (200)", status, 200)
     profiles_list = profiles_resp.get("profiles", []) if isinstance(profiles_resp, dict) else profiles_resp
     assert_eq("Profiles returned as array", isinstance(profiles_list, list), True)
+    assert_eq("User has exactly 1 candidate profile", len(profiles_list), 1)
 
-    # Create a secondary candidate persona
+    primary_id = profiles_list[0].get("id")
+    status, get_prof_res = request("GET", f"/profiles/{primary_id}")
+    assert_eq("GET /profiles/{primary_id} status (200)", status, 200)
+    assert_eq("Profile isActive is True", get_prof_res.get("isActive"), True)
+
+    # Verify creating secondary candidate personas is disabled and returns HTTP 400
     secondary_profile = {
         "name": "Cloud DevOps Specialist",
         "primarySkill": "Kubernetes",
         "description": "Candidate profile focused strictly on Cloud Infrastructure and Site Reliability"
     }
     status, create_sec = request("POST", "/profiles", data=secondary_profile)
-    assert_eq("POST /profiles creates secondary persona (201)", status, 201)
-    sec_id = create_sec.get("profile", {}).get("id") or create_sec.get("id")
-    assert_eq("Secondary profile has valid ID", bool(sec_id), True)
+    assert_eq("POST /profiles rejected with HTTP 400 (multi-profile disabled)", status, 400)
 
-    # Activate secondary profile and verify isolation
-    status, act_res = request("POST", f"/profiles/{sec_id}/activate")
-    assert_eq("POST /profiles/{id}/activate status (200)", status, 200)
-    assert_eq("Active profile changed to secondary", act_res.get("activeProfileId"), sec_id)
-
-    # Check secondary profile is incomplete initially
-    status, sec_val = request("GET", "/profiles/active/validation")
-    assert_eq("Secondary profile validation isComplete is False", sec_val.get("isComplete"), False)
-
-    # Switch back to primary profile
-    status, switch_back = request("POST", "/profiles/default/activate")
-    assert_eq("Switch back to default profile (200)", status, 200)
+    # Verify single profile validation remains complete
     status, def_val = request("GET", "/profiles/active/validation")
-    assert_eq("Default profile remains complete", def_val.get("isComplete"), True)
+    assert_eq("Candidate profile remains complete", def_val.get("isComplete"), True)
 
     # ------------------------------------------------------------------
     # 5. AI-Generated Role and Search Keywords (Primary Skill Anchored)
@@ -313,14 +333,22 @@ def run_tests():
     assert_eq("Error message mentions missing required headers", "Missing required headers" in str(bad_import) or "required" in str(bad_import).lower(), True)
 
     # Verify imported jobs are tagged with source 'Excel Import' and NOT misrepresented as live radar discoveries
-    status, jobs_check = request("GET", "/jobs?origin=all&limit=10")
+    status, jobs_check = request("GET", "/jobs?source=Excel%20Import&profileDriven=false")
     assert_eq("GET /jobs status (200)", status, 200)
     imported_jobs = [j for j in jobs_check.get("jobs", []) if j.get("source") == "Excel Import"]
     assert_eq("Imported jobs properly tagged with source 'Excel Import'", len(imported_jobs) >= 2, True)
 
     # Clean up test records
     print("\n--- Post-Test Database Cleanup ---")
-    clear_dummy_data()
+    with get_db() as conn:
+        conn.execute("DELETE FROM jobs WHERE source = 'Excel Import'")
+        conn.execute("DELETE FROM users WHERE email LIKE '%@example.com'")
+        conn.execute("DELETE FROM candidate_profiles WHERE id != 'default'")
+        conn.execute("UPDATE candidate_profiles SET is_active = 1 WHERE id = 'default'")
+        conn.execute("DELETE FROM explorer_runs")
+    print("[OK] Test artifacts cleaned up cleanly.")
+    teardown_test_environment()
+    print("[OK] Temporary test database unlinked and isolated environment torn down.")
 
     print("\n======================================================================")
     print(f"[SUMMARY] Stage 1 Acceptance Test Results: {passed}/{total} Passed ({100.0 * passed / (total or 1):.1f}%)")

@@ -23,7 +23,7 @@ import { PlatformIcon } from './BrandIcons';
 import { apiService } from '../services/api';
 import './AutomationView.css';
 
-export default function AutomationView({ onNavigateTab }) {
+export default function AutomationView({ onNavigateTab, activeCandidateProfile }) {
   const [pipelines, setPipelines] = useState([]);
   const [logs, setLogs] = useState([]);
   const [isRunningAll, setIsRunningAll] = useState(false);
@@ -36,12 +36,12 @@ export default function AutomationView({ onNavigateTab }) {
   const [newThreshold, setNewThreshold] = useState('85');
   const terminalEndRef = useRef(null);
 
-  // Load pipelines from Python SQLite backend
+  // Load pipelines from Python SQLite backend scoped to active candidate profile
   useEffect(() => {
     let mounted = true;
     async function loadData() {
       try {
-        const data = await apiService.getAutomationPipelines();
+        const data = await apiService.getAutomationPipelines(activeCandidateProfile?.id);
         if (mounted && Array.isArray(data)) {
           setPipelines(data);
         }
@@ -51,7 +51,7 @@ export default function AutomationView({ onNavigateTab }) {
     }
     loadData();
     return () => { mounted = false; };
-  }, []);
+  }, [activeCandidateProfile?.id]);
 
   // Auto-scroll terminal log
   useEffect(() => {
@@ -108,17 +108,39 @@ export default function AutomationView({ onNavigateTab }) {
     ]);
 
     try {
-      const res = await apiService.runAutomationPipeline(pipe.id);
-      const updatedCount = res?.appliedCount || (pipe.appliedCount + 3);
+      const res = await apiService.runAutomationPipeline(pipe.id, activeCandidateProfile?.id, false);
+      const updatedCount = res?.appliedCount !== undefined ? res.appliedCount : pipe.appliedCount;
+      const isSimulated = res?.simulated || res?.mode === 'simulation';
+
       setPipelines(prev => prev.map(p => p.id === pipe.id ? { ...p, appliedCount: updatedCount, lastRun: 'Just now' } : p));
       setLogs(l => [
         ...l,
-        { id: Date.now() + 1, time: now, level: 'SUCCESS', text: `Dispatched 3 matched applications for [${pipe.title}]. Real-time activity logged.` }
+        {
+          id: Date.now() + 1,
+          time: now,
+          level: 'SUCCESS',
+          text: `[${isSimulated ? 'SIMULATED' : 'CONFIRMED'}] ${res?.message || `Pipeline [${pipe.title}] completed.`} (Count: ${updatedCount})`
+        }
       ]);
-      showNotification(`Dispatched 3 applications for ${pipe.title}`);
+      showNotification(res?.message || `Pipeline [${pipe.title}] executed.`);
     } catch (err) {
-      setPipelines(prev => prev.map(p => p.id === pipe.id ? { ...p, appliedCount: p.appliedCount + 1, lastRun: 'Just now' } : p));
-      showNotification(`Dispatched 1 application for ${pipe.title}`);
+      const errDetail = err?.data?.detail;
+      const errorCode = (typeof errDetail === 'object' ? errDetail?.error : null) || 'BLOCKED';
+      const errorMsg = (typeof errDetail === 'object' ? errDetail?.message : errDetail) || err.message || 'Execution failed';
+      const reasons = Array.isArray(errDetail?.reasons) ? ` (${errDetail.reasons.join('; ')})` : '';
+
+      // Preserve actual state: Do NOT increment appliedCount, do NOT show "Dispatched"
+      setPipelines(prev => prev.map(p => p.id === pipe.id ? { ...p, lastRun: 'Blocked by Gate' } : p));
+      setLogs(l => [
+        ...l,
+        {
+          id: Date.now() + 1,
+          time: now,
+          level: 'WARN',
+          text: `[BLOCKED: ${errorCode}] ${errorMsg}${reasons}`
+        }
+      ]);
+      showNotification(`Blocked: ${errorMsg}`);
     }
   };
 
@@ -127,25 +149,59 @@ export default function AutomationView({ onNavigateTab }) {
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     setLogs(l => [
       ...l,
-      { id: Date.now(), time: now, level: 'AGENT', text: '⚡ Full Autonomous Application Cycle initiated across all active pipelines.' },
-      { id: Date.now() + 1, time: now, level: 'INFO', text: 'Crawling active endpoints (LinkedIn, Indeed, Greenhouse)...' }
+      { id: Date.now(), time: now, level: 'AGENT', text: '⚡ Autonomous Application Cycle initiated across all active pipelines.' },
+      { id: Date.now() + 1, time: now, level: 'INFO', text: 'Validating pipelines against submission gate...' }
     ]);
 
     const activePipes = pipelines.filter(p => p.active);
-    try {
-      await Promise.all(activePipes.map(p => apiService.runAutomationPipeline(p.id)));
-    } catch (err) {
-      console.warn('Batch execution notice:', err);
-    }
+    let successCount = 0;
+    let blockedCount = 0;
+
+    const results = await Promise.allSettled(
+      activePipes.map(pipe => apiService.runAutomationPipeline(pipe.id, activeCandidateProfile?.id, false))
+    );
+
+    const updatedPipelines = pipelines.map(pipe => {
+      const idx = activePipes.findIndex(ap => ap.id === pipe.id);
+      if (idx === -1) return pipe;
+      const res = results[idx];
+      if (res.status === 'fulfilled') {
+        successCount++;
+        const updatedCount = res.value?.appliedCount !== undefined ? res.value.appliedCount : pipe.appliedCount;
+        return { ...pipe, appliedCount: updatedCount, lastRun: 'Just now' };
+      } else {
+        blockedCount++;
+        return { ...pipe, lastRun: 'Blocked by Gate' };
+      }
+    });
+
+    setPipelines(updatedPipelines);
 
     const finishTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    setLogs(l => [
-      ...l,
-      { id: Date.now() + 2, time: finishTime, level: 'SUCCESS', text: `Autonomous cycle finished: Dispatched applications across ${activePipes.length} active pipelines!` }
-    ]);
-    setPipelines(prev => prev.map(p => p.active ? { ...p, appliedCount: p.appliedCount + 3, lastRun: 'Just now' } : p));
+    if (blockedCount > 0 && successCount === 0) {
+      setLogs(l => [
+        ...l,
+        {
+          id: Date.now() + 2,
+          time: finishTime,
+          level: 'WARN',
+          text: `[BLOCKED] All ${blockedCount} active pipeline(s) blocked by submission gate. 0 applications dispatched.`
+        }
+      ]);
+      showNotification(`All ${blockedCount} pipelines blocked by submission safety gate.`);
+    } else {
+      setLogs(l => [
+        ...l,
+        {
+          id: Date.now() + 2,
+          time: finishTime,
+          level: blockedCount > 0 ? 'WARN' : 'SUCCESS',
+          text: `Batch cycle completed: ${successCount} pipeline(s) executed, ${blockedCount} blocked by submission gate.`
+        }
+      ]);
+      showNotification(`Batch cycle finished: ${successCount} executed, ${blockedCount} blocked.`);
+    }
     setIsRunningAll(false);
-    showNotification('Automated batch execution complete!');
   };
 
   const handleCreatePipelineSubmit = async (e) => {
@@ -160,7 +216,7 @@ export default function AutomationView({ onNavigateTab }) {
         frequencyLabel: 'Continuous Auto',
         matchThreshold: parseInt(newThreshold) || 85,
         mode: 'Auto-Apply'
-      });
+      }, activeCandidateProfile?.id);
       setPipelines(prev => [created, ...prev]);
       setShowCreateModal(false);
       setNewTitle('');
@@ -172,6 +228,21 @@ export default function AutomationView({ onNavigateTab }) {
       ]);
     } catch (err) {
       console.error('Failed to create pipeline:', err);
+    }
+  };
+
+  const handleDeletePipeline = async (id) => {
+    try {
+      await apiService.deleteAutomationPipeline(id);
+      setPipelines(prev => prev.filter(p => p.id !== id));
+      showNotification('Pipeline deleted successfully');
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLogs(l => [
+        ...l,
+        { id: Date.now(), time: now, level: 'WARN', text: `Pipeline [${id}] removed.` }
+      ]);
+    } catch (err) {
+      showNotification('Failed to delete pipeline');
     }
   };
 
@@ -433,7 +504,7 @@ export default function AutomationView({ onNavigateTab }) {
                       <span>Last run: {pipe.lastRun}</span>
                     </div>
 
-                    <div className="pipe-footer-actions">
+                    <div className="pipe-footer-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <button 
                         className="btn-pipe-run"
                         onClick={() => handleRunPipelineNow(pipe)}
@@ -442,6 +513,23 @@ export default function AutomationView({ onNavigateTab }) {
                       >
                         <Play size={11} fill="currentColor" />
                         <span>Run Now</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeletePipeline(pipe.id)}
+                        title="Delete pipeline"
+                        style={{
+                          background: 'transparent',
+                          border: '1px solid var(--border-color, #334155)',
+                          borderRadius: '6px',
+                          color: '#ef4444',
+                          padding: '5px 8px',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </div>

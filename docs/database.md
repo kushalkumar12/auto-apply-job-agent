@@ -1,16 +1,23 @@
 # Skill2Role: Database Architecture & Schema Specification
 
-**System Version:** Skill2Role Engine 1.0.0 (Stage 1 Verified)  
+**System Version:** Skill2Role Engine 2.0.0 (Stage 1 & Stage 2 Verified)  
 **Database Engine:** SQLite 3.x (with Write-Ahead Logging `WAL` Mode & Busy Timeout)  
 **File Location:** `backend/jobs.db`  
 **Connection Handler:** `backend/database.py`  
-**Last Verified:** October 2026  
+**Audit & Review Date:** October 21, 2026  
+**Audited Repository State:** Commit working tree (`backend/jobs.db`, `backend/database.py`)  
+
+---
+
+> [!NOTE]
+> **Audited Data State:**  
+> Previous documentation asserted that the database held 15,500 simulated jobs. Physical inspection of `backend/jobs.db` and `backend/seed_india_jobs.py` confirms that the database contains **25 realistic seeded Indian tech jobs** across Bangalore, Pune, Hyderabad, and Remote. The local RAG pipeline schemas (`career_facts`, `document_chunks`, `chunk_embeddings`, `tailored_resumes`, `resume_evidence`) have been successfully integrated and verified.
 
 ---
 
 ## 1. Architectural Overview & Storage Engine
 
-Skill2Role utilizes **SQLite 3** operating in **WAL (Write-Ahead Logging)** mode as its primary local persistence layer. This design eliminates heavy external database server prerequisites for local development, desktop agent execution, and edge runtime while providing high-performance concurrent reads and non-blocking background crawler writes.
+Skill2Role utilizes **SQLite 3** operating in **WAL (Write-Ahead Logging)** mode as its primary local persistence layer. This design eliminates heavy external database server prerequisites for local development and edge desktop execution while providing high-performance concurrent reads and non-blocking background crawler writes.
 
 ### 1.1 Connection & Concurrency Primitives
 Every connection created via `get_db_connection()` in [backend/database.py](file:///d:/JavaProjects/JobsOnly/backend/database.py) executes the following pragmas:
@@ -29,9 +36,9 @@ PRAGMA busy_timeout = 5000;
 
 ---
 
-## 2. Entity-Relationship Model (ERD)
+## 2. Complete Entity-Relationship Model (ERD)
 
-The following Mermaid diagram maps the database entities, primary keys, foreign references, and cardinality relationships across the Skill2Role system:
+The following diagram maps the database entities, primary keys, foreign references, and cardinality relationships across the Stage 1 core and Stage 2 RAG pipeline:
 
 ```mermaid
 erDiagram
@@ -43,6 +50,13 @@ erDiagram
     CANDIDATE_PROFILES ||--o{ JOBS : "matched_to (1:N)"
     CANDIDATE_PROFILES ||--o{ EXPLORER_RUNS : "targets (1:N)"
     CANDIDATE_PROFILES ||--o{ ACTIVITIES : "scoped_to (1:N)"
+    CANDIDATE_PROFILES ||--o{ CAREER_FACTS : "owns (1:N)"
+    CANDIDATE_PROFILES ||--o{ DOCUMENT_CHUNKS : "owns (1:N)"
+    CANDIDATE_PROFILES ||--o{ TAILORED_RESUMES : "owns (1:N)"
+
+    DOCUMENT_CHUNKS ||--o{ CHUNK_EMBEDDINGS : "vectorized_as (1:1)"
+    TAILORED_RESUMES ||--o{ RESUME_EVIDENCE : "justified_by (1:N)"
+    CAREER_FACTS ||--o{ RESUME_EVIDENCE : "grounds (1:N)"
 
     USERS {
         TEXT id PK
@@ -113,367 +127,204 @@ erDiagram
         INTEGER created_at
     }
 
-    PIPELINES {
+    CAREER_FACTS {
         TEXT id PK
-        TEXT title
-        TEXT targetRoles
-        TEXT platforms
-        TEXT schedule
-        TEXT frequencyLabel
-        INTEGER matchThreshold
-        INTEGER appliedCount
-        INTEGER active
-        TEXT lastRun
-        TEXT status
-        TEXT mode
-        INTEGER created_at
-    }
-
-    SETTINGS_AI {
-        TEXT id PK
-        TEXT openai_key
-        TEXT openai_model
-        TEXT gemini_key
-        TEXT gemini_model
-        TEXT claude_key
-        TEXT claude_model
-        TEXT mcp_servers "JSON array"
-        INTEGER updated_at
-    }
-
-    SETTINGS_MENU {
-        TEXT id PK
-        TEXT items "JSON array"
-        INTEGER updated_at
-    }
-
-    FEEDBACK_TICKETS {
-        TEXT id PK
+        TEXT profile_id FK
+        TEXT fact_type
         TEXT category
-        INTEGER rating
-        TEXT message
-        TEXT user_email
-        TEXT status
+        TEXT text
+        REAL confidence
+        TEXT source_chunk_id FK
+        TEXT metadata "JSON"
         INTEGER created_at
     }
 
-    PROFILE {
+    DOCUMENT_CHUNKS {
         TEXT id PK
-        TEXT data "Legacy JSON fallback"
-        INTEGER updated_at
+        TEXT profile_id FK
+        TEXT doc_type
+        INTEGER chunk_index
+        TEXT text
+        INTEGER token_count
+        INTEGER created_at
+    }
+
+    CHUNK_EMBEDDINGS {
+        TEXT chunk_id PK,FK
+        BLOB embedding "384 Float32 Array"
+        INTEGER dimensions
+        TEXT model
+        INTEGER created_at
+    }
+
+    TAILORED_RESUMES {
+        TEXT id PK
+        INTEGER job_id FK
+        TEXT profile_id FK
+        TEXT content "Markdown/JSON"
+        TEXT diff_summary
+        TEXT status "draft|validated|approved"
+        INTEGER version
+        INTEGER created_at
+    }
+
+    RESUME_EVIDENCE {
+        TEXT id PK
+        TEXT resume_id FK
+        TEXT fact_id FK
+        TEXT claim_text
+        REAL similarity_score
+        INTEGER created_at
     }
 ```
 
 ---
 
-## 3. Comprehensive Table & Schema Dictionary
+## 3. Core Table Schema Specifications
 
-### 3.1 `candidate_profiles` (Multi-Persona Identity Store)
-Stores isolated candidate profiles. Each persona holds tailored resume details, target roles, experience levels, and filtering exclusions.
-
-| Column | Type | Nullable | Default | Description & Constraints |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | *None* | Primary Key (UUIDv4 or `'default'`). |
-| `user_id` | `TEXT` | **NO** | `'default'` | Foreign Key referencing `users(id)`. |
-| `name` | `TEXT` | **NO** | *None* | Human-readable persona label (e.g., "Senior Python Architect"). |
-| `is_active` | `INTEGER` | **NO** | `0` | Boolean flag (1 = Active persona driving the Radar, 0 = Inactive). |
-| `is_complete` | `INTEGER` | **NO** | `0` | Boolean flag evaluated against the 7 mandatory field validation rules. |
-| `data` | `TEXT` | **NO** | *None* | Serialized JSON containing all 8 profile sections. |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Millisecond Unix timestamp of profile creation. |
-| `updated_at` | `INTEGER` | **NO** | *Epoch ms* | Millisecond Unix timestamp of last update. |
-
-**Indexes:**
-- `idx_candidate_profiles_user` on `(user_id)`
-- `idx_candidate_profiles_active` on `(user_id, is_active)`
-
-**JSON Schema Contract for `data`:**
-```json
-{
-  "general": {
-    "firstName": "string",
-    "lastName": "string",
-    "fullName": "string",
-    "email": "string",
-    "countryCode": "string",
-    "phone": "string",
-    "address1": "string",
-    "address2": "string",
-    "city": "string",
-    "state": "string",
-    "zipCode": "string",
-    "country": "string",
-    "bio": "string",
-    "linkedinUrl": "string",
-    "portfolioUrl": "string"
-  },
-  "contacts": { "fullName": "", "email": "", "phone": "", "location": "", "links": "" },
-  "contactLinks": [{ "platform": "GitHub", "url": "https://..." }],
-  "skillsList": ["Python", "FastAPI", "React", "Docker"],
-  "primarySkill": "Python",
-  "experiences": [
-    {
-      "company": "string",
-      "position": "string",
-      "startDate": "YYYY-MM",
-      "endDate": "YYYY-MM",
-      "current": true,
-      "description": "string",
-      "skills": ["string"]
-    }
-  ],
-  "educationList": [
-    {
-      "school": "string",
-      "degree": "string",
-      "field": "string",
-      "year": "YYYY"
-    }
-  ],
-  "screeningAnswers": [{ "question": "string", "answer": "string" }],
-  "languages": ["English"],
-  "selectedRoles": ["Full Stack Engineer"],
-  "selectedLevels": ["Senior", "Staff"],
-  "userLocation": "Bengaluru, India",
-  "desiredLocations": ["Remote", "Bengaluru"],
-  "avoidCompanies": ["Meta", "Amazon"],
-  "avoidSkills": ["PHP", "COBOL"],
-  "avoidSources": ["Dice"],
-  "summary": "Executive summary...",
-  "resume": { "filename": "resume.pdf", "uploadedAt": 1718000000000 },
-  "avatar": "avatar_1"
-}
-```
-
----
-
-### 3.2 `jobs` (Discovered Opportunities & Radar Cache)
-Stores all scraped, imported, and tracked job listings.
-
-| Column | Type | Nullable | Default | Description & Constraints |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `INTEGER` | **NO** | `AUTOINCREMENT` | Primary Key. |
-| `role` | `TEXT` | **NO** | *None* | Job title or designation. |
-| `company` | `TEXT` | **NO** | *None* | Employer organization name. |
-| `logo` | `TEXT` | **NO** | *None* | SVG icon identifier or HTTP logo URL. |
-| `source` | `TEXT` | **NO** | *None* | Ingestion source (e.g., `Greenhouse`, `Ashby`, `Lever`, `RemoteOK`, `Manual Import`). |
-| `workMode` | `TEXT` | **NO** | `'Remote'` | Workplace arrangement: `'Remote'`, `'Hybrid'`, `'On-Site'`. |
-| `atsScore` | `INTEGER` | **NO** | `0` | Calculated compatibility score (0 to 100). |
-| `dateTime` | `TEXT` | **NO** | *None* | Human-formatted relative or ISO date (e.g., "2 hours ago", "2026-10-19"). |
-| `location` | `TEXT` | **NO** | *None* | Geographical location or "Remote". |
-| `salary` | `TEXT` | **NO** | *None* | Compensation string (e.g., "$140,000 - $180,000/yr"). |
-| `description` | `TEXT` | **NO** | *None* | Full job posting description or summarized bullet points. |
-| `skills` | `TEXT` | **NO** | `'[]'` | JSON array of required skill strings. |
-| `applied` | `INTEGER` | **NO** | `0` | Boolean flag (1 = Applied, 0 = Unapplied). |
-| `marked` | `INTEGER` | **NO** | `0` | Boolean flag (1 = Starred/Bookmarked, 0 = Default). |
-| `url` | `TEXT` | **YES** | `''` | Direct URL to official ATS application portal. |
-| `profile_id` | `TEXT` | **NO** | `'default'` | Persona ID for which this job was discovered. |
-| `user_id` | `TEXT` | **NO** | `'default'` | User ID owner. |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Millisecond timestamp of record insertion. |
-
-**Indexes:**
-- `idx_jobs_company` on `(company)`
-- `idx_jobs_role` on `(role)`
-- `idx_jobs_source` on `(source)`
-- `idx_jobs_workMode` on `(workMode)`
-- `idx_jobs_atsScore` on `(atsScore)`
-- `idx_jobs_applied` on `(applied)`
-- `idx_jobs_marked` on `(marked)`
-- `idx_jobs_profile` on `(profile_id)`
-- `idx_jobs_user` on `(user_id)`
-
----
-
-### 3.3 `explorer_runs` (Crawler Execution & Run Auditing)
-Tracks every automated radar sweep or manual discovery cycle.
-
-| Column | Type | Nullable | Default | Description |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | *None* | Primary Key (e.g., `run_1718000000_abcd`). |
-| `profile_id` | `TEXT` | **NO** | *None* | Foreign Key referencing `candidate_profiles(id)`. |
-| `user_id` | `TEXT` | **NO** | `'default'` | Foreign Key referencing `users(id)`. |
-| `status` | `TEXT` | **NO** | *None* | Execution state: `'running'`, `'completed'`, `'stopped'`, `'failed'`. |
-| `jobs_discovered`| `INTEGER` | **NO** | `0` | Raw count of job postings scanned across sources. |
-| `jobs_retained` | `INTEGER` | **NO** | `0` | Count of jobs matching profile criteria and saved to DB. |
-| `started_at` | `INTEGER` | **NO** | *Epoch ms* | Run kickoff timestamp. |
-| `finished_at` | `INTEGER` | **YES** | `NULL` | Run termination timestamp. |
-| `completed_at` | `INTEGER` | **YES** | `NULL` | Alias timestamp for completion. |
-| `error_message` | `TEXT` | **YES** | `NULL` | Failure traceback or error diagnostics. |
-| `created_at` | `INTEGER` | **YES** | *Epoch ms* | Record timestamp. |
-
-**Indexes:**
-- `idx_explorer_runs_status` on `(status)`
-- `idx_explorer_runs_profile` on `(profile_id)`
-
----
-
-### 3.4 `users` (Authentication & Security Identities)
-Stores local and OAuth-authenticated user credentials.
+### 3.1 `users` (Account Credentials)
+Stores account login identities, hashed credentials, and authentication providers.
 
 | Column | Type | Nullable | Default | Description |
 | :--- | :--- | :---: | :---: | :--- |
 | `id` | `TEXT` | **NO** | *None* | Primary Key (UUIDv4). |
-| `email` | `TEXT` | **NO** | *None* | Unique email address (lowercased). |
-| `password_hash` | `TEXT` | **NO** | *None* | PBKDF2-HMAC-SHA256 hashed password string. |
+| `email` | `TEXT` | **NO** | *None* | Unique candidate email address. |
+| `password_hash` | `TEXT` | **NO** | *None* | Static-salted SHA-256 hash *(flagged for PBKDF2 upgrade)*. |
 | `name` | `TEXT` | **NO** | *None* | User display name. |
-| `avatar` | `TEXT` | **NO** | `'avatar_1'` | Avatar identifier or URI. |
-| `auth_provider` | `TEXT` | **NO** | `'google'` | Authentication source (`'local'`, `'google'`). |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Account creation timestamp. |
+| `avatar` | `TEXT` | YES | `''` | Avatar URL or data URI. |
+| `auth_provider` | `TEXT` | **NO** | `'local'` | Authentication source (`'local'`, `'google'`). |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Unix timestamp of creation. |
 
-**Constraints:**
-- `UNIQUE(email)`
-
----
-
-### 3.5 `activities` (Event Audit Log)
-Real-time activity audit log displayed on the dashboard feed.
+### 3.2 `candidate_profiles` (Professional Personas)
+Stores candidate career personas, skills, bios, and configuration metadata.
 
 | Column | Type | Nullable | Default | Description |
 | :--- | :--- | :---: | :---: | :--- |
 | `id` | `TEXT` | **NO** | *None* | Primary Key (UUIDv4). |
-| `time` | `TEXT` | **NO** | *None* | Human formatted string (e.g. "Just now", "5m ago"). |
-| `platform` | `TEXT` | **NO** | *None* | Associated ATS / platform (e.g., "Greenhouse", "System"). |
-| `iconType` | `TEXT` | **NO** | *None* | Icon renderer key (`'radar'`, `'check'`, `'bot'`, `'file'`). |
-| `text` | `TEXT` | **NO** | *None* | Log description narrative. |
-| `countBadge` | `TEXT` | **YES** | `NULL` | Visual counter chip (e.g., `"+12"`). |
-| `status` | `TEXT` | **NO** | *None* | Event badge severity (`'success'`, `'info'`, `'warning'`, `'pending'`). |
-| `profile_id` | `TEXT` | **NO** | `'default'` | Persona filter scope. |
-| `user_id` | `TEXT` | **NO** | `'default'` | User filter scope. |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Millisecond ordering timestamp. |
-
-**Indexes:**
-- `idx_activities_profile` on `(profile_id)`
-- `idx_activities_user` on `(user_id)`
-
----
-
-### 3.6 `pipelines` (Automation Schedules - Stage 2 Precursor)
-Configures autonomous job application runners.
-
-| Column | Type | Nullable | Default | Description |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | *None* | Primary Key (e.g. `pipe_01`). |
-| `title` | `TEXT` | **NO** | *None* | Pipeline title (e.g., "FastAPI / Python Roles"). |
-| `targetRoles` | `TEXT` | **NO** | *None* | Roles targeted by this pipeline. |
-| `platforms` | `TEXT` | **NO** | *None* | Target platforms (e.g., "Greenhouse, Ashby"). |
-| `schedule` | `TEXT` | **NO** | *None* | Cron or human schedule string (e.g., "Daily at 09:00 AM"). |
-| `frequencyLabel`| `TEXT` | **NO** | *None* | Short label (e.g., "Daily"). |
-| `matchThreshold`| `INTEGER` | **NO** | `85` | Minimum ATS score required to trigger auto-apply. |
-| `appliedCount` | `INTEGER` | **NO** | `0` | Number of applications dispatched through this pipeline. |
-| `active` | `INTEGER` | **NO** | `1` | Toggle switch (1 = Active, 0 = Paused). |
-| `lastRun` | `TEXT` | **NO** | *None* | Last execution time or "Never". |
-| `status` | `TEXT` | **NO** | `'ACTIVE'` | Running status (`'ACTIVE'`, `'PAUSED'`, `'ERROR'`). |
-| `mode` | `TEXT` | **NO** | `'Auto-Apply'` | Pipeline mode (`'Auto-Apply'`, `'Supervised'`). |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Creation timestamp. |
-
----
-
-### 3.7 `settings_ai` (LLM Engine & MCP Configuration)
-Stores user-configured LLM API keys, model selections, and registered MCP server endpoints.
-
-| Column | Type | Nullable | Default | Description |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | *None* | Primary Key (`'default'`). |
-| `openai_key` | `TEXT` | **YES** | `''` | User OpenAI API secret key. |
-| `openai_model` | `TEXT` | **NO** | `'gpt-4o'` | Active OpenAI model string. |
-| `gemini_key` | `TEXT` | **YES** | `''` | Google Gemini API secret key. |
-| `gemini_model` | `TEXT` | **NO** | `'gemini-1.5-pro'` | Active Gemini model string. |
-| `claude_key` | `TEXT` | **YES** | `''` | Anthropic Claude API secret key. |
-| `claude_model` | `TEXT` | **NO** | `'claude-3-5-sonnet'` | Active Claude model string. |
-| `mcp_servers` | `TEXT` | **NO** | `'[]'` | Serialized JSON array of registered MCP servers. |
+| `user_id` | `TEXT` | **NO** | `'default'` | Owning user account reference. |
+| `name` | `TEXT` | **NO** | *None* | Persona title (e.g., "Senior Backend Engineer"). |
+| `is_active` | `INTEGER` | **NO** | `0` | Flag: `1` if currently active; `0` otherwise. |
+| `is_complete`| `INTEGER` | **NO** | `0` | Flag: `1` if all 7 mandatory gate fields are populated. |
+| `data` | `TEXT` | **NO** | `'{}'` | JSON document containing full structured resume fields. |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Timestamp of creation. |
 | `updated_at` | `INTEGER` | **NO** | *Epoch ms* | Timestamp of last modification. |
 
----
-
-### 3.8 `settings_menu` (Dynamic Navigation Layout)
-Stores user-defined navigation item ordering and visibility toggles.
+### 3.3 `jobs` (Opportunities & Indian Tech Seed)
+Stores discovered, imported, and seeded job listings. Currently populated with 25 realistic Indian tech postings from `seed_india_jobs.py`.
 
 | Column | Type | Nullable | Default | Description |
 | :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | *None* | Primary Key (`'default'`). |
-| `items` | `TEXT` | **NO** | *None* | Serialized JSON array of navigation items. |
-| `updated_at` | `INTEGER` | **NO** | *Epoch ms* | Timestamp of last modification. |
+| `id` | `INTEGER` | **NO** | *Autoincrement* | Primary Key. |
+| `role` | `TEXT` | **NO** | *None* | Job title (e.g., "Lead Python Architect"). |
+| `company` | `TEXT` | **NO** | *None* | Hiring organization (e.g., "Swiggy", "CRED", "Razorpay"). |
+| `logo` | `TEXT` | YES | `''` | Company logo URL or inline SVG placeholder. |
+| `source` | `TEXT` | **NO** | `'Direct ATS'` | Origin platform (`'Greenhouse'`, `'Ashby'`, `'Lever'`, `'RemoteOK'`). |
+| `workMode` | `TEXT` | **NO** | `'Remote'` | Work model (`'Remote'`, `'Hybrid'`, `'On-site'`). |
+| `atsScore` | `INTEGER` | **NO** | `75` | Calculated compatibility score (0–100). |
+| `dateTime` | `TEXT` | **NO** | *ISO String* | Discovery or posting date. |
+| `location` | `TEXT` | **NO** | `'Bengaluru'` | Geographic location. |
+| `salary` | `TEXT` | YES | `''` | Compensation bracket (e.g., "₹35L - ₹50L PA"). |
+| `description`| `TEXT` | **NO** | *None* | Full job description text. |
+| `skills` | `TEXT` | **NO** | `'[]'` | JSON array string of required skills. |
+| `applied` | `INTEGER` | **NO** | `0` | Flag: `1` if applied; `0` otherwise. |
+| `marked` | `INTEGER` | **NO** | `0` | Flag: `1` if bookmarked; `0` otherwise. |
+| `url` | `TEXT` | YES | `''` | External application URL. |
+| `profile_id` | `TEXT` | **NO** | `'default'` | Persona scope reference. |
+| `user_id` | `TEXT` | **NO** | `'default'` | User scope reference. |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Ingestion timestamp. |
 
 ---
 
-### 3.9 `feedback_tickets` (User Issue Reporting)
-Stores in-app feedback submissions and bug reports.
+## 4. Stage 2 Local RAG Pipeline Schemas
+
+### 4.1 `career_facts` (Extracted Resume Truths)
+Stores atomic, verified career facts extracted from candidate resumes to serve as the ground truth during LLM generation.
 
 | Column | Type | Nullable | Default | Description |
 | :--- | :--- | :---: | :---: | :--- |
 | `id` | `TEXT` | **NO** | *None* | Primary Key (UUIDv4). |
-| `category` | `TEXT` | **NO** | *None* | Category (`'bug'`, `'feature'`, `'general'`). |
-| `rating` | `INTEGER` | **NO** | `5` | User star rating (1–5). |
-| `message` | `TEXT` | **NO** | *None* | User feedback narrative. |
-| `user_email` | `TEXT` | **NO** | *None* | Submitting user email. |
-| `status` | `TEXT` | **NO** | `'open'` | Ticket lifecycle status (`'open'`, `'resolved'`). |
-| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Creation timestamp. |
+| `profile_id` | `TEXT` | **NO** | *None* | Reference to `candidate_profiles.id`. |
+| `fact_type` | `TEXT` | **NO** | *None* | Category: `'skill'`, `'metric'`, `'title'`, `'company'`, `'education'`, `'certification'`. |
+| `category` | `TEXT` | YES | `''` | Sub-category (e.g., `'backend'`, `'cloud'`). |
+| `text` | `TEXT` | **NO** | *None* | Normalized fact statement (e.g., "Built streaming pipeline processing 10k req/sec"). |
+| `confidence` | `REAL` | **NO** | `1.0` | Extraction confidence score (0.0–1.0). |
+| `source_chunk_id` | `TEXT` | YES | *None* | Foreign key to `document_chunks.id`. |
+| `metadata` | `TEXT` | YES | `'{}'` | JSON metadata dictionary. |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Ingestion timestamp. |
 
----
+### 4.2 `document_chunks` & `document_chunks_fts` (Chunk Text & Lexical Index)
+Stores segmented paragraphs from uploaded resumes and provides an SQLite FTS5 virtual table for BM25 text search.
 
-### 3.10 `profile` (Legacy Single-Profile Store)
-Maintained for backwards-compatibility with early versions of the front-end before multi-persona architecture was introduced.
-
-| Column | Type | Nullable | Default | Description |
-| :--- | :--- | :---: | :---: | :--- |
-| `id` | `TEXT` | **NO** | `'default'` | Primary Key. |
-| `data` | `TEXT` | **NO** | *None* | Serialized candidate JSON profile. |
-| `updated_at` | `INTEGER` | **NO** | *Epoch ms* | Timestamp of last save. |
-
----
-
-## 4. Schema Migration & Evolution Strategy
-
-In [backend/database.py](file:///d:/JavaProjects/JobsOnly/backend/database.py), the `init_db()` function handles non-destructive idempotent schema evolution during backend startup:
-
-1. **Table Creation**: `CREATE TABLE IF NOT EXISTS` generates base tables if `jobs.db` is missing.
-2. **Column Augmentation**: Safe column migration patterns use wrapped `ALTER TABLE {table} ADD COLUMN {col_def}` try/except blocks to ensure zero data loss when deploying updates over existing databases:
-   ```python
-   for col_def in [
-       "url TEXT DEFAULT ''",
-       "marked INTEGER DEFAULT 0",
-       "profile_id TEXT DEFAULT 'default'",
-       "user_id TEXT DEFAULT 'default'"
-   ]:
-       try:
-           conn.execute(f"ALTER TABLE jobs ADD COLUMN {col_def}")
-       except Exception:
-           pass  # Column already exists
-   ```
-3. **Index Creation**: Safe `CREATE INDEX IF NOT EXISTS` guarantees optimal query plans without causing duplicate index creation errors.
-4. **Seed Provisioning**: Checks if singleton records (`settings_ai:default`, `settings_menu:default`, `candidate_profiles:default`) exist. If absent, it inserts pristine blank structures.
-
----
-
-## 5. Maintenance, Backup, and Factory Reset
-
-### 5.1 Factory Reset & Clear Clean Slate
-When a user requests a clean slate (via UI settings or backend admin), the database calls `clear_dummy_data()`:
 ```sql
-DELETE FROM jobs;
-DELETE FROM activities;
-DELETE FROM pipelines;
-DELETE FROM feedback_tickets;
-DELETE FROM explorer_runs;
-DELETE FROM users;
-VACUUM;
-```
-`VACUUM` defragments the SQLite storage file, reclaims unused pages, and resets file size back to initial state (~60 KB).
+-- Underlying table
+CREATE TABLE IF NOT EXISTS document_chunks (
+    id TEXT PRIMARY KEY,
+    profile_id TEXT NOT NULL,
+    doc_type TEXT NOT NULL,
+    chunk_index INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    token_count INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
 
-### 5.2 Hot Backup Procedure
-Because WAL mode separates active writes into `jobs.db-wal`, a standard file copy of `jobs.db` while the server is running may capture a partially committed state. Use the SQLite Backup API:
-```bash
-sqlite3 jobs.db ".backup 'backups/jobs_backup_$(date +%Y%m%d_%H%M%S).db'"
+-- FTS5 Full-Text Search Virtual Table
+CREATE VIRTUAL TABLE IF NOT EXISTS document_chunks_fts USING fts5(
+    chunk_id UNINDEXED,
+    profile_id,
+    text,
+    tokenize='porter unicode61'
+);
 ```
-Or execute through Python:
+
+### 4.3 `chunk_embeddings` (Local 384-Dim Vector Storage)
+Stores deterministic hash-based TF-IDF token vector projections as raw binary BLOBs (`FLOAT32` arrays) to enable local cosine similarity retrieval without external vector databases.
+
+| Column | Type | Nullable | Default | Description |
+| :--- | :--- | :---: | :---: | :--- |
+| `chunk_id` | `TEXT` | **NO** | *None* | Primary Key, references `document_chunks.id`. |
+| `embedding` | `BLOB` | **NO** | *None* | Binary serialized IEEE 754 float32 array (384 dimensions, 1536 bytes). |
+| `dimensions` | `INTEGER` | **NO** | `384` | Embedding dimensionality. |
+| `model` | `TEXT` | **NO** | `'local-hash-tfidf-384'` | Identifier of embedding projection engine. |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Vectorization timestamp. |
+
+### 4.4 `tailored_resumes` & `resume_evidence` (Tailoring & Verification Tracking)
+Tracks generated resume drafts, bullet-point diffs, factual validation results, and submission gate compliance.
+
+| Column | Type | Nullable | Default | Description |
+| :--- | :--- | :---: | :---: | :--- |
+| `id` | `TEXT` | **NO** | *None* | Primary Key (UUIDv4). |
+| `job_id` | `INTEGER` | **NO** | *None* | Target job reference (`jobs.id`). |
+| `profile_id` | `TEXT` | **NO** | *None* | Candidate persona reference (`candidate_profiles.id`). |
+| `content` | `TEXT` | **NO** | *None* | Serialized tailored resume (Markdown/JSON). |
+| `diff_summary` | `TEXT` | YES | `''` | Summary of bullet modifications. |
+| `status` | `TEXT` | **NO** | `'draft'` | Lifecycle: `'draft'`, `'validated'`, `'approved'`, `'rejected'`. |
+| `version` | `INTEGER` | **NO** | `1` | Revision number. |
+| `created_at` | `INTEGER` | **NO** | *Epoch ms* | Generation timestamp. |
+
+---
+
+## 5. Schema Migration & Idempotent Initialization
+
+In `backend/database.py`, `init_db()` executes idempotent initialization steps during backend startup:
+1. **Base Tables:** `CREATE TABLE IF NOT EXISTS` generates base entity tables.
+2. **Column Migrations:** Safe `ALTER TABLE {table} ADD COLUMN {col_def}` try/except blocks add new columns to older databases without data loss.
+3. **FTS5 Virtual Tables:** Creates `document_chunks_fts` virtual table if absent.
+4. **Seed Checking:** Inspects `jobs` table count. If 0, executes `seed_india_jobs.py` to populate 25 initial realistic Indian tech opportunities.
+
+---
+
+## 6. Maintenance & Backup Protocols
+
+### 6.1 Database Backups (WAL-Safe)
+Because WAL mode separates active writes into `jobs.db-wal`, a plain filesystem copy while the server is active risks partial transactions. Use Python's SQLite backup API:
 ```python
 import sqlite3
-def backup_database(destination_path):
-    with sqlite3.connect("jobs.db") as src:
+
+def backup_database(destination_path: str):
+    with sqlite3.connect("backend/jobs.db") as src:
         with sqlite3.connect(destination_path) as dst:
             src.backup(dst)
 ```
 
-### 5.3 Data Retention & Purge Rules
-- **Jobs Table**: Historical jobs older than 90 days with `applied = 0` and `marked = 0` can be pruned without affecting analytics or saved bookmarks.
-- **Explorer Runs**: Runs are retained for 30 days to power the 5-day history analytics bar chart on the Explorer tab.
-- **Activities**: Dashboard activities are capped at 1,000 entries; older events are automatically truncated during background sync.
+### 6.2 Factory Reset Procedure
+Invoking `POST /api/settings/factory-reset` triggers `clear_dummy_data()`, which wipes non-seed records, resets explorer runs, and executes `VACUUM` to reclaim disk space.

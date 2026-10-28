@@ -30,6 +30,9 @@ Skill2Role enforces an evidence-based Quality Assurance methodology:
 ## 2. Automated Test Suites & Verified Results
 
 ### 2.1 Backend Acceptance Suite (`backend/test_backend.py`)
+> [!WARNING]
+> **Audit Warning (TEST-01):** `test_backend.py` executes `test_factory_reset()` at line 326, which wipes all database records (`DELETE FROM jobs`, etc.) on the running instance. Run this test suite ONLY against an isolated test database, never against a live or seeded database. See [docs/testing.md](file:///d:/JavaProjects/JobsOnly/docs/testing.md) for the complete test execution audit baseline.
+
 The primary backend test suite executes 61 end-to-end integration and API acceptance checks using Python's standard `urllib` to guarantee zero third-party testing framework dependencies.
 
 **Command:**
@@ -69,16 +72,14 @@ npm run lint
 
 ---
 
-## 3. Manual QA Scenarios & Multi-Theme Visual Matrix
+## 3. Manual QA Scenarios & Dual-Theme Visual Matrix
 
-Every UI change must undergo visual validation across all 4 themes and both lighting modes:
+Every UI change must undergo visual validation across both supported themes and both lighting modes (Glass and Difference themes have been decommissioned):
 
 | Theme | Dark Mode | Light Mode | Criteria |
 | :--- | :---: | :---: | :--- |
-| **Default** | Verified | Verified | High contrast, teal accent (`--rp-accent-teal`), deep card backgrounds (`#111827`). |
-| **Glass** | Verified | Verified | Translucent glassmorphism cards (`backdrop-filter: blur(16px)`), cyan highlights. |
-| **Minimal** | Verified | Verified | Monochrome contrast, crisp 1px borders, subtle hover elevations. |
-| **Difference** | Verified | Verified | High-contrast neon aesthetics, distinct inverted surfaces. |
+| **Default** | Verified | Verified | High contrast, balanced 60-30-10 palette, input backgrounds `#181E1B` with `#E6EAE7` text. |
+| **Minimal** | Verified | Verified | High-contrast monochrome, inverted solid primary action buttons (`#FAFAFA` on `#09090B` in dark mode). |
 
 ### Visual Checklist:
 - [x] Universal Modal: Backdrop blur active, modal centered, ESC key closes modal, body scroll locked while open.
